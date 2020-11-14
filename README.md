@@ -91,7 +91,11 @@ cat >links.json
 ```
 e lanciare il comando
 ```
-mycurl -d "@links.json" -H "Content-Type: application/json" -H "Authorization: Bearer  $(tokeno)" -X "POST" http://192.168.0.40:8081/services/api/idempierepara/web/search/postLinks && echo
+mycurl \
+-d "@links.json" \
+-H "Content-Type: application/json" -H "Authorization: Bearer  $(tokeno)" \
+-X "POST" http://192.168.0.40:8081/services/api/idempierepara/web/search/postLinks && \
+echo
 ```
 otteremo qualcosa del tipo:
 ```
@@ -106,7 +110,7 @@ root@db-id-Scheduler:~/gantt#
 alias log_name='date +/opt/idempiere/idempiere-Test/log/idempiere.%Y-%m-%d_0.log'
 tail -f $(log_name)
 ```
-NOTE: l'alias sopra fa riferimento al file di lofg con indice 0, eventualmente verificare che il numero sia giusto
+NOTE: l'alias sopra fa riferimento al file di log con indice 0, eventualmente verificare che il numero sia giusto
 
 
 
