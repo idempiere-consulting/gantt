@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}{% endblock %}
+    {% block head1 %}{% endblock %}
+    <title>idGANTT</title>
+    <style>
+        html,
+        body {
+          height: 100%;
+          padding: 0;
+          margin: 0;
+          overflow: hidden;
+        }
+        {% block style1 %}{% endblock %}
+    
+    </style>
+  </head>
+  <body>
+    
+      {% block content %}{% endblock %}
+      <div id="gantt_here" style='width:100%; height:100%;'></div>
+
+    
+    <script type="text/javascript">
+
+        gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+        gantt.config.fit_tasks = true; 
+
+        gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
+        return new Date(rawDate ); // * 1000);// UNIX timestamps
+        };
+
+        gantt.templates.xml_format = gantt.templates.format_date = function(date){
+            // format to UNIX timestamps before sending the update to the server
+            return Math.floor(date.valueOf() );// / 1000);
+        };
+
+        {% block scale %}{% endblock %}
+        {% block columns %}{% endblock %}
+        {% block lightbox %}{% endblock %}
+        // {% block constraints %}{% endblock %}
+        // {% block risorse %}{% endblock %}
+        {% block tooltip %}{% endblock %}
+        {% block script4 %}{% endblock %}
+        {% block script5 %}{% endblock %}
+        // {% block scheduling %}{% endblock %}
+
+        gantt.init("gantt_here");
+
+        gantt.load("/data")
+        .then(function(data){
+            console.log(data)
+            gantt.message({ text: "dati caricati", expire: 2000 });
+            /* while(gantt.getParent(id)!=0){
+            console.log(gantt.getParent(id));
+            id=gantt.getParent(id);
+            }; */
+        });
+        // gantt.parse("/data");
+        // gantt.config.fit_tasks = true; 
+        // gantt.config.cascade_delete = false;
+
+        // gantt.init("gantt_here");
+        gantt.render();
+/*          var dp = new gantt.dataProcessor("/api");
+        dp.setTransactionMode("REST");
+ */ 
+        var dp = gantt.createDataProcessor({
+		    url: "/api",
+		    mode: "REST"
+	    });
+        dp.init(gantt);
+
+    </script>
+  </body>
+</html>

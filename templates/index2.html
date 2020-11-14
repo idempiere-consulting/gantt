@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>GANTT</title> 
+    <!-- <script src="/codebase/dhtmlxgantt.js?v=7.0.10"></script> -->
+    <!-- <link rel="stylesheet" href="/codebase/dhtmlxgantt.css?v=7.0.10"> -->
+	<link rel="stylesheet3" href="{{ url_for('static', filename='dhtmlxgantt.css') }}"> 
+	<link rel="stylesheet4" href="{{ url_for('static', filename='style-col.css') }}">
+    <!-- <script src="{{ url_for('static', filename='dhtmlxgantt.js') }}"></script> -->
+	<link rel="stylesheet5" href="/codebase/skins/dhtmlxgantt_broadway.css">
+	<script src="textbox.js" type="text/javascript"></script>
+	<style>
+		html {
+			height: 100%;
+			padding: 0px;
+			margin: 0px;
+			overflow: hidden;
+			
+		}
+	</style>
+</head>
+<body>
+	{% if name %}
+  <h1>gant {{ name }}!</h1>
+{% else %}
+  <h1>gantt, World!</h1>
+{% endif %}
+<p id="myclass">TEST CSS</p>
+
+<div id="gantt_here" style='width:100%; height:100%;'></div>
+
+<script type="text/javascript">
+    gantt.init("gantt_here");
+
+ //gantt.load("/user");
+ //setTimeout(() => {  gantt.load("/data"); }, 100);
+ gantt.load("/data");
+ 
+ var dp = new gantt.dataProcessor("/api");
+ dp.init(gantt);
+ dp.setTransactionMode("REST");
+</script>
+</body>
+<!--
+<script>
+	gantt.message({
+		text: "This example requires a RESTful API on the backend. <br>Check our <a target='_blank' href='https://docs.dhtmlx.com/gantt/desktop__server_side.html'>guides on backend integration here</a> ",
+		expire: -1
+	});
+	gantt.message({
+		text: "You can also find our step-by-step tutorials for different platforms <a target='_blank' href='https://docs.dhtmlx.com/gantt/desktop__howtostart_guides.html'>here </a> ",
+		expire: -1
+	});
+
+	gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+	gantt.init("gantt_here");
+	gantt.load("/gantt/backend/data");
+
+	var dp = gantt.createDataProcessor({
+		url: "/gantt/backend/data",
+		mode: "REST"
+	});
+</script>
+-->

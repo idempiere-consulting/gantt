@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<!--     <link rel="shortcut icon"    href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet"       href="{{ url_for('static', filename='dhtmlxgantt.css') }}">
+    <script src="{{ url_for('static', filename='dhtmlxgantt.js') }}" type="text/javascript"></script>
+ -->
+    <title>idGANTT</title>
+    <script src="https://dhtmlx.com/docs/products/dhtmlxGantt/codebase_upd/dhtmlxgantt.js?v=6.0.7"></script>
+	<script src="https://dhtmlx.com/docs/products/dhtmlxGantt/codebase_upd/ext/dhtmlxgantt_auto_scheduling.js?v=6.0.7"></script>
+	<script src="https://dhtmlx.com/docs/products/dhtmlxGantt/codebase_upd/ext/dhtmlxgantt_marker.js?v=6.0.7"></script>
+	<link rel="stylesheet" href="https://dhtmlx.com/docs/products/dhtmlxGantt/codebase_upd/dhtmlxgantt.css?v=6.0.7" />
+	<link rel="stylesheet" href="https://dhtmlx.com/docs/products/dhtmlxGantt/gantt/styles/samples.css?v=1" type="text/css">
+	<script src="https://dhtmlx.com/docs/products/dhtmlxGantt/codebase_upd/testdata.js?v=6.0.7"></script>
+
+
+  <style>
+		html,
+		body {
+			height: 100%;
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+		}
+
+		.weekend {
+			background: #f4f7f4 !important;
+		}
+
+		[data-column-name='constraint_type'] .gantt_tree_content {
+			padding: 1px;
+			line-height: 17px;
+			white-space: normal;
+			text-align: right;
+			box-sizing: border-box;
+		}
+
+		.gantt_grid_editor_placeholder[data-column-name='constraint_type'] select {
+			line-height: 20px;
+			white-space: normal;
+		}
+
+		.constraint-marker {
+			position: absolute;
+
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+
+			width: 22px;
+			height: 22px;
+			margin-top: 17px;
+
+			opacity: 0.7;
+			z-index: 1;
+			background: url("codebase_upd/baseline-keyboard_tab-24px.svg") center no-repeat;
+		}
+
+		.constraint-marker.earliest-start {
+			margin-left: -22px;
+		}
+
+		.constraint-marker.latest-end {
+			margin-left: 0;
+			transform: rotate(180deg);
+		}
+	</style>
+</head>
+<body>
+
+<select name="scales" size="1" onchange="customSetScale(value)">
+    <option value="1">Day scale</option>
+    <option value="2">Week scale</option>
+    <option value="3">Month scale</option>
+    <option value="4">Year scale</option>
+  </select>
+  <button onClick="rowHeightDecrease()"> Decrease</button>
+  <button onClick="rowHeightIncrease()"> Increase</button>
+
+
+    <div id="gantt_here" style='width:100%; height:100%;'></div>
+
+<script type="text/javascript">
+
+ gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
+    return new Date(rawDate ); // * 1000);// UNIX timestamps
+};
+
+gantt.templates.xml_format = gantt.templates.format_date = function(date){
+    // format to UNIX timestamps before sending the update to the server
+    return Math.floor(date.valueOf() );// / 1000);
+};
+gantt.config.project_start = new Date(2020, 3, 1);
+if (gantt.addMarker) {
+			gantt.addMarker({
+				start_date: gantt.config.project_start,
+				text: "project start"
+			});
+		}
+
+gantt.plugins({
+    quick_info: true
+});
+var textEditor = { type: "text", map_to: "text" };
+
+gantt.config.columns = [
+    {name:"text",       label:"Task name",  width:"*", tree:true,resize: true ,editor:textEditor},
+    {name:"start_date", label:"Start time", align:"center", width:80 },
+    /* {name:"duration",   label:"Duration",   align:"center", width:30 }, */
+    {name:"S_Resource_ID",      label:"Owner",   align:"center", width:60 },
+    {name:"add",        label:"",           width:44 }
+];
+ gantt.config.lightbox.sections = [
+ {name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
+ {name: "owner_id", height: 22, map_to: "owner_id", type: "select", options: gantt.serverList("options", [
+    {key: 1000004, label: "Marco"},
+    {key: 1000005, label: "Andrea"},
+    {key: 1000006, label: "Mauro"}])},
+ {name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
+    {key: 'project', label: "project"},
+    {key: 'task', label: "task"},
+    {key: 'milestone', label: "milestone"}]
+
+
+ )},
+	{name: "time", type: "duration", map_to: "auto"}
+];
+
+function setScaleConfig(value) {
+  switch (value) {
+    case "1":
+      gantt.config.scale_unit = "day";
+      gantt.config.step = 1;
+      gantt.config.date_scale = "%d %M";
+      gantt.config.subscales = [];
+      gantt.config.scale_height = 27;
+      gantt.templates.date_scale = null;
+      break;
+    case "2":
+      var weekScaleTemplate = function (date) {
+        var dateToStr = gantt.date.date_to_str("%d %M");
+        var startDate = gantt.date.week_start(new Date(date));
+        var endDate = gantt.date.add(gantt.date.add(startDate, 1, "week"), -1, "day");
+        return dateToStr(startDate) + " - " + dateToStr(endDate);
+      };
+
+      gantt.config.scale_unit = "week";
+      gantt.config.step = 1;
+      gantt.templates.date_scale = weekScaleTemplate;
+      gantt.config.subscales = [
+        {unit: "day", step: 1, date: "%D"}
+      ];
+      gantt.config.scale_height = 50;
+      break;
+    case "3":
+      gantt.config.scale_unit = "month";
+      gantt.config.date_scale = "%F, %Y";
+      gantt.config.subscales = [
+        {unit: "day", step: 1, date: "%j, %D"}
+      ];
+      gantt.config.scale_height = 50;
+      gantt.templates.date_scale = null;
+      break;
+    case "4":
+      gantt.config.scale_unit = "year";
+      gantt.config.step = 1;
+      gantt.config.date_scale = "%Y";
+      gantt.config.min_column_width = 50;
+
+      gantt.config.scale_height = 90;
+      gantt.templates.date_scale = null;
+
+
+      gantt.config.subscales = [
+        {unit: "month", step: 1, date: "%M"}
+      ];
+      break;
+  }
+}
+
+setScaleConfig('4');
+gantt.render();
+function customSetScale(value){
+  setScaleConfig(value);
+  gantt.render();
+}
+
+// gantt.config.autosize = "xy";
+// gantt.config.auto_scheduling_move_projects = true;
+
+    gantt.init("gantt_here");
+
+ //gantt.load("/user");
+ //setTimeout(() => {  gantt.load("/data"); }, 100);
+ gantt.load("/data");
+ //gantt.parse(tasks);
+ //gantt.load("/risorse");
+ 
+ 
+//gantt.config.autosize = "xy";
+gantt.config.row_height =40 ;
+function rowHeightDecrease(){
+  if(gantt.config.row_height > 20){
+    gantt.config.row_height = gantt.config.row_height-10;
+  }
+  gantt.render()
+}
+function rowHeightIncrease(){
+  if(gantt.config.row_height < 100){
+    gantt.config.row_height = gantt.config.row_height+10;
+  }
+  gantt.render()
+}
+
+
+//gantt.init("gantt_here");
+
+
+
+
+ var dp = new gantt.dataProcessor("/api");
+ dp.init(gantt);
+ dp.setTransactionMode("REST");
+</script>
+
+
+</body>
+</html>

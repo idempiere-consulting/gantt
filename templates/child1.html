@@ -1,0 +1,43 @@
+{% extends 'template.html' %}
+
+{% block head %}
+    {% include 'head.html' %}
+{% endblock %}
+
+{% block content %}
+    {% include 'dateScale.html' %}
+    {% if task == 'scale' %}
+        {% include 'dateScale.html' %}
+    {% endif %}
+    {% if task == 'content2' %}
+        {% include 'content2.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block scale %}
+    {% include 'dateScale.js' %}
+{% endblock %}
+
+{% block columns %}
+    {% include 'columns.js' %}
+{% endblock %}
+
+{% block lightbox %}
+    {% include 'lightbox.js' %}
+{% endblock %}
+
+{% block constraints %}
+    {% include 'constraints.js' %}
+{% endblock %}
+
+{% block risorse %}
+    {% include 'risorse.js' %}
+{% endblock %}
+
+{% block scheduling %}
+    {% include 'scheduling.js' %}
+{% endblock %}
+
+
+
+
