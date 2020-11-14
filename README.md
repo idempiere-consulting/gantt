@@ -88,7 +88,6 @@ cat >links.json
         "Name": "pippotask"
 
 }
-CTRL + D
 ```
 e lanciare il comando
 ```
@@ -96,20 +95,18 @@ mycurl -d "@links.json" -H "Content-Type: application/json" -H "Authorization: B
 ```
 otteremo qualcosa del tipo:
 ```
-root@db-id-Scheduler:~/gantt# . curls.txt 
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100   233  100   160  100    73  24566  11208 --:--:-- --:--:-- --:--:-- 26666
 {"message":"model inserito"}
 root@db-id-Scheduler:~/gantt# 
 ```
+## Controllare i log di idempiere
+``` 
+alias log_name='date +/opt/idempiere/idempiere-Test/log/idempiere.%Y-%m-%d_0.log'
+tail -f $(log_name)
+```
+NOTE: l'alias sopra fa riferimento al file di lofg con indice 0, eventualmente verificare che il numero sia giusto
 
-
-
-
-
-
-
- /opt/idempiere/idempiere-server/log/
 
 
