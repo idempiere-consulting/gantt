@@ -58,7 +58,7 @@ bash gantt_start.sh
 ```
 ## Strumenti utili da riga di comando per eseguire test
 (con riferimento alla macchina 140 su test1 ed utente demo@ciao.com, cambiare i dati in accordo )
-####creare user.json
+#### creare user.json
 ```
 cat >user.json
 {
@@ -97,7 +97,10 @@ mycurl \
 -X "POST" http://192.168.0.40:8081/services/api/idempierepara/web/search/postLinks && \
 echo
 ```
-otteremo qualcosa del tipo:
+NOTE: ipotizzo di lanciare il comando dalla stessa macchina che fornisce le API, se usassi localhost o 127.0.0.1 non funzionerebbe.
+ovviamente per accedere da fuori bisogna conoscere il forward della porta su proxmox, in questo caso test1:4081
+
+### otteremo qualcosa del tipo:
 ```
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
@@ -111,6 +114,7 @@ alias log_name='date +/opt/idempiere/idempiere-Test/log/idempiere.%Y-%m-%d_0.log
 tail -f $(log_name)
 ```
 NOTE: l'alias sopra fa riferimento al file di log con indice 0, eventualmente verificare che il numero sia giusto
+
 
 
 
