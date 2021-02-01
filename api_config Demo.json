@@ -1,0 +1,20 @@
+{
+    "ssl":false,
+    "host":"5.189.165.60",
+    "port":"4081",
+    "path":{
+        "login":"services/api/auth/login",
+        "query":"services/api/idempierepara/web/search/"
+    },
+    "login_user":{
+        "username": "demo@ciao.com",
+        "password": "DEMOAdmin"    },
+    "headers":{
+        "Content-Type": "application/json"
+    },
+    
+    "date_dormat":"%Y-%m-%d %H:%M:%S"
+
+
+     
+}
