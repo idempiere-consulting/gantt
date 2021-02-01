@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon"    href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet"       href="{{ url_for('static', filename='dhtmlxgantt.css') }}">
+
+    <script src="{{ url_for('static', filename='dhtmlxgantt.js') }}" type="text/javascript"></script>
+    <!-- <script src="{{ url_for('static', filename='suite.js') }}" type="text/javascript"></script> -->
+    <title>idGANTT</title>
+  	<style>
+		html, body {
+			padding: 0px;
+			margin: 0px;
+			height: 100%;
+		}
+
+		#gantt_here {
+			width:100%;
+			height: 800px;
+			height:calc(100vh - 52px);
+		}
+
+		.gantt_grid_scale .gantt_grid_head_cell,
+		.gantt_task .gantt_task_scale .gantt_scale_cell {
+			font-weight: bold;
+			font-size: 14px;
+			color: rgba(0, 0, 0, 0.7);
+		}
+
+		.resource_marker{
+			text-align: center;
+		}
+		.resource_marker div{
+			width: 28px;
+			height: 28px;
+			line-height: 29px;
+			display: inline-block;
+
+			color: #FFF;
+			margin: 3px;
+		}
+		.resource_marker.workday_ok div {
+			border-radius: 15px;
+			background: #51c185;
+		}
+
+		.resource_marker.workday_over div{
+			border-radius: 3px;
+			background: #ff8686;
+		}
+
+		.folder_row {
+			font-weight: bold;
+		}
+
+		.highlighted_resource,
+		.highlighted_resource.odd
+		{
+			background-color: rgba(255, 251, 224, 0.6);
+		}
+	
+		.resource-controls .gantt_layout_content{
+			padding: 7px;
+			overflow: hidden;
+		}
+		.resource-controls label{
+			margin: 0 10px;
+			vertical-align: bottom;
+			display: inline-block;
+			color: #3e3e3e;
+			padding: 2px;
+			transition: box-shadow 0.2s;
+		}
+
+		.resource-controls label:hover{
+			box-shadow: 0 2px rgba(84, 147, 255, 0.42);
+		}
+
+		.resource-controls label.active,
+		.resource-controls label.active:hover
+		{
+			box-shadow: 0 2px #5493ffae;
+			color: #1f1f1f;
+		}
+
+		.resource-controls input{
+			vertical-align: top;
+		}
+
+		.gantt_task_cell.week_end {
+			background-color: #e8e8e87d;
+		}
+
+		.gantt_task_row.gantt_selected .gantt_task_cell.week_end {
+			background-color: #e8e8e87d !important;
+		}
+
+
+		.group_row,
+		.group_row.odd,
+		.gantt_task_row.group_row{
+			background-color: rgba(232, 232, 232, 0.6);
+		}
+		.progress {
+			color: Blue;
+		}
+
+		.zero {
+			color: Red;
+		}
+		.finito {
+			font-weight: bold;
+
+			color: Green;
+		}
+		.weekend {
+			background: #f4f7f4 !important;
+		}
+
+		[data-column-name='constraint_type'] .gantt_tree_content {
+			padding: 1px;
+			line-height: 17px;
+			white-space: normal;
+			text-align: right;
+			box-sizing: border-box;
+		}
+
+		.gantt_grid_editor_placeholder[data-column-name='constraint_type'] select {
+			line-height: 20px;
+			white-space: normal;
+		}
+
+		.constraint-marker {
+			position: absolute;
+
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+
+			width: 56px;
+			height: 56px;
+			margin-top: -11px;
+
+			opacity: 0.4;
+			z-index: 1;
+			background: url("{{ url_for('static', filename='common/constraint-arrow.svg') }}" ) center no-repeat;
+			background-size: cover;
+		}
+
+		.constraint-marker.earliest-start {
+			margin-left: -53px;
+		}
+
+		.constraint-marker.latest-end {
+			margin-left: -3px;
+			transform: rotate(180deg);
+		}
+
+		.gantt_link_control {
+			z-index: 1;
+		}
+
+
+
+
+	</style>
+</head>
+<body>
+<div class="gantt_control" >
+	<input type='button' id='default' onclick="toggleGroups(this)" value="Show Resource view">
+	<select name="scales" size="1" onchange="customSetScale(value)">
+		<option value="day">Day scale</option>
+		<option value="week">Week scale</option>
+		<option value="month">Month scale</option>
+		<option selected="selected" value="year">Year scale
+		  
+		</option>
+	  </select>
+	  <button onClick="rowHeightDecrease()"> Decrease</button>
+	  <button onClick="rowHeightIncrease()"> Increase</button>
+	  <input type='button' id='default' onclick="toggleTooltip(this)" value="Nascondi InfoBox">
+	
+	
+</div>
+
+<div id="gantt_here"></div>
+<script>
+
+	gantt.plugins({
+		auto_scheduling: true,
+		marker: true,
+		grouping: true,
+		quick_info: false,
+		tooltip: false,
+	});
+
+		// reordering tasks within the whole gantt
+	gantt.config.order_branch = true;
+	gantt.config.order_branch_free = true;
+
+///////////////////////
+// funzionalità bottone aggiuntivo
+	gantt.locale.labels["complete_button"] = "Complete";
+	gantt.locale.labels["useless_button"] = "INUTILE";
+	
+	gantt.config.buttons_left = ["dhx_save_btn", "dhx_cancel_btn", "complete_button","useless_button"];
+
+	gantt.templates.task_class = function (start, end, task) {
+		if (task.progress == 1)
+			return "completed_task";
+		return "";
+	};
+	console.log('tipi',gantt.config.types)
+	gantt.attachEvent("onAfterTaskAutoSchedule", function (task, new_date, link, predecessor) {
+			console.log("onAfterTaskAutoSchedule predecessor:",predecessor)
+			var reason = "";
+			if (predecessor) {
+				reason = predecessor.text;
+			} else {
+				var constraint = gantt.getConstraintType(task);
+				reason = gantt.locale.labels[constraint];
+			}
+			var predecessor = predecessor ? predecessor : { text: task.constraint_type };
+			console.log("<b>" + task.text + "</b> has been rescheduled to " + gantt.templates.task_date(new_date) + " due to <b>" + reason + "</b> constraint");
+		});
+		//gantt.message({ text: "Project is scheduled as soon as possible starting from the project start date", expire: 5000 });
+
+	gantt.attachEvent("onLightboxButton", function (button_id, node, e) {
+		if (button_id == "complete_button") {
+			var id = gantt.getState().lightbox;
+			gantt.getTask(id).progress = 1;
+			gantt.updateTask(id)
+			gantt.hideLightbox();
+		}
+		if (button_id == "useless_button") {
+
+			gantt.message({ text: '<p style="color:red;background:blue">funzione da implementare a piacimento</p>', expire: 2000 })
+			gantt.hideLightbox();
+		}
+	});
+	gantt.attachEvent("onBeforeLightbox", function (id) {
+		var task = gantt.getTask(id);
+		if (task.progress == 1) {
+			gantt.message({text: "The task is already completed!", type: "completed"});
+			return false;
+		}
+		return true;
+	});
+///////////////////////
+
+
+		gantt.templates.scale_cell_class = function (date) {
+			if (date.getDay() == 0 || date.getDay() == 6) {
+				return "weekend";
+			}
+		};
+		gantt.templates.timeline_cell_class = function (item, date) {
+			if (date.getDay() == 0 || date.getDay() == 6) {
+				return "weekend";
+			}
+		};
+
+		gantt.config.work_time = true;
+		gantt.config.min_column_width = 45;
+		gantt.config.auto_scheduling = true;
+
+		gantt.config.schedule_from_end = false;
+		//gantt.config.project_start = new Date(2020, 0, 1);
+
+///VV///VVV/V/V/V/V/V/V
+gantt.attachEvent("onBeforeGanttRender", function(){
+   var range = gantt.getSubtaskDates();
+   console.log('range\n',range);
+   var scaleUnit = gantt.getState().scale_unit;
+   gantt.config.project_ = new Date(2020, 0, 1);
+   console.log('test: ',gantt.config.project_)
+   if(range.start_date && range.end_date){
+     gantt.config.start_date = gantt.calculateEndDate(range.start_date, -1, scaleUnit);
+	 gantt.config.end_date = gantt.calculateEndDate(range.end_date, 1, scaleUnit);
+	 gantt.config.project_start = range.start_date;
+	 gantt.config.project_end = range.end_date;
+	 console.log('inizioP: ',gantt.config.project_start)
+   gantt.config.project_ = new Date(2020, 0, 1);
+   console.log(gantt.config.project_)
+   gantt.addMarker({
+				start_date: gantt.config.project_start,
+				text: "project start"
+			});
+			gantt.addMarker({
+				start_date: gantt.config.project_end,
+				text: "project end",
+				//title: "END: " + dateToStr(gantt.config.project_end)
+
+			});
+
+
+	 
+   }
+});
+/////V/V/V/V/V/V/V/V/V/V/
+
+
+
+	var today = new Date();
+	var dd = String(today.getDate()).padStart(2, '0');
+	var mm = String(today.getMonth() ).padStart(2, '0'); //January is 0!
+	var yyyy = today.getFullYear();
+	today = mm + '/' + dd + '/' + yyyy;
+
+	var dateToStr = gantt.date.date_to_str(gantt.config.task_date);
+	today = new Date(yyyy, mm, dd);
+	gantt.addMarker({
+		start_date: today,
+		css: "today",
+		text: "Today",
+		title: "Today: " + dateToStr(today)
+	});
+	gantt.addMarker({
+				start_date: gantt.config.project_start,
+				text: "project start"
+			});
+	gantt.addMarker({
+		start_date: gantt.config.project_end,
+		text: "project end",
+		//title: "END: " + dateToStr(gantt.config.project_end)
+
+	});
+	
+////////////////////////////
+	gantt.config.row_height =40 ;
+	gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+	gantt.config.auto_scheduling = true;
+	gantt.config.auto_scheduling_strict = true;
+	gantt.config.work_time = true;
+	gantt.config.resource_store = "my_resources";
+	gantt.config.resource_property = "S_Resource_ID";
+	gantt.config.order_branch = true;
+	gantt.config.open_tree_initially = false;
+	gantt.config.scale_height = 50;
+	//////////////   vincoli
+	var constraintTypeEditor = {
+			type: "select", map_to: "constraint_type", options: [
+				{ key: "asap", label: gantt.locale.labels.asap },
+				{ key: "alap", label: gantt.locale.labels.alap },
+				{ key: "snet", label: gantt.locale.labels.snet },
+				{ key: "snlt", label: gantt.locale.labels.snlt },
+				{ key: "fnet", label: gantt.locale.labels.fnet },
+				{ key: "fnlt", label: gantt.locale.labels.fnlt },
+				{ key: "mso", label: gantt.locale.labels.mso },
+				{ key: "mfo", label: gantt.locale.labels.mfo }
+			]
+		};
+		function renderDiv(task, date, className) {
+			var el = document.createElement('div');
+			el.className = className;
+			var sizes = gantt.getTaskPosition(task, date);
+			el.style.left = sizes.left + 'px';
+			el.style.top = sizes.top + 'px';
+			return el;
+		}
+
+		gantt.addTaskLayer(function draw_deadline(task) {
+			console.log('add layer 362')
+			//console.log('gantt\n',gantt)
+			console.log('vincolo task: ',task.constraint_date)
+			var constraintType = gantt.getConstraintType(task);
+			var types = gantt.config.constraint_types;
+			if (constraintType != types.ASAP && constraintType != types.ALAP && task.constraint_date) {
+				var dates = gantt.getConstraintLimitations(task);
+				console.log('vincoli data: ',dates)
+				var els = document.createElement("div");
+
+				if (dates.earliestStart) {
+					els.appendChild(renderDiv(task, dates.earliestStart, 'constraint-marker earliest-start'));
+				}
+
+				if (dates.latestEnd) {
+					els.appendChild(renderDiv(task, dates.latestEnd, 'constraint-marker latest-end'));
+				}
+
+				els.title = gantt.locale.labels[constraintType] + " " + gantt.templates.task_date(task.constraint_date);
+				console.log('trasformata....',gantt.templates.task_date(task.constraint_date))
+
+				if (els.children.length)
+					return els;
+			}
+			return false;
+		});
+////////////   vincoli
+	var constraintDateEditor = { type: "date", map_to: "constraint_date", min: new Date(2019, 0, 1), max: new Date(2022, 0, 1) };
+
+	var labels = gantt.locale.labels;
+	labels.column_myresource = labels.section_myresource = "My_resource";
+	var resourcesStore= gantt.$resourcesStore
+	resourcesStore= gantt.createDatastore({
+		name: gantt.config.resource_store,
+		type: "treeDatastore",
+		initItem: function (item) {
+			//console.log('createdatastore, item',item)
+			item.parent = item.parent || gantt.config.root_id;
+			item[gantt.config.resource_property] = item.parent;
+			item.open = true;
+			return item;
+		}
+	});
+	resourcesStore.attachEvent("onParse", function(){
+		var myresources = [];
+		resourcesStore.eachItem(function(res){
+			if(!resourcesStore.hasChild(res.id)){
+			
+			var copy = gantt.copy(res);
+			copy.key = res.id;
+			copy.label = res.Name;
+			myresources.push(copy);
+			}
+		});
+		console.log('ho caricato le seguenti risorse:\n',myresources)
+		gantt.updateCollection("my_resources", myresources);
+		gantt.config.lightbox.sections = [
+		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
+		{name: "myresource",  height: 22, map_to: "S_Resource_ID", type: "select", options: gantt.serverList(gantt.config.resource_store)}, 
+		{name: "constraint",  type: "constraint" },
+		// FIXME 
+		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
+			{key: 'project', label: "project"},
+			{key: 'task', label: "task"},
+			{key: 'milestone', label: "milestone"}]
+		)},
+			{name: "time", type: "duration", map_to: "auto"}
+		];
+		});
+
+	function ResById(list, id) {
+		if (id == null) {
+			return ""
+		}
+		for (var i = 0; i < list.length; i++) {
+			
+			if (list[i].id==id)
+// console.log('ecco la risorsa col suo numero',list[i].Name.concat(id))
+				return list[i].Name || "";
+			
+			}
+		return "";
+	  }
+
+  	gantt.config.lightbox.sections = [
+		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
+		{name: "myresource",  height: 22, map_to: "S_Resource_ID", type: "select", options: gantt.serverList(gantt.config.resource_store)}, 
+		{name: "constraint",  type: "constraint" },
+		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
+			{key: 'project', label: "project"},
+			{key: 'task', label: "task"},
+			{key: 'milestone', label: "milestone"}]
+		)},
+			{name: "time", type: "duration", map_to: "auto"}
+		];
+
+  
+	function rowHeightDecrease(){
+		if(gantt.config.row_height > 20){
+			gantt.config.row_height = gantt.config.row_height-10;
+		}
+  		gantt.render()
+	}
+	function rowHeightIncrease(){
+		if(gantt.config.row_height < 100){
+			gantt.config.row_height = gantt.config.row_height+10;
+		}
+		gantt.render()
+	}
+	gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
+	return new Date(rawDate ); // * 1000);// UNIX timestamps
+	};
+	gantt.templates.xml_format = gantt.templates.format_date = function(date){
+	// format to UNIX timestamps before sending the update to the server
+	return Math.floor(date.valueOf() );// / 1000);
+	};
+	/* gantt.message({
+		text:[
+			"Displaying a resource usage diagram.",
+			"The diagram is in sync with the main Gantt.",
+			"Columns and resources are fully customizable, the resources can be changed using a public api."
+		].join("<br><br>"),
+		expire: -1
+	});
+ */
+	function shouldHighlightTask(task){
+//console.log('sto lavorando il task : ',task)		
+		var store = resourcesStore;
+//console.log('lo store delle risorse è: ',store)
+		var taskResource = task[gantt.config.resource_property],
+			selectedResource = store.getSelectedId();
+//console.log('taskResource',taskResource)			
+//console.log('gantt.config.resource_property',gantt.config.resource_property)
+//console.log('selectedResource',selectedResource)
+//console.log('store.getSelectedId()',store.getSelectedId())
+		if(taskResource == selectedResource || store.isChildOf(taskResource, selectedResource)){
+			return true;
+		}
+	}
+
+	// questo assegna le classi CSS per poter poi disegnare correttamente gli oggetti GRID row
+	gantt.templates.grid_row_class = function(start, end, task){
+		var css = [];
+		if(gantt.hasChild(task.id)){
+			css.push("folder_row");
+		}
+
+		if(task.$virtual){
+			css.push("group_row")
+		}
+
+		if(shouldHighlightTask(task)){
+			css.push("highlighted_resource");
+		}
+
+		return css.join(" ");
+	};
+	// questo assegna le classi CSS per poter poi disegnare correttamente gli oggetti TASK row
+
+	gantt.templates.task_row_class = function(start, end, task){
+		if(shouldHighlightTask(task)){
+			return "highlighted_resource";
+		}
+		return "";
+	};
+
+	gantt.templates.timeline_cell_class = function (task, date) {
+		if (!gantt.isWorkTime({date: date, task: task}))
+			return "week_end";
+		return "";
+	};
+
+	gantt.templates.resource_cell_class = function(start_date, end_date, resource, tasks){
+		var css = [];
+		css.push("resource_marker");
+		if (tasks.length <= 1) {
+			css.push("workday_ok");
+		} else {
+			css.push("workday_over");
+		}
+		return css.join(" ");
+	};
+
+	gantt.templates.resource_cell_value = function(start_date, end_date, resource, tasks){
+		var html = "<div>"
+		if(resourceMode == "hours"){
+			html += tasks.length * 8;
+		}else{
+			html += tasks.length;
+		}
+		html += "</div>";
+		return html;
+	};
+
+	function shouldHighlightResource(resource){
+		var selectedTaskId = gantt.getState().selected_task;
+		if(gantt.isTaskExists(selectedTaskId)){
+			var selectedTask = gantt.getTask(selectedTaskId),
+				selectedResource = selectedTask[gantt.config.resource_property];
+
+			if(resource.id == selectedResource){
+				return true;
+			}else if(resourcesStore.isChildOf(selectedResource, resource.id)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	var resourceTemplates = {
+		grid_row_class: function(start, end, resource){
+			var css = [];
+			if(resourcesStore.hasChild(resource.id)){
+				css.push("folder_row");
+				css.push("group_row");
+			}
+			if(shouldHighlightResource(resource)){
+				css.push("highlighted_resource");
+			}
+			return css.join(" ");
+		},
+		task_row_class: function(start, end, resource){
+			var css = [];
+			if(shouldHighlightResource(resource)){
+				css.push("highlighted_resource");
+			}
+			if(resourcesStore.hasChild(resource.id)){
+				css.push("group_row");
+			}
+
+			return css.join(" ");
+
+		}
+	};
+
+	
+	function getResourceTasks(resourceId){
+		var store = gantt.getDatastore(gantt.config.resource_store),
+			field = gantt.config.resource_property,
+			tasks;
+
+		if(store.hasChild(resourceId)){
+			tasks = gantt.getTaskBy(field, store.getChildren(resourceId));
+		}else{
+			tasks = gantt.getTaskBy(field, resourceId);
+		}
+		return tasks;
+	}
+
+	var resourceConfig = {
+		scale_height: 30,
+		scales: [
+			{unit: "day", step: 1, date: "%d %M"}
+		],
+		columns: [
+			{
+				name: "name", label: "Name", tree:true, width:200, template: function (resource) {
+
+					return resource.Name;
+				}, resize: true
+			},
+			{
+				name: "progress", label: "Complete", align:"center",template: function (resource) {
+					var tasks = getResourceTasks(resource.id);
+
+					var totalToDo = 0,
+						totalDone = 0;
+					tasks.forEach(function(task){
+						totalToDo += task.duration;
+						totalDone += task.duration * (task.progress || 0);
+					});
+
+					var completion = 0;
+					if(totalToDo){
+						completion = Math.floor((totalDone / totalToDo)*100);
+					}
+
+					return Math.floor(completion) + "%";
+				}, resize: true
+			},
+			{
+				name: "workload", label: "Workload", align:"center", template: function (resource) {
+					var tasks = getResourceTasks(resource.id);
+					var totalDuration = 0;
+					tasks.forEach(function(task){
+						totalDuration += task.duration;
+					});
+
+					return (totalDuration || 0) * 8 + " h";
+				}, resize: true
+			},
+
+			{
+				name: "capacity", label: "Capacity", align:"center",template: function (resource) {
+					var store = gantt.getDatastore(gantt.config.resource_store);
+					var n = store.hasChild(resource.id) ? store.getChildren(resource.id).length : 1
+
+					var state = gantt.getState();
+
+					return gantt.calculateDuration(state.min_date, state.max_date) * n * 8 + " h";
+				}
+			}
+
+		]
+	};
+/* 
+gantt.config.scales = [
+	{unit: "month", step: 1, format: "%F, %Y"},
+	{unit: "day", step: 1, format: "%d %M"}
+];
+ */
+
+
+ function setScaleConfig(value) {
+  switch (value) {
+    case "day":
+      gantt.config.scale_unit = "day";
+      gantt.config.step = 1;
+      gantt.config.date_scale = "%d %M";
+      gantt.config.subscales = [];
+      gantt.config.scale_height = 27;
+      gantt.templates.date_scale = null;
+      break;
+    case "week":
+      var weekScaleTemplate = function (date) {
+        var dateToStr = gantt.date.date_to_str("%d %M");
+        var startDate = gantt.date.week_start(new Date(date));
+        var endDate = gantt.date.add(gantt.date.add(startDate, 1, "week"), -1, "day");
+        return dateToStr(startDate) + " - " + dateToStr(endDate);
+      };
+
+      gantt.config.scale_unit = "week";
+      gantt.config.step = 1;
+      gantt.templates.date_scale = weekScaleTemplate;
+      gantt.config.subscales = [
+        {unit: "day", step: 1, date: "%D"}
+      ];
+      gantt.config.scale_height = 50;
+      break;
+    case "month":
+      gantt.config.scale_unit = "month";
+      gantt.config.date_scale = "%F, %Y";
+      gantt.config.subscales = [
+        {unit: "day", step: 1, date: "%j, %D"}
+      ];
+      gantt.config.scale_height = 50;
+      gantt.templates.date_scale = null;
+      break;
+    case "year":
+      gantt.config.scale_unit = "year";
+      gantt.config.step = 1;
+      gantt.config.date_scale = "%Y";
+      gantt.config.min_column_width = 50;
+
+      gantt.config.scale_height = 90;
+      gantt.templates.date_scale = null;
+
+
+      gantt.config.subscales = [
+        {unit: "month", step: 1, date: "%M"}
+      ];
+      break;
+  }
+}
+
+setScaleConfig('year');
+gantt.render();
+function customSetScale(value){
+  setScaleConfig(value);
+  gantt.render();
+  gantt.message({ text: "imposto la scala temporale", expire: 1000 });
+
+}
+
+///////////////////////////////////////// 
+	gantt.config.layout = {
+		css: "gantt_container",
+		rows: [
+			{
+				gravity: 2,
+				cols: [
+					{view: "grid", group:"grids", scrollY: "scrollVer"},
+					{resizer: true, width: 1},
+					{view: "timeline", scrollX: "scrollHor", scrollY: "scrollVer"},
+					{view: "scrollbar", id: "scrollVer", group:"vertical"}
+				]
+			},
+			{ resizer: true, width: 1, next: "resources"},
+			{
+				height: 35,
+				cols: [
+					{ html:"", group:"grids"},
+					{ resizer: true, width: 1},
+					{ html:"<label class='active' >Hours per day <input checked type='radio' name='resource-mode' value='hours'></label>" +
+					"<label>Tasks per day <input type='radio' name='resource-mode' value='tasks'></label>", css:"resource-controls"}
+				]
+			},
+
+			{
+				gravity:1,
+				id: "resources",
+				config: resourceConfig,
+				templates: resourceTemplates,
+				cols: [
+					{ view: "resourceGrid", group:"grids", scrollY: "resourceVScroll" },
+					{ resizer: true, width: 1},
+					{ view: "resourceTimeline", scrollX: "scrollHor", scrollY: "resourceVScroll"},
+					{ view: "scrollbar", id: "resourceVScroll", group:"vertical"}
+				]
+			},
+			{view: "scrollbar", id: "scrollHor"}
+		]
+	};
+
+	var resourceMode = "hours";
+	gantt.attachEvent("onGanttReady", function(){
+		var radios = [].slice.call(gantt.$container.querySelectorAll("input[type='radio']"));
+		radios.forEach(function(r){
+			gantt.event(r, "change", function(e){
+				var radios = [].slice.call(gantt.$container.querySelectorAll("input[type='radio']"));
+				radios.forEach(function(r){
+					r.parentNode.className = r.parentNode.className.replace("active", "");
+				});
+
+				if(this.checked){
+					resourceMode = this.value;
+					this.parentNode.className += " active";
+					gantt.getDatastore(gantt.config.resource_store).refresh();
+				}
+			});
+		});
+	});
+	
+	resourcesStore.attachEvent("onAfterSelect", function(id){
+		gantt.refreshData();
+	});
+
+	//gantt.init("gantt_here");
+
+	function toggleGroups(input) {
+		gantt.$groupMode = !gantt.$groupMode;
+		if (gantt.$groupMode) {
+			input.value = "show gantt view";
+
+			var groups = gantt.$resourcesStore.getItems().map(function(item){
+				var group = gantt.copy(item);
+				group.group_id = group.id;
+				group.id = gantt.uid();
+				return group;
+			});
+
+			gantt.groupBy({
+				groups: groups,
+				relation_property: gantt.config.resource_property,
+				group_id: "group_id",
+				group_text: "text"
+			});
+		} else {
+			input.value = "show resource view";
+			gantt.groupBy(false);
+		}
+	}
+
+	var textEditor = { type: "text", map_to: "text" };
+
+
+	gantt.init("gantt_here");
+
+	gantt.load("/data")
+ 	.then(function(data){
+		//console.log('ho caricato \n',gantt.serverList("my_resources"))
+		gantt.message({ text: "dati caricati", expire: 2000 });
+		resourcesStore.parse(gantt.serverList("my_resources"))
+		var textEditor = { type: "text", map_to: "text" };
+
+		gantt.config.columns = [
+			{name:"text",       label:"Task name",  width:"200", tree:true,resize: true ,editor:textEditor,
+				template: function (task) {
+						p=task.progress;
+						pf=Math.round(parseFloat(p)*100);
+						pt=pf.toString() + "%"
+						if (p == "0")
+									return "<div class='zero'>" + task.text + " (Da Iniziare)  </div>";
+						if (pf <= 0.1 )
+							return "<div class='progress'>" + task.text + " (Iniziato) </div>";
+						
+								if (p == "1")
+							return "<div class='finito'>" + task.text + " (Completo)  </div>";
+						
+								return task.text + " (" + pt + ")";}},
+			{name:"start_date", label:"Start time", align:"center", width:90 },
+		
+		//  qui aggiungo le colonne
+			{
+				name: "constraint_type",align: "center", width: 100, template: function (task) {
+					return gantt.locale.labels[gantt.getConstraintType(task)];
+				}, resize: true, editor: constraintTypeEditor
+			},
+			{		name: "constraint_date", align: "center", width: 140, template: function (task) {
+					var constraintTypes = gantt.config.constraint_types;
+					console.log('ecco il task incriminato>: ',task)
+					console.log('startdate                : ',task.start_date)
+					
+					console.log('vincolo  e la data fallace ',task.constraint_date)
+					
+
+					if (task.constraint_date && task.constraint_type != constraintTypes.ASAP && task.constraint_type != constraintTypes.ALAP) {
+						console.log('qui errore!!!!!!!!! ',task.constraint_date)
+						return gantt.templates.task_date(task.constraint_date);
+					}
+					return "";
+				}, resize: true //, editor: constraintDateEditor
+			},
+
+			{name: "my_resource",label:"RISORSA",width:80,align: "center",resize: true ,template: function (task) {
+			 	// console.log('mostro cosa mi arriva in my_resource\n',task);
+			// mi arriva la riga del task selezionato
+					return ResById(gantt.serverList('my_resources'),task.S_Resource_ID)
+				}
+			},// fine
+			{name:"add",        label:"",           width:30 }
+		/* {name:"duration",   label:"Duration",   align:"center", width:30 }, */
+		/* {
+					name: "constraint_type", align: "center", width: 30, template: function (task) {
+			console.log('provo a verificare il tipo di constartin')
+					return gantt.locale.labels[gantt.getConstraintType(task)];
+				}, resize: true, editor: constraintTypeEditor
+		*/
+		];
+			
+		console.log('renderixzzo dopo i dati')
+		gantt.render();
+
+ });
+ 
+
+
+
+	var dp = new gantt.dataProcessor("/api");
+ dp.init(gantt);
+ dp.setTransactionMode("REST");
+
+</script>
+</body>
