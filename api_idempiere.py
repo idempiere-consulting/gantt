@@ -49,7 +49,10 @@ class api(object):
         url=self.get_url() + endpoint
         print(url)
         print(self.headers)
-        response = method(url,json=payload,headers=self.headers)  
+        try:
+            response = method(url,json=payload,headers=self.headers)  
+        except Exception as error:
+            print(error)
         #print(response.request.method)        
         print(response)
         return response
