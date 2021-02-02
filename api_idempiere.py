@@ -54,7 +54,7 @@ class api(object):
         except Exception as error:
             print(error)
         except AttributeError as error:
-            print(error)
+            print('ecco errore',error)
             
         #print(response.request.method)        
         print(response)
