@@ -48,11 +48,14 @@ class api(object):
         print(method)
         url=self.get_url() + endpoint
         print(url)
-        print(self.headers)
+        print('intestazioni',self.headers)
         try:
             response = method(url,json=payload,headers=self.headers)  
         except Exception as error:
             print(error)
+        except AttributeError as error:
+            print(error)
+            
         #print(response.request.method)        
         print(response)
         return response
