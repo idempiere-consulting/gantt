@@ -150,7 +150,7 @@ app = Flask(__name__)#,
 #api = CORS(app, resources={r"/api/*": {"origins": "*"}})
 api = Api(app)
 gantt = idapi()
-gantt.login()
+""" gantt.login()
 tasks=gantt.query('get','getGantt')
 tasks_json=loads(tasks.text)
 pretty_json(tasks_json)
@@ -160,10 +160,10 @@ links_json=loads(links.text)
 resources=gantt.query('get','getRisorse')
 resources_json=loads(resources.text)
 #pretty_json(resources_json)
-
+ """
 class Data(Resource):
     def get(self):
-        
+        print('carico i dati')
         tasks=gantt.query('get','getGantt')
         tasks_json=loads(tasks.text)
         links=gantt.query('get','getLinks')
@@ -187,9 +187,9 @@ class TASK_change(Resource):
         # request è definito da flask, non confondere con libreria reequests
         r=request.values.to_dict()
         print('change task\n',request.values.to_dict())
-        api='put' + mapping[r['table_from']]['api']
+        apilink='put' + mapping[r['table_from']]['api']
         payload=translate_data(r,myid)
-        gantt.query('put',api,payload)
+        gantt.query('put',apilink,payload)
         print('finished change',myid,'\n-------------------\n')
 #{'S_Resource_ID': '', 'constraint_date': '', 'constraint_type': '', 'end_date': '1598652000000', 'parent': '0', 'progress': '0.71538461', 'sortorder': '0', 'start_date': '1593554400000', 'table_from': 'c_project', 'text': 'Commessa XXX', 'type': 'Task', 'duration': '59'}
 
@@ -277,9 +277,9 @@ class home_ganttt(Resource):
         return render_template('gantt.html')
 api.add_resource(home_ganttt,'/home')
  """
-
+# da qui comincia il caricamento iniziale dei dati 
 api.add_resource(Data, '/data') # Route_4
-
+# i nomi sono esplicativi...
 api.add_resource(TASK_change,'/api/task/<myid>')
 api.add_resource(TASK_add,'/api/task')
 api.add_resource(LINK_change,'/api/link/<id>')
@@ -319,7 +319,7 @@ def home_gantt(task=''):
 
 
 
-
+# questa funzione serve a bypasare il CORS senza importare librerie apposite
 
 @app.after_request # blueprint can also be app~~
 def after_request(response):
