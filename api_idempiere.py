@@ -71,7 +71,7 @@ class api(object):
             print("user")  
             print(self.cfg.get("login_user"))
             print("token")  
-            print((self.cfg.get("login_user")).json()["token"])
+            print((self.cfg.get("login_user")).json())
             token=requests.post(self.login_path,json=self.cfg.get("login_user")).json()["token"]
         
         except Exception as error:
