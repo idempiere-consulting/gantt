@@ -63,7 +63,15 @@ class api(object):
         try:
             print("provo il login")
             """ restituisce una stringa contenente il token di autorizzazione\n
-            impostandolo anche nelle proprietà della classe"""    
+            impostandolo anche nelle proprietà della classe"""  
+            print("cfg")  
+            print(self.cfg)  
+            print("path")  
+            print(self.login_path)
+            print("user")  
+            print(self.cfg.get("login_user")))
+            print("token")  
+            print(self.cfg.get("login_user")).json()["token")
             token=requests.post(self.login_path,json=self.cfg.get("login_user")).json()["token"]
         
         except Exception as error:
