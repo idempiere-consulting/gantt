@@ -69,7 +69,7 @@ class api(object):
             print("path")  
             print(self.login_path)
             print("user")  
-            print(self.cfg.get("login_user")))
+            print(self.cfg.get("login_user"))
             print("token")  
             print(self.cfg.get("login_user")).json()["token")
             token=requests.post(self.login_path,json=self.cfg.get("login_user")).json()["token"]
