@@ -67,7 +67,9 @@ class api(object):
         
         except Exception as error:
             print(error)
-            
+        except requests.exceptions.ConnectionError:
+            print("eccolo il bastardo")
+
         except:
             print("eseguo per errrori sconosciuti")
         else:
@@ -76,7 +78,7 @@ class api(object):
             self.set_query_header()
             return self.token
         finally:
-            #print("eseguo SEMPRE")
+            print("eseguo SEMPRE")
             pass
 
 
