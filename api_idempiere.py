@@ -61,11 +61,13 @@ class api(object):
         return response
     def login(self):
         try:
+            print("provo il login")
             """ restituisce una stringa contenente il token di autorizzazione\n
             impostandolo anche nelle proprietà della classe"""    
             token=requests.post(self.login_path,json=self.cfg.get("login_user")).json()["token"]
         
         except Exception as error:
+            print("ecco l'errore")
             print(error)
         except requests.exceptions.ConnectionError:
             print("eccolo il bastardo")
@@ -73,7 +75,7 @@ class api(object):
         except:
             print("eseguo per errrori sconosciuti")
         else:
-            #print("eseguo SOLO SE nessun problema")
+            print("eseguo SOLO SE nessun problema")
             self.token = token
             self.set_query_header()
             return self.token
