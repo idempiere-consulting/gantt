@@ -72,8 +72,12 @@ class api(object):
             print(self.cfg.get("login_user"))
             #print("token")  
             #print((self.cfg.get("login_user")).json())
-            token=requests.post(self.login_path,json=self.cfg.get("login_user")) #.json()["token"]
-        
+            #     --------------------------------------------------------------
+            #  questa  è la risposta busando alla login con l'utente specificato
+            #                                                                   ----------------
+            #                             sintassi per estrarre il campo con chiave "token"
+            token=requests.post(self.login_path,json=self.cfg.get("login_user")).json()["token"]
+            print(token)
         except Exception as error:
             print("ecco l'errore")
             print(error)
