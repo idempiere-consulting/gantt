@@ -258,7 +258,7 @@
 				return "weekend";
 			}
 		};
-
+        gantt.config.skip_off_time = true //saltare il weekend
 		gantt.config.work_time = true;
 		gantt.config.min_column_width = 45;
 		gantt.config.auto_scheduling = true;
@@ -328,8 +328,8 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 ////////////////////////////
 	gantt.config.row_height =40 ;
 	gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
-	gantt.config.auto_scheduling = true;
-	gantt.config.auto_scheduling_strict = true;
+	//gantt.config.auto_scheduling = true;
+	//gantt.config.auto_scheduling_strict = true;
 	gantt.config.work_time = true;
 	gantt.config.resource_store = "my_resources";
 	gantt.config.resource_property = "S_Resource_ID";
@@ -402,6 +402,9 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			return item;
 		}
 	});
+	
+	gantt.locale.labels.section_split = "Display";
+	
 	resourcesStore.attachEvent("onParse", function(){
 		var myresources = [];
 		resourcesStore.eachItem(function(res){
@@ -417,6 +420,9 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 		gantt.updateCollection("my_resources", myresources);
 		gantt.config.lightbox.sections = [
 		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
+		{name: "split", type:"checkbox", map_to: "render", options:[
+        {key:"split", label:"Split Task"}
+        ]},
 		{name: "myresource",  height: 22, map_to: "S_Resource_ID", type: "select", options: gantt.serverList(gantt.config.resource_store)}, 
 		{name: "constraint",  type: "constraint" },
 		// FIXME 
@@ -442,6 +448,8 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			}
 		return "";
 	  }
+    
+     
 
   	gantt.config.lightbox.sections = [
 		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
@@ -612,6 +620,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 		scale_height: 30,
 		scales: [
 			{unit: "day", step: 1, date: "%d %M"}
+			//{unit: "week", step: 1, date: "%w %M"}, work in progress FIXME
 		],
 		columns: [
 			{
@@ -824,7 +833,7 @@ function customSetScale(value){
 
 	var textEditor = { type: "text", map_to: "text" };
 
-
+    gantt.config.open_split_tasks = true;
 	gantt.init("gantt_here");
 
 	gantt.load("/data")
