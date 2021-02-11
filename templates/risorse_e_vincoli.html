@@ -359,12 +359,12 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 		}
 
 		gantt.addTaskLayer(function draw_deadline(task) {
-			console.log('add layer 362')
+			// console.log('add layer 362',task)
 			//console.log('gantt\n',gantt)
-			console.log('vincolo task: ',task.constraint_date)
 			var constraintType = gantt.getConstraintType(task);
 			var types = gantt.config.constraint_types;
 			if (constraintType != types.ASAP && constraintType != types.ALAP && task.constraint_date) {
+				console.log('vincolo task: ',task.constraint_date)
 				var dates = gantt.getConstraintLimitations(task);
 				console.log('vincoli data: ',dates)
 				var els = document.createElement("div");
@@ -386,7 +386,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			return false;
 		});
 ////////////   vincoli
-	var constraintDateEditor = { type: "date", map_to: "constraint_date", min: new Date(2019, 0, 1), max: new Date(2022, 0, 1) };
+	var constraintDateEditor = { type: "constraint", map_to: "constraint_date", min: new Date(2019, 0, 1), max: new Date(2022, 0, 1) };
 
 	var labels = gantt.locale.labels;
 	labels.column_myresource = labels.section_myresource = "My_resource";
@@ -866,7 +866,7 @@ function customSetScale(value){
 					return gantt.locale.labels[gantt.getConstraintType(task)];
 				}, resize: true, editor: constraintTypeEditor
 			},
-			{		name: "constraint_date", align: "center", width: 140, template: function (task) {
+/*  			{		name: "constraint_date", align: "center", width: 140, template: function (task) {
 					var constraintTypes = gantt.config.constraint_types;
 					console.log('ecco il task incriminato>: ',task)
 					console.log('startdate                : ',task.start_date)
@@ -881,7 +881,7 @@ function customSetScale(value){
 					return "";
 				}, resize: true //, editor: constraintDateEditor
 			},
-
+ */ 
 			{name: "my_resource",label:"RISORSA",width:80,align: "center",resize: true ,template: function (task) {
 			 	// console.log('mostro cosa mi arriva in my_resource\n',task);
 			// mi arriva la riga del task selezionato
