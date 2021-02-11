@@ -4,7 +4,10 @@ import requests
 import datetime
 
 class api(object):
+    """base class to manage iDempiere API REST"""
     def __init__(self,config_file="api_config Demo.json"):
+        """initialize api class, bringing the config file explicitally 
+           it manages parameters according to"""
         with open(config_file, "r") as read_file:
             self.cfg = json.load(read_file)
             #print(self.cfg)
@@ -16,28 +19,33 @@ class api(object):
         self.method=""
         self.data = ""
     def get_base_url(self):
+        """returns the url base to build former API call"""
         s="s" if self.cfg.get("ssl") else ""
         url ="http" + s + "://" + self.cfg.get("host") + ":" + self.cfg.get("port") + "/"
         return url
     def get_login_url(self):
+        """ returns url to call for logging in"""
         path=self.cfg.get("path")["login"]
         url=self.base_url + path
         return url
     def get_url(self,path="query"):
         '''return the complete url for requests
-        path tell if login or query'''
+        path tells if login-call or query-call (default one)'''
         path=self.cfg.get("path")[path]
         url=self.base_url + path
         return url
     def set_query_header(self):
+        """build and set headers with autentication token pre-requested"""
         self.headers={
         "Content-Type": "application/json",
         "Authorization": "Bearer "+self.token
         }
     def re_init(self,config_file=""):
+        """ reinitialize api object with specific config file passed in"""
         cfg_file = self.config_file if config_file == "" else config_file
         self.__init__(cfg_file)
     def query(self,method_NaMe,endpoint,payload=None): #, *vartuple):
+        """try to call the specific API passing all of parameters needed"""
         #for var in vartuple:
         #    print (var)
         print(method_NaMe,endpoint,payload)

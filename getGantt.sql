@@ -1,5 +1,5 @@
-drop VIEW lit_gantt_project2_v  CASCADE;
-create or replace view lit_gantt_project2_v as 
+ drop VIEW lit_gantt_project2_v  CASCADE;
+ create or replace view lit_gantt_project2_v as 
  SELECT (1::character varying::text || c_project.c_project_id::character varying::text)::numeric AS lit_gantt_project2_v_id,
     c_project.c_project_id,
     0 AS c_projectphase_id,
@@ -22,7 +22,8 @@ create or replace view lit_gantt_project2_v as
     c_project.ad_client_id,
     c_project.lit_gantt_constraint_type AS constraint_type,
     c_project.lit_gantt_constraint_date AS constraint_date,
-    'c_project'::text AS table_from
+    'c_project'::text AS table_from,
+    null AS dailycapacity
    FROM c_project
   WHERE c_project.isactive = 'Y'::bpchar
 UNION
@@ -43,8 +44,12 @@ UNION
     c_projectphase.ad_client_id,
     c_projectphase.lit_gantt_constraint_type AS constraint_type,
     c_projectphase.lit_gantt_constraint_date AS constraint_date,
-    'c_projectphase'::text AS table_from
+    'c_projectphase'::text AS table_from,
+    t.DailyCapacity AS dailycapacity
    FROM c_projectphase
+   JOIN s_resource     r on r.s_resource_id     = c_projectphase.s_resource_id
+   JOIN s_resourcetype t on t.s_resourcetype_id = r.s_resourcetype_id
+
   WHERE c_projectphase.isactive = 'Y'::bpchar
 UNION
  SELECT (3::character varying::text || c_projecttask.c_projecttask_id::character varying::text)::numeric AS lit_gantt_project2_v_id,
@@ -64,8 +69,12 @@ UNION
     c_projecttask.ad_client_id,
     c_projecttask.lit_gantt_constraint_type AS constraint_type,
     c_projecttask.lit_gantt_constraint_date AS constraint_date,
-    'c_projecttask'::text AS table_from
+    'c_projecttask'::text AS table_from,
+    t.DailyCapacity AS dailycapacity
+   
    FROM c_projecttask
+   JOIN s_resource     r on r.s_resource_id     = c_projecttask.s_resource_id
+   JOIN s_resourcetype t on t.s_resourcetype_id = r.s_resourcetype_id
   WHERE c_projecttask.isactive = 'Y'::bpchar
 UNION
  SELECT (4::character varying::text || c_projectline.c_projectline_id::character varying::text)::numeric AS lit_gantt_project2_v_id,
@@ -85,7 +94,9 @@ UNION
     c_projectline.ad_client_id,
     c_projectline.lit_gantt_constraint_type AS constraint_type,
     c_projectline.lit_gantt_constraint_date AS constraint_date,
-    'c_projectline'::text AS table_from
+    'c_projectline'::text AS table_from,
+    null AS dailycapacity
+   
    FROM c_projectline
   WHERE c_projectline.isactive = 'Y'::bpchar AND c_projectline.c_projecttask_id IS NOT NULL;
 

@@ -121,9 +121,12 @@ def translate_data(data_from_gantt,gantt_id):
             gantt_key=v[0]
             # il secondo è il nome della funzione di traduzione
             key_tr=v[1]
+            # qui ottengo il metodo fornendo la classe a cui appartiene ed il nome
+            # quindi fornendo una stringa ottengo un "oggetto" funzione
             trl=getattr(translator,key_tr, lambda: 'invalide choise')
             # siccome è una lista sono sicuro che la chiave esiste da entrambe le parti
             # quindi trasformo il dato 
+            # finalmente applico la trasformazione al dato in esame
             api_value=trl(data_from_gantt[gantt_key])
             # e lo aggiungo al payload
             data[k]=api_value
@@ -181,9 +184,7 @@ class Data(Resource):
 
 class TASK_change(Resource):
     def put(self,myid):
-        global token
-        
-        ''' id è una stringa'''
+        """ myid è una stringa, l'id del task processato"""
         print('\n*********************\nprogetto..',myid[0])
         print('tipo id \n',myid)
         # request è definito da flask, non confondere con libreria reequests
@@ -218,6 +219,8 @@ class TASK_add(Resource):
         r=request.values.to_dict()
         print('aggiungo task, ecco cosa mi arriva\n',r)
         print('\n*********************\nprogetto..',r['text'])
+        apilink='post' + mapping[r['table_from']]['api']
+
         data={  'C_Currency_ID' : '102',
             'Seq_No'      : r['progress'],
             'Name'          : r['text'],
@@ -225,8 +228,8 @@ class TASK_add(Resource):
            }
         
         data={  'C_Currency_ID' : '102',
-                'DateContract'  : format_date2( r['start_date']),
-                'DateFinish'    : format_date2( r['end_date']),
+                'DateContract'  : format_date( r['start_date']),
+                'DateFinish'    : format_date( r['end_date']),
                 'Seq_No'      : r['progress'],
                 'Name'          : r['text'],
                 'Value'         : r['text'],
@@ -237,8 +240,6 @@ class TASK_add(Resource):
         #print('provo ad inserire \n',data)
 
         #idapi.post_project(token,data)
-        sw=switcher(token,(r,request.method),'',idapi)
-        rr=sw.num2type()
         print('si è scelto: ',rr)
         #idapi.put_project_phase(token,request.values.to_dict(),id)
         print('finished change',r['text'],'\n-------------------\n')
