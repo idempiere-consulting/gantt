@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<head>
+	{% block head %}{% endblock %}
+
+	<style>
+		html, body {
+			height: 100%;
+			padding: 0px;
+			margin: 0px;
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+	{% block button_scale  %}{% endblock %}
+
+	<div id="gantt_here" style='width:100%; height:100%;'></div>
+	<script>
+	{% block script_scale  %}{% endblock %}
+	gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+	gantt.config.fit_tasks = true; 
+			// reordering tasks within the whole gantt
+			gantt.config.order_branch = true;
+	gantt.config.order_branch_free = true;
+
+	 gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
+	return new Date(rawDate ); // * 1000);// UNIX timestamps
+	};
+	gantt.templates.xml_format = gantt.templates.format_date = function(date){
+	// format to UNIX timestamps before sending the update to the server
+	return Math.floor(date.valueOf() );// / 1000);
+	};
+ 
+		gantt.init("gantt_here");
+		gantt.load('/data')
+		.then(function(data){
+			console.log('ho caricato i task, i link e le risorse\n',data.response)
+			console.log('\necco il gantt\n',gantt)
+            gantt.message({ text: "task,link e risorse caricati", expire: 2000 });
+			gantt.render();
+			
+
+             }); 
+        
+				 gantt.render();
+ 
+//		gantt.render();
+         //dp.init(gantt);
+
+/* 			gantt.parse({
+				data: [
+					{'S_Resource_ID': 1000258, 'type': 'task', 'duration': 4.01,  'id': 11005983, 'owner': 1000258, 'parent': 11006331, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-14 15:00:00', 'duration':5, 'text': '1000554-Plugin #IC Asset Maintenance '},
+					{'S_Resource_ID': 1000226, 'type': 'task', 'duration': 1.0,   'id': 11004812, 'owner': 1000226, 'parent': 11006331, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-18 10:00:00', 'duration':5, 'text': 'Plugin CashForecasting'},
+				  	{'S_Resource_ID': 1000149, 'type': 'task', 'duration': 0.01,  'id': 11006331, 'owner': 1000149, 'parent': 0, 		'progress': '0', 'sortorder': '0', 'start_date': '2020-12-14 09:06:29', 'duration':5, 'text': 'P0604-Modulo Asset - Plugin #IC Cespiti'}, {'S_Resource_ID': 1000149, 'type': 'task', 'duration': 1, 'end_date': '2020-12-09 10:44:45', 'id': 11006191, 'owner': 1000149, 'parent': 91001124, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-09 09:44:45', 'table_from': 'lit_hour', 'text': '1000267-Plugin #IC Office 365  Outlook / Teams'}, {'S_Resource_ID': 1000070, 'type': 'task', 'duration': 2.01, 'end_date': '2020-12-16 10:00:36', 'id': 11005501, 'owner': 1000070, 'parent': 91001611, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-16 08:00:00', 'table_from': 'lit_hour', 'text': 'Addition e Check Finale '}, {'S_Resource_ID': 1000149, 'type': 'task', 'duration': 1.0, 'end_date': '2021-01-11 10:30:00', 'id': 11003760, 'owner': 1000149, 'parent': 91000635, 'progress': '0', 'sortorder': '0', 'start_date': '2021-01-11 09:30:00', 'table_from': 'lit_hour', 'text': '9156-Plugin #IC i-Virtual Forlder - RFID Giorgio'}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 2, 'end_date': '2020-12-23 11:22:38', 'id': 11006032, 'owner': 1000226, 'parent': 91003856, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-23 09:22:38', 'table_from': 'lit_hour', 'text': '1001922-Plugin STD Manual Generator'}, {'S_Resource_ID': 1000271, 'type': 'task', 'duration': 1.01, 'end_date': '2020-12-22 08:00:36', 'id': 11004363, 'owner': 1000271, 'parent': 91003409, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-22 07:00:00', 'table_from': 'lit_hour', 'text': '1001550-Review Window Incassi/Pagamenti'}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 8.0, 'end_date': '2021-01-20 16:30:00', 'id': 11003447, 'owner': 1000226, 'parent': 91001820, 'progress': '0', 'sortorder': '0', 'start_date': '2021-01-20 08:30:00', 'table_from': 'lit_hour', 'text': '1000760-Plugin BPM Configurator '}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 8, 'end_date': '2021-01-04 20:36:48', 'id': 11005776, 'owner': 1000226, 'parent': 91001137, 'progress': '0', 'sortorder': '0', 'start_date': '2021-01-04 12:36:48', 'table_from': 'lit_hour', 'text': '1000280-Installare Server Jenkins(S)'}, {'S_Resource_ID': 1000271, 'type': 'task', 'duration': 3.01, 'end_date': '2020-12-24 11:00:36', 'id': 11004703, 'owner': 1000271, 'parent': 91003578, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-24 08:00:00', 'table_from': 'lit_hour', 'text': '1001720-Report Indice Rotazione Magazzino'}, {'S_Resource_ID': 1000271, 'type': 'task', 'duration': 2.0, 'end_date': '2020-12-25 22:30:00', 'id': 11003725, 'owner': 1000271, 'parent': 91003042, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-25 20:30:00', 'table_from': 'lit_hour', 'text': '1001359-Modifica Report Finanziari: APERTURA / CHIUSURA Stat'}, {'S_Resource_ID': 1000070, 'type': 'task', 'duration': 1.01, 'end_date': '2020-12-04 09:00:36', 'id': 11006306, 'owner': 1000070, 'parent': 91003692, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-04 08:00:00', 'table_from': 'lit_hour', 'text': 'CAME DDT 10000 -> Produzione 500'}, {'S_Resource_ID': 1000070, 'type': 'task', 'duration': 4.01, 'end_date': '2020-12-14 17:00:36', 'id': 11005823, 'owner': 1000070, 'parent': 91003823, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-14 13:00:00', 'table_from': 'lit_hour', 'text': '1001890-IDempiere Modulo Qualità'}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 8, 'end_date': '2021-01-30 02:02:23', 'id': 11005764, 'owner': 1000226, 'parent': 91001340, 'progress': '0', 'sortorder': '0', 'start_date': '2021-01-29 18:02:23', 'table_from': 'lit_hour', 'text': 'Creare DRS  live tempo zero'}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 1, 'end_date': '2020-12-30 17:00:00', 'id': 11006056, 'owner': 1000226, 'parent': 91002121, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-30 16:00:00', 'table_from': 'lit_hour', 'text': '1000922-Plugin STD Supplementary Product'}, {'S_Resource_ID': 1000271, 'type': 'task', 'duration': 2.01, 'end_date': '2020-12-05 13:39:33', 'id': 11005578, 'owner': 1000271, 'parent': 91003526, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-05 11:38:57', 'table_from': 'lit_hour', 'text': '1001668-Report Bilancio Sez Contrapposte  RP.861'}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 2.01, 'end_date': '2020-12-18 17:00:36', 'id': 11005991, 'owner': 1000226, 'parent': 91001294, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-18 15:00:00', 'table_from': 'lit_hour', 'text': '1000389-Plugin #IC Nextcloud'}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 6.01, 'end_date': '2020-12-29 14:00:36', 'id': 11003817, 'owner': 1000226, 'parent': 91002495, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-29 08:00:00', 'table_from': 'lit_hour', 'text': 'P1162-i-Badge - RaspBerry + Timesheet (S)'}, {'S_Resource_ID': 1000271, 'type': 'task', 'duration': 1.01, 'end_date': '2020-12-03 18:00:36', 'id': 11006221, 'owner': 1000271, 'parent': 91003692, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-03 17:00:00', 'table_from': 'lit_hour', 'text': 'STP Risorsa Barcode + RPT OP '}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 2, 'end_date': '2021-01-20 18:00:00', 'id': 11006050, 'owner': 1000226, 'parent': 91003875, 'progress': '0', 'sortorder': '0', 'start_date': '2021-01-20 16:00:00', 'table_from': 'lit_hour', 'text': '1001941-Plugin STD Unicenta oPOS '}, {'S_Resource_ID': 1000226, 'type': 'task', 'duration': 2.01, 'end_date': '2020-12-15 16:00:36', 'id': 11004655, 'owner': 1000226, 'parent': 91003510, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-15 14:00:00', 'table_from': 'lit_hour', 'text': 'TaB Implosione Prodotti'}, {'S_Resource_ID': 1000271, 'type': 'task', 'duration': 1.0, 'end_date': '2020-12-21 11:30:00', 'id': 11004374, 'owner': 1000271, 'parent': 91003419, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-21 10:30:00', 'table_from': 'lit_hour', 'text': '1001560-Report Access'}
+
+			],
+ 		links:[]});
+*/		
+/* 		gantt.parse({
+				data: [
+
+		{'end_date': '2021-01-14 14:00:00', 'id': 11003645, 'owner': 1000070, 'parent': 911006289, 'progress': '0', 'sortorder': '0', 'start_date': '2021-01-14 11:00:00', 'table_from': 'lit_hour', 'text': '1000701-Provvigioni + Plugin #IC ', 'type': 'task'},
+		{'end_date': '2020-12-17 14:40:24', 'id': 11006289, 'owner': 1000149, 'parent': 0, 'progress': '0', 'sortorder': '0', 'start_date': '2020-12-17 12:40:24', 'table_from': 'lit_hour', 'text': '1000267-Plugin #IC Office 365  Outlook / Teams', 'type': 'task'}, 
+		], 
+		
+		'links': []});
+ */
+
+
+/* 		gantt.parse({
+			data: [
+				{ id: 1, text: "Project #2", start_date: "01-04-2018", duration: 18, progress: 0.4, open: true },
+				{ id: 2, text: "Task #1", start_date: "02-04-2018", duration: 8, progress: 0.6, parent: 1 },
+				{ id: 3, text: "Task #2", start_date: "11-04-2018", duration: 8, progress: 0.6, parent: 1 }
+			],
+			links: [
+				{id: 1, source: 1, target: 2, type: "1"},
+				{id: 2, source: 2, target: 3, type: "0"}
+			]
+		});
+ */		var dp = gantt.createDataProcessor({
+		    url: "/api",
+		    mode: "REST"
+		});
+
+	</script>
+</body>

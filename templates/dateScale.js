@@ -2,15 +2,24 @@
 
 function setScaleConfig(value) {
   switch (value) {
-    case "1":
-      gantt.config.scale_unit = "day";
-      gantt.config.step = 1;
-      gantt.config.date_scale = "%d %M";
+
+    case "0":
+      gantt.config.scale_unit = "hour";
+      gantt.config.step = 4;
+      gantt.config.date_scale = "%H:%i";
       gantt.config.subscales = [];
-      gantt.config.scale_height = 27;
+      gantt.config.scale_height = 22;
       gantt.templates.date_scale = null;
       break;
-    case "2":
+      case "1":
+        gantt.config.scale_unit = "day";
+        gantt.config.step = 1;
+        gantt.config.date_scale = "%d %M";
+        gantt.config.subscales = [];
+        gantt.config.scale_height = 27;
+        gantt.templates.date_scale = null;
+        break;
+      case "2":
       var weekScaleTemplate = function (date) {
         var dateToStr = gantt.date.date_to_str("%d %M");
         var startDate = gantt.date.week_start(new Date(date));
