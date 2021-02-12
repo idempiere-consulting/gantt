@@ -5,7 +5,8 @@ from json import dumps,loads
 import json
 #from flask_jsonpify import jsonify
 from api_idempiere import api as idapi
-from api_mapping_project import mapping,translator
+# Questo è il file di mapping da usare FIXME dichiarare nell'init di idapi
+from api_mapping_activity import mapping,translator
 #from api_payload_Demo import putProject,putProjectPhase,putProjectTask,putProjectLine  #,dagantt
 
 import datetime
@@ -152,7 +153,7 @@ app = Flask(__name__)#,
             #template_folder='templates')
 #api = CORS(app, resources={r"/api/*": {"origins": "*"}})
 api = Api(app)
-gantt = idapi()
+gantt = idapi(config_file="api_config Consulting.json")
 """ gantt.login()
 tasks=gantt.query('get','getGantt')
 tasks_json=loads(tasks.text)
@@ -304,10 +305,10 @@ def home_gantt(task=''):
         #html=render_template('risorse_test.html')
         #html= render_template('04_resource_usage_diagram.html')
         #html= render_template('05_resource_usage_templates copy.html')   # ok  funziona quasi tutto
-        html= render_template('risorse_e_vincoli.html')
+        #html= render_template('risorse_e_vincoli.html')
         #html= render_template('attivita.html')
         #html = render_template('01_basic_init copy.html')
-        #html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
+        html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
         #html= render_template('vincoli.html')   #esempio funzionante
         #html= render_template('25_click_drag_select_by_drag.html')
         # 19_constraints_scheduling copy  
