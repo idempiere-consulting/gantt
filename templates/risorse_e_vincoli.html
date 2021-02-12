@@ -617,7 +617,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 	}
 
 	var resourceConfig = {
-		scale_height: 30,
+		scale_height: 60,
 		scales: [
 			{unit: "day", step: 1, date: "%d %M"}
 			//{unit: "week", step: 1, date: "%w %M"}, work in progress FIXME
@@ -659,6 +659,19 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 					return (totalDuration || 0) * 8 + " h";
 				}, resize: true
 			},
+			{
+				name: "dayCap", label: "dayCapacity", align:"center", template: function (resource) {
+					var tasks = getResourceTasks(resource.id);
+					var dc = 0;
+					tasks.forEach(function(task){
+						console.log(task.dailyCapacity)
+						dc =parseInt( task.dailyCapacity);
+					});
+
+					return (dc);
+				}, resize: true
+			},
+			
 
 			{
 				name: "capacity", label: "Capacity", align:"center",template: function (resource) {
