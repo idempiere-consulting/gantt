@@ -168,14 +168,17 @@ resources_json=loads(resources.text)
 class Data(Resource):
     def get(self):
         print('carico i dati')
-        tasks=gantt.query('get','getGantt')
+        tasks=gantt.query('get','getTasks')
         tasks_json=loads(tasks.text)
-        links=gantt.query('get','getLinks')
+        print(tasks_json)
+        """         links=gantt.query('get','getLinks')
         links_json=loads(links.text)
         
         pretty_json(links_json)
-        resources=gantt.query('get','getRisorse')
-        resources_json=loads(resources.text)
+ """
+        """ resources=gantt.query('get','getRisorse')
+        resources_json=loads(resources.text) """
+        resources_json=[]
         # qualsiasi altro dato che volessi far processare al gantt devo mettorlo dentro a collections e poi importarlo
         #  dentro al javascript
         result= {'tasks': tasks_json,"links": [] ,'collections':{'my_resources':resources_json,'otherone':[]}}
