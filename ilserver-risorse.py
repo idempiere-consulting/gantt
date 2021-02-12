@@ -2,7 +2,7 @@ from flask import Flask, request, render_template
 from flask_cors import CORS
 from flask_restful import Resource, Api
 from json import dumps,loads
-from flask_jsonpify import jsonify
+#from flask_jsonpify import jsonify
 import idempiereAPI as idapi
 import apiconfig as cfg
 from switcher import switcher
@@ -14,16 +14,16 @@ def format_date2(epoch):
 
 
 #db_connect = create_engine('sqlite:///chinook.db')
-app = Flask(__name__,
+app = Flask(__name__)#,
             #static_url_path='', 
             #static_folder='/static',
-            template_folder='templates')
+            #template_folder='templates')
 #api = CORS(app, resources={r"/api/*": {"origins": "*"}})
 api = Api(app)
 token=''
 
 
-class Data(Resource):
+class DataOK(Resource):
     def get(self):
         print('quantomeno ce provo')
         global token
@@ -36,10 +36,34 @@ class Data(Resource):
         links_json=loads(links)
         links_tr1=[dict(('target' if k=='lit_target' else k,v) for k,v in item.items()) for item in links_json]
         links_json=[dict(('type' if k=='lit_type' else k,v) for k,v in item.items()) for item in links_tr1]
+        resources=idapi.get_risorse(cfg.options_tasks,token)
+        resources_json=loads(resources)
+        
 
         #print(tasks_json)
-        result= {'tasks': tasks_json,"links": links_json}
-        #print(result)
+        result= {'tasks': tasks_json,"links": links_json,'collections':{'my_resources':resources_json}}
+        print('ecco i dati che tiro su dal getgantt:\n',result)
+        return  result
+class Data(Resource):
+    def get(self):
+        print('vediamo se tiro su le ore')
+        global token
+        if token == '':
+            token=idapi.get_token(cfg.options_token,cfg.user)
+        #print(token)
+        tasks=idapi.get_data(cfg.options_tasks,token)
+        tasks_json=loads(tasks)
+        links=idapi.get_links(cfg.options_tasks,token)
+        links_json=loads(links)
+        links_tr1=[dict(('target' if k=='lit_target' else k,v) for k,v in item.items()) for item in links_json]
+        links_json=[dict(('type' if k=='lit_type' else k,v) for k,v in item.items()) for item in links_tr1]
+        resources=idapi.get_risorse(cfg.options_tasks,token)
+        resources_json=loads(resources)
+        
+
+        #print(tasks_json)
+        result= {'tasks': tasks_json,"links": links_json,'collections':{'my_resources':resources_json}}
+        print('ecco i dati che tiro su dal getgantt:\n',result)
         return  result
 
 
@@ -49,11 +73,29 @@ class Risorse(Resource):
         if token == '':
             token=idapi.get_token(cfg.options_token,cfg.user)
         #print(token)
-        tasks=idapi.get_risorse(cfg.options_tasks,token)
-        tasks_json=loads(tasks)
+        resources=idapi.get_risorse(cfg.options_tasks,token)
+        resources_json=loads(resources)
+        resources_tr1=[dict(('parent' if k=='AD_User_ID' else k,v) for k,v in item.items()) for item in links_json]
+        resources_json=[dict(('text' if k=='Name' else k,v) for k,v in item.items()) for item in links_tr1]
         #print(tasks_json)
-        result= {'tasks': tasks_json}
-        return  result
+        # result= {'resources': resources_json}
+        result= resources_json
+        return  {'resources':result}
+
+class Resources(Resource):
+    def get(self):
+        global token
+        if token == '':
+            token=idapi.get_token(cfg.options_token,cfg.user)
+        #print(token)
+        resources=idapi.get_resources(cfg.options_tasks,token)
+        resources_json=loads(resources)
+        #print(tasks_json)
+        # result= {'resources': resources_json}
+        result= resources_json
+        return  {'resources':result}
+
+        
 
 class TASK_change(Resource):
     def put(self,myid):
@@ -107,7 +149,7 @@ class TASK_add(Resource):
                 'Seq_No'      : r['progress'],
                 'Name'          : r['text'],
                 'Value'         : r['text'],
-                'Type'          : r['type'],
+                'Type'          : r['Type'],
                 #'S_Resource_ID' : '1000004',
                 'CopyFrom'        : r['parent']
            }
@@ -127,6 +169,20 @@ class TASK_add(Resource):
 class LINK_change(Resource):
     def put(self,id):
         print(id)
+    def delete(self,myid):
+        global token
+        ''' id è una stringa'''
+        print('cancello link: ',myid)
+        idapi.delete_link(token,myid[1:])
+        rr=request.values.to_dict()
+        r=(rr,request.method)
+        print('delete link\n',r) 
+        #sw=switcher(token,r,myid,idapi)
+        #rr=sw.num2type()
+        #print('si è scelto: ',rr)
+        #idapi.put_project_phase(token,request.values.to_dict(),id)
+        print('finished delete',myid,'\n-------------------\n')
+
 class LINK_add(Resource):
 
     def post(self):
@@ -146,7 +202,9 @@ api.add_resource(home_ganttt,'/home')
  """
 
 api.add_resource(Data, '/data') # Route_4
+api.add_resource(Resources, '/resources') # Route_4
 api.add_resource(Risorse, '/risorse') # Route_4
+
 api.add_resource(TASK_change,'/api/task/<myid>')
 api.add_resource(LINK_change,'/api/link/<id>')
 api.add_resource(LINK_add,'/api/link')
@@ -159,10 +217,25 @@ api.add_resource(TASK_add,'/api/task')
 def home_gantt(task=''):
         print(request.method,' si parte')
         #return render_template('gantt copy.html')
-        #return render_template('gantt.html')
+        #html= render_template('gantt.html')
         #html=render_template('gantt.html',task=task)
-        html=render_template('constraints.html')
-
+        #html=render_template('constraints.html')
+        #html=render_template('ganttRisorse.html')
+        #html=render_template('child1.html')
+        #html=render_template('04_resource.html')
+        #html=render_template('risorse_test.html')
+        #html= render_template('04_resource_usage_diagram.html')
+        #html= render_template('05_resource_usage_templates copy.html')   # ok  funziona quasi tutto
+        html= render_template('risorse_e_vincoli.html')
+        html= render_template('attivita.html')
+        
+        #html= render_template('vincoli.html')   # ok  funziona quasi tutto
+        #html= render_template('25_click_drag_select_by_drag.html')
+        # 19_constraints_scheduling copy  
+        #html= render_template('19_constraints_scheduling copy.html')
+        #html=render_template('samples/03_scales/09_skip_weekends.html')  # non mostra i  weekend, solo giorni lavorativi
+        #html=render_template('18_linked_tasks.html') # interessante: evidenzia i collegamenti
+        #html=render_temlate('samples/11_resources/11_resource_histogram_display_tasks.html')
         #print(html)
         return html
         
