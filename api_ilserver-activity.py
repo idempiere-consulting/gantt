@@ -11,6 +11,10 @@ import datetime
 # questa funzione è quella che si occupa "materialmente" di restituire il payload corretto 
 # da spedire ad iDempiere traducendo quello in arrivo dal DHTMLX
 # devo inserire come parametro l'id perchè non è dentro il payload
+
+def pretty_json(json_obj):
+    print(dumps(json_obj, sort_keys=False, indent=2))
+
 def translate_data(data_from_gantt,gantt_id):
     # arriva questo :
     #{'S_Resource_ID': '', 'constraint_date': '', 'constraint_type': '', 'end_date': '1598652000000', 'parent': '0', 'progress': '0.71538461', 
