@@ -87,13 +87,15 @@ gantt = idapi(config_file="api_config Consulting.json")
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
 gantt.login()
 print(gantt.token)
-
+print(gantt.cfg['getTasks'])
 # questa è la chiamata principale, quella di inizializzazione dei dati della pagina html
 class Data(Resource):
     # una funzione per metodo, qui basta la GET, sto prendendo i dati da iDempiere
     def get(self):
         # prendo i dati separatamente e poi li assemblo
-        tasks=gantt.query('get','getTasks')
+        # FIXME qui devo trovare il modo di usare la stringa che imposto in fase di configurazione
+        print(gantt)
+        tasks=gantt.query('get',gantt.cfg['getTasks'])
         tasks_json=loads(tasks.text)
         """ links=gantt.query('get','getLinks')
         links_json=loads(links.text)
@@ -106,6 +108,7 @@ class Data(Resource):
         # assemblamento finale
         result= {'tasks': tasks_json,"links": links_json ,'collections':{'my_resources':resources_json,'otherone':[]}}
         print(result)
+        pretty_json(result)
         return  result
         
 # quando MODIFICO un "task" viene eseguita questa

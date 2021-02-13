@@ -14,6 +14,9 @@
         "Content-Type": "application/json"
     },
     "mapping":"api_mapping_activity",
+    "getTasks":"getTasks",
+    "getLinks":"getLinks",
+    "getResources":"getResources",
     
     "date_format":"%Y-%m-%d %H:%M:%S"
 
