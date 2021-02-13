@@ -104,47 +104,43 @@ class Data(Resource):
         print(result)
         return  result
         
-
+# quando MODIFICO un "task" viene eseguita questa
 class TASK_change(Resource):
+    # ovviamente modifica generica (cancellazione più sotto)
     def put(self,myid):
-        global token
-        ''' attenzione parent su altra api???? non ricordo....
-        '''
-        ''' id è una stringa'''
-        print('\n*********************\nprogetto..',myid[0])
+        ''' myid è una stringa'''
+        print('\n*********************\nNidificazione progetto..',myid[0])
         print('tipo id \n',myid)
-        # request è definito da flask, non confondere con libreria reequests
+        # request è definito da flask (riga 1), non confondere con libreria requests
+        # estraggo il payload del gantt e lo trasformo nel tipo dizionario per manipolarlo
         r=request.values.to_dict()
-        print('change task\n',request.values.to_dict())
+        print('change task\n',r)
+        # costruisco la parte finale della endPoint da contattare
         api='put' + mapping[r['table_from']]['api']
+        # trasformo il payload
         payload=translate_data(r,myid)
+        # finalmente eseguo la PUT API
         gantt.query('put',api,payload)
         print('finished change',myid,'\n-------------------\n')
-#{'S_Resource_ID': '', 'constraint_date': '', 'constraint_type': '', 'end_date': '1598652000000', 'parent': '0', 'progress': '0.71538461', 'sortorder': '0', 'start_date': '1593554400000', 'table_from': 'c_project', 'text': 'Commessa XXX', 'type': 'Task', 'duration': '59'}
-
+    # quando ELIMINO un task
     def  delete(self,myid):
-        global token
-        ''' attenzione parent su altra api
-        '''
         ''' id è una stringa'''
         print('tipo id \n',myid)
-        print('\n*********************\nprogetto..',myid[0])
-        idapi.delete_project(token,myid[1:])
-        rr=request.values.to_dict()
-        r=(rr,request.method)
-        print('change task\n',r) 
-        #sw=switcher(token,r,myid,idapi)
-        #rr=sw.num2type()
-        #print('si è scelto: ',rr)
-        #idapi.put_project_phase(token,request.values.to_dict(),id)
-        print('finished change',myid,'\n-------------------\n')
-        
+        print('\n*********************\nNidificazione progetto..',myid[0])
+        # questa chiamata è la più semplice, basta indicare l'id da cancellare e fornire il token
+        idapi.delete_project(gantt.token,myid[1:])
+        print('finished delete',myid,'\n-------------------\n')
+# quando AGGIUNGO un task        
 class TASK_add(Resource):
-
+    # necessario metodo POST
     def post(self):
+        # il payload in arrivo dal DHTMLX, comodamnete trasformato in dizionario
         r=request.values.to_dict()
         print('aggiungo task, ecco cosa mi arriva\n',r)
+        #TODO TODO tutta da implementare, molto molto male!!!!!
         print('\n*********************\nprogetto..',r['text'])
+
+        # devo aggiungefe i campi che sono indispendabili ad idempiere ma che non vengono indicati dal DHTMLX
         data={  'C_Currency_ID' : '102',
             'Seq_No'      : r['progress'],
             'Name'          : r['text'],
@@ -162,18 +158,8 @@ class TASK_add(Resource):
                 'CopyFrom'        : r['parent']
            }
         #print('provo ad inserire \n',data)
+        print('finished POST, non implementato','\n-------------------\n')
 
-        #idapi.post_project(token,data)
-        sw=switcher(token,(r,request.method),'',idapi)
-        rr=sw.num2type()
-        print('si è scelto: ',rr)
-        #idapi.put_project_phase(token,request.values.to_dict(),id)
-        print('finished change',r['text'],'\n-------------------\n')
-
-
-
-
-        pass
 class LINK_change(Resource):
     def put(self,id):
         print(id)
@@ -185,11 +171,7 @@ class LINK_change(Resource):
         rr=request.values.to_dict()
         r=(rr,request.method)
         print('delete link\n',r) 
-        #sw=switcher(token,r,myid,idapi)
-        #rr=sw.num2type()
-        #print('si è scelto: ',rr)
-        #idapi.put_project_phase(token,request.values.to_dict(),id)
-        print('finished delete',myid,'\n-------------------\n')
+        print('finished link change non implementato',myid,'\n-------------------\n')
 
 class LINK_add(Resource):
 
@@ -198,7 +180,7 @@ class LINK_add(Resource):
         r=request.values.to_dict()
         print('\n*********************\link..',r)
         print('add link\n',r)
-        idapi.post_links(token,r)
+        idapi.post_links(gantt.token,r)
         print('finished add link','\n-------------------\n')
         """ 
 DEVO CAPIRE come fare a renderizzare il template jinja!!!
@@ -208,18 +190,20 @@ class home_ganttt(Resource):
         return render_template('gantt.html')
 api.add_resource(home_ganttt,'/home')
  """
-
-api.add_resource(Data, '/data') # Route_4
-
+# qui indirizzo alle funzioni locali le API che mi arrivano dal DHTMLX, 
+# il dato tra parentesi angolate è una variabile
+api.add_resource(Data, '/data')
 api.add_resource(TASK_change,'/api/task/<myid>')
 api.add_resource(TASK_add,'/api/task')
 api.add_resource(LINK_change,'/api/link/<id>')
 api.add_resource(LINK_add,'/api/link')
 
-
-@app.route('/')
+# decoratore per "interfacciare" la chiamata API con le funzioni interne alla classe
+# API principale
+@app.route('/') 
+# se volessi gestire un parametro potrei fare così
 #@app.route('/<task>')
-
+# essendo il parametro passato di default a ''
 def home_gantt(task=''):
         print(request.method,' si parte')
         #return render_template('gantt copy.html')
@@ -245,19 +229,13 @@ def home_gantt(task=''):
         #html=render_temlate('samples/11_resources/11_resource_histogram_display_tasks.html')
         #print(html)
         return html
-        
-
-
-
-
-
-
+# per poter aprire all'esterno il server di sviluppo senza usare librerie esterne CORS
 @app.after_request # blueprint can also be app~~
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response        
-
+# potrei lanciare lo script direttamente allora prenderebbe il parametro indicato
 if __name__ == '__main__':
      print('giro')
      app.run(port='5002')
