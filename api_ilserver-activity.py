@@ -1,15 +1,16 @@
 from flask import Flask, request, render_template
-from flask_cors import CORS
 from flask_restful import Resource, Api
 from json import dumps,loads
-import json
-#from flask_jsonpify import jsonify
+#import json
+# la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
+# la struttura di mappatura tra i campi del gantt e le tabelle di iDempiere
 from api_mapping_activity import mapping,translator
-#from api_payload_Demo import putProject,putProjectPhase,putProjectTask,putProjectLine  #,dagantt
 
 import datetime
-
+# questa funzione è quella che si occupa "materialmente" di restituire il payload corretto 
+# da spedire ad iDempiere traducendo quello in arrivo dal DHTMLX
+# devo inserire come parametro l'id perchè non è dentro il payload
 def translate_data(data_from_gantt,gantt_id):
     # arriva questo :
     #{'S_Resource_ID': '', 'constraint_date': '', 'constraint_type': '', 'end_date': '1598652000000', 'parent': '0', 'progress': '0.71538461', 
@@ -69,24 +70,25 @@ def translate_data(data_from_gantt,gantt_id):
     print('payload:\n',data)
     print('/////////////////')
     return data
-#db_connect = create_engine('sqlite:///chinook.db')
+
+# inizializzo la app
 app = Flask(__name__)#,
             #static_url_path='', 
             #static_folder='/static',
             #template_folder='templates')
-#api = CORS(app, resources={r"/api/*": {"origins": "*"}})
+# lo rendo RESTFUL COMPLIANT             
 api = Api(app)
+# inizializzo l'oggetto che comunicherà con iDempiere
 gantt = idapi(config_file="api_config Consulting.json")
+# FIXME ottengo subito il token di login, non so se è bene così concettualmente
 gantt.login()
 print(gantt.token)
 
-token=''
-tasks=gantt.query('get','getTasks')
-
-
+# questa è la chiamata principale, quella di inizializzazione dei dati della pagina html
 class Data(Resource):
+    # una funzione per metodo, qui basta la GET, sto prendendo i dati da iDempiere
     def get(self):
-        
+        # prendo i dati separatamente e poi li assemblo
         tasks=gantt.query('get','getTasks')
         tasks_json=loads(tasks.text)
         """ links=gantt.query('get','getLinks')
@@ -97,7 +99,7 @@ class Data(Resource):
         # qualsiasi altro dato che volessi far processare al gantt devo mettorlo dentro a collections e poi importarlo dentro al javascript
         links_json=[]
         resources_json=[]
-
+        # assemblamento finale
         result= {'tasks': tasks_json,"links": links_json ,'collections':{'my_resources':resources_json,'otherone':[]}}
         print(result)
         return  result
