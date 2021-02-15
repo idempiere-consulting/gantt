@@ -86,7 +86,7 @@ api = Api(app)
 gantt = idapi(config_file="api_config Consulting.json")
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
 gantt.login()
-print(gantt.token)
+print('ecco il token: ',gantt.token)
 print(gantt.cfg['getTasks'])
 # questa è la chiamata principale, quella di inizializzazione dei dati della pagina html
 class Data(Resource):
@@ -99,12 +99,13 @@ class Data(Resource):
         tasks_json=loads(tasks.text)
         """ links=gantt.query('get','getLinks')
         links_json=loads(links.text)
+        """
         resources=gantt.query('get','getResources')
         resources_json=loads(resources.text)
-         """
+        #print(resources_json)
         # qualsiasi altro dato che volessi far processare al gantt devo mettorlo dentro a collections e poi importarlo dentro al javascript
         links_json=[]
-        resources_json=[]
+        #resources_json=[]
         # assemblamento finale
         result= {'tasks': tasks_json,"links": links_json ,'collections':{'my_resources':resources_json,'otherone':[]}}
         print(result)
@@ -215,6 +216,7 @@ def home_gantt(task=''):
         print(request.method,' si parte')
         #return render_template('gantt copy.html')
         #html= render_template('gantt.html')
+        html= render_template('ganttRisorseNOTchange.html')
         #html=render_template('gantt.html',task=task)
         #html=render_template('constraints.html')
         #html=render_template('ganttRisorse.html')
@@ -226,7 +228,7 @@ def home_gantt(task=''):
         #html= render_template('risorse_e_vincoli.html')
         #html= render_template('attivita.html')
         #html = render_template('01_basic_init copy.html')
-        html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
+#        html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
         #html= render_template('vincoli.html')   #esempio funzionante
         #html= render_template('25_click_drag_select_by_drag.html')
         # 19_constraints_scheduling copy  

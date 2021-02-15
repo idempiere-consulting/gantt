@@ -92,12 +92,12 @@ gantt.config.columns = [
     gantt.config.lightbox.sections = [
  {name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
  {name:"owner",height:60, type:"resources", options:gantt.serverList("people"),   
-    map_to:"owner_id", default_value:8},                                 
+    map_to:gantt.config.resource_property, default_value:8},                                 
  {name: "time", type: "duration", map_to: "auto"}
 ];
 
-		var store = gantt.getDatastore("resource");
-		var owner = store.getItem(task.owner_id);
+		var store = gantt.getDatastore("my_resources");
+		var owner = store.getItem(task.S_Resource_ID);
 		if (owner) {
 			return owner.text;
 		} else {
@@ -156,12 +156,12 @@ gantt.templates.resource_cell_value = function(start_date, end_date, resource, t
 gantt.locale.labels.section_owner = "Owner";
 gantt.config.lightbox.sections = [
 	{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
-	{name: "owner", height: 22, map_to: "owner_id", type: "select", options: gantt.serverList("people")},
+	{name: "owner", height: 22, map_to: gantt.config.resource_property, type: "select", options: gantt.serverList("people")},
 	{name: "time", type: "duration", map_to: "auto"}
 ];
 
-gantt.config.resource_store = "resource";
-gantt.config.resource_property = "owner_id";
+gantt.config.resource_store = "my_resources";
+gantt.config.resource_property = "S_Resource_ID";
 gantt.config.order_branch = true;
 gantt.config.open_tree_initially = true;
 gantt.config.layout = {
@@ -230,7 +230,8 @@ resourcesStore.attachEvent("onParse", function(){
 	{id: 9, text: "Bill", parent:3},
 	{id: 10, text: "Floe", parent:3}
 ];
- */ gantt.load("/risorse");
+ */ 
+//gantt.load("/risorse");
  
 
 var tasks = {

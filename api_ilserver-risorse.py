@@ -176,9 +176,10 @@ class Data(Resource):
         
         pretty_json(links_json)
  """
-        """ resources=gantt.query('get','getRisorse')
-        resources_json=loads(resources.text) """
-        resources_json=[]
+        
+        resources=gantt.query('get','getResources')
+        resources_json=loads(resources.text) 
+        #resources_json=[]
         # qualsiasi altro dato che volessi far processare al gantt devo mettorlo dentro a collections e poi importarlo
         #  dentro al javascript
         result= {'tasks': tasks_json,"links": [] ,'collections':{'my_resources':resources_json,'otherone':[]}}

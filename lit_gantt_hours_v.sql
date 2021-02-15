@@ -23,7 +23,7 @@ SELECT 10000000::numeric + h.lit_hour_id AS lit_gantt_hours_v_id,
     h.updated,
     h.updatedby
    FROM lit_hour h
-  WHERE h.name IS NOT NULL AND h.dateworkstart > (now() - 1::numeric)
+  WHERE h.name IS NOT NULL AND h.dateworkstart::timestamp > NOW() - INTERVAL '3 days' 
 UNION
  SELECT 90000000::numeric + c.c_contactactivity_id AS lit_gantt_hours_v_id,
     90000000::numeric + c.c_contactactivity_id AS id,
@@ -45,7 +45,8 @@ UNION
     c.updatedby
    FROM c_contactactivity c
      JOIN r_status r ON c.r_status_id = r.r_status_id
-  WHERE c.name IS NOT NULL;
+  WHERE c.name IS NOT NULL  AND c.startdate::timestamp > NOW() - INTERVAL '3 days'
+  order by start_date asc;
 -- è agganciato il trigger per "scivere" sulla vista, verificare funzionamento  
 --Triggers:
   --  test_it2 INSTEAD OF UPDATE ON lit_gantt_hours_v FOR EACH ROW EXECUTE FUNCTION test_trigger()
