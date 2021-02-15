@@ -14,7 +14,7 @@
 mapping={
 "lit_hour" : {
     "id":["id","strip_id"],
-    "DateWorkStart  ":["start_date","format_date"],
+    "DateWorkStart":["start_date","format_date"],
     "DateFinish":["end_date","format_date"],
     "Name":"text",
     "ProjectLineLevel":["Type","get_first"],     
@@ -28,9 +28,28 @@ mapping={
 "c_contactactivity" : {
     "id":["id","strip_id"],
     "Name":"text",
-
+    "AssignDateFrom":["start_date","format_date"],
+    "AssignDateTo":["end_date","format_date"],
+    "SalesRep_ID":["S_Resource_ID","intero"],
     "api":"putActivity"
 }
+# quindi la procedura corretta da seguiere è:
+# - ANDATA
+# creare la vista  su Postgres
+# creare la vista su idempiere ed importare i campi 
+# creare la API getGantt
+# indicare sul file di configurazione il nome della query
+# - RITORNO
+# creare la API verso la tabella di riferimento
+# creare la voce di dizionrio nel file mapping con lo stesso nome della tabella
+# creare le chiavi con lo stesso nome indicato nella API (case sensitive)
+# impostare i valori come 
+#   - valore secco se il tipo ed i valori passati sono corretti
+#   - lista di due valori:
+#     * il primo è il nome del campo che arriva dal dhtmlx
+#     * il secondo è il nome della funzione di "traduzione"
+
+
 
 }
 import datetime
