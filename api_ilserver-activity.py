@@ -216,7 +216,7 @@ def home_gantt(task=''):
         print(request.method,' si parte')
         #return render_template('gantt copy.html')
         #html= render_template('gantt.html')
-        html= render_template('ganttRisorseNOTchange.html')
+#        html= render_template('ganttRisorseNOTchange.html')
         #html=render_template('gantt.html',task=task)
         #html=render_template('constraints.html')
         #html=render_template('ganttRisorse.html')
@@ -228,7 +228,7 @@ def home_gantt(task=''):
         #html= render_template('risorse_e_vincoli.html')
         #html= render_template('attivita.html')
         #html = render_template('01_basic_init copy.html')
-#        html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
+        html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
         #html= render_template('vincoli.html')   #esempio funzionante
         #html= render_template('25_click_drag_select_by_drag.html')
         # 19_constraints_scheduling copy  
