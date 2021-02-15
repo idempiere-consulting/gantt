@@ -20,35 +20,44 @@ SELECT 10000000::numeric + h.lit_hour_id AS lit_gantt_hours_v_id,
     'lit_hour'::text AS table_from,
     'task'::text AS type,
     '0'::text AS sortorder,
-    'Y'::text AS isactive,
+    h.isactive  AS isactive,
     1000006 AS ad_client_id,
     h.updated,
     h.updatedby
    FROM lit_hour h
-  WHERE h.name IS NOT NULL AND h.dateworkstart::timestamp > NOW() - INTERVAL '3 days' 
+  WHERE h.name IS NOT NULL AND h.dateworkstart::timestamp > (NOW() - INTERVAL '333 days' )
+  and
+   h.name IS NOT NULL AND h.dateworkstart::timestamp < (NOW() - INTERVAL '332 days' )
+   and h.isactive='Y'
 UNION
  SELECT 90000000::numeric + c.c_contactactivity_id AS lit_gantt_hours_v_id,
     90000000::numeric + c.c_contactactivity_id AS id,
     (c.documentno::text || ' '::text) || c.name::text AS text,
     c.startdate AS start_date,
     --c.enddate AS end_date,
-    --to_char(c.startdate, 'yyyy-mm-dd hh24:mi:ss'::text) AS start_date2,
-    --to_char(c.enddate, 'yyyy-mm-dd hh24:mi:ss'::text) AS end_date2,
-    coalesce (enddate,date (startdate + interval '8 HOUR')) AS end_date,
-    c.salesrep_id AS owner,
-    c.salesrep_id AS s_resource_id,
-    0 AS parent,
-    '0.5'::text AS progress,
-    'c_contactactivity'::text AS table_from,
-    'project'::text AS type,
-    '0'::text AS sortorder,
-    'Y'::text AS isactive,
-    1000006 AS ad_client_id,
-    c.updated,
-    c.updatedby
+      --to_char(c.startdate, 'yyyy-mm-dd hh24:mi:ss'::text) AS start_date2,
+      --to_char(c.enddate, 'yyyy-mm-dd hh24:mi:ss'::text) AS end_date2,
+      coalesce (enddate,date (startdate + interval '8 HOUR')) AS end_date,
+      c.salesrep_id AS owner,
+      c.salesrep_id AS s_resource_id,
+      0 AS parent,
+      '0.5'::text AS progress,
+      'c_contactactivity'::text AS table_from,
+      'project'::text AS type,
+      '0'::text AS sortorder,
+      c.isactive AS isactive,
+      1000006 AS ad_client_id,
+      c.updated,
+      c.updatedby
    FROM c_contactactivity c
      JOIN r_status r ON c.r_status_id = r.r_status_id
-  WHERE c.name IS NOT NULL  AND c.startdate::timestamp > NOW() - INTERVAL '3 days'
+  --WHERE c.name IS NOT NULL  AND c.startdate::timestamp > NOW() - INTERVAL '333 days'
+  --where start_date::timestamp > NOW() - INTERVAL '33 days'
+  --and
+ --c.name IS NOT NULL  AND c.startdate::timestamp > NOW() - INTERVAL '332 days'
+ where  (enddate - startdate) > interval '33 days'
+
+  --where start_date < NOW() - INTERVAL '32 days'
   order by start_date asc;
 -- è agganciato il trigger per "scivere" sulla vista, verificare funzionamento  
 --Triggers:
