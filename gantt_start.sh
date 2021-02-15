@@ -1,9 +1,9 @@
 python --version
-cd /root/gantt
+#cd /root/gantt
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 export FLASK_ENV=development
-export FLASK_APP=ilserver-risorse.py
-. /root/gantt/gantV/bin/activate
+export FLASK_APP=api_ilserver-activity.py
+. ./gantV/bin/activate
 python --version
-flask run --host=0.0.0.0 --port=8090
+flask run --host=127.0.0.1 --port=8090
