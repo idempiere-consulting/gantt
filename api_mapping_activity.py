@@ -5,60 +5,31 @@
 # se presente un secondo elemento questo è il nome della funzione di "traduzione" per ripristinare il 
 # valore "originale" presente come metodo statico della classe in coda alla struttura: vedasi il campo id per esempio banale
 # il campo "api" indica l'endpoint da contattare.
-
+# Quindi questa struttura serve nel "viaggio" dei dati DAL gantt AD idempiere
+# mnemonicamente uso la tabella rispondendo a questa domanda:
+# Per scrivere sulla colonna di IDEMPIERE(SX)    quale campo cerco sul GANTT(DX) e COME lo devo trattare?
+#                             "DateContract" :   ["start_date"     ,                   "format_date"],
+# la chiave (a sx) è il     il valore a dx è in arrivo
+#    nome su IDEMPIERE          DAL GANTT
 mapping={
 "lit_hour" : {
     "id":["id","strip_id"],
-    "DateContract":["start_date","format_date"],
+    "DateWorkStart  ":["start_date","format_date"],
     "DateFinish":["end_date","format_date"],
     "Name":"text",
-    "ProjectLineLevel":["type","get_first"],     
-    "progress":"progress",
+    "ProjectLineLevel":["Type","get_first"],     
+    "isConfirmed":"progress",
     "sortorder":"sortorder",
     "S_Resource_ID": ["S_Resource_ID","intero"],
-    "LIT_gantt_constraint_date":["constraint_date","format_date"],
-    "LIT_gantt_constraint_type":["constraint_type","not_null"],
-    "api":"Project"
+    #"LIT_gantt_constraint_date":["constraint_date","format_date"],
+    #"LIT_gantt_constraint_type":["constraint_type","not_null"],
+    "api":"putHour"
 },
-"c_projectphase" : {
+"c_contactactivity" : {
     "id":["id","strip_id"],
-    "StartDate":["start_date","format_date"],
-    "EndDate":["end_date","format_date"],
-    "Name": "text",
-    "Type": "type",
-    "progress": "progress",
-    "sortorder": "sortorder",
-    "S_Resource_ID": ["S_Resource_ID","intero"],
-    "LIT_gantt_constraint_date":["constraint_date","format_date"],
-    "LIT_gantt_constraint_type":["constraint_type","not_null"],
-    "api":"ProjectPhase"
-},
+    "Name":"text",
 
-"c_projecttask" :{ 
-    "id":["id","strip_id"],
-    "AssignDateFrom":["start_date","format_date"],
-    "AssignDateTo":["end_date","format_date"],
-    "Name": "text",
-    "Type": "type",
-    "progress": "progress",
-    "SeqNo": "sortorder",
-    "S_Resource_ID": ["S_Resource_ID","intero"],
-    "LIT_gantt_constraint_date":["constraint_date","format_date"],
-    "LIT_gantt_constraint_type":["constraint_type","not_null"],
-    "api":"ProjectTask"
-},
-"c_projectline" : {
-    "id":["id","strip_id"],
-    "AssignDateFrom":["start_date","format_date"],
-    "AssignDateTo":["end_date","format_date"],
-    "Description": "text",
-    "Type": "type",
-    "progress": "progress",
-    "Line": "sortorder",
-    "S_Resource_ID": ["S_Resource_ID","intero"],
-    "LIT_gantt_constraint_date":["constraint_date","format_date"],
-    "LIT_gantt_constraint_type":["constraint_type","not_null"],
-    "api":"ProjectLine"
+    "api":"putActivity"
 }
 
 }
