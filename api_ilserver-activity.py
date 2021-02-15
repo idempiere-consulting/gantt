@@ -11,7 +11,7 @@ import datetime
 # questa funzione è quella che si occupa "materialmente" di restituire il payload corretto 
 # da spedire ad iDempiere traducendo quello in arrivo dal DHTMLX
 # devo inserire come parametro l'id perchè non è dentro il payload
-
+# piccola funzione di comodo per stampare chiaramente un json
 def pretty_json(json_obj):
     print(dumps(json_obj, sort_keys=False, indent=2))
 
