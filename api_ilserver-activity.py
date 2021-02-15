@@ -97,14 +97,14 @@ class Data(Resource):
         print(gantt)
         tasks=gantt.query('get',gantt.cfg['getTasks'])
         tasks_json=loads(tasks.text)
-        """ links=gantt.query('get','getLinks')
+        links=gantt.query('get','getLinks')
         links_json=loads(links.text)
-        """
+        
         resources=gantt.query('get','getResources')
         resources_json=loads(resources.text)
         #print(resources_json)
         # qualsiasi altro dato che volessi far processare al gantt devo mettorlo dentro a collections e poi importarlo dentro al javascript
-        links_json=[]
+        #links_json=[]
         #resources_json=[]
         # assemblamento finale
         result= {'tasks': tasks_json,"links": links_json ,'collections':{'my_resources':resources_json,'otherone':[]}}
