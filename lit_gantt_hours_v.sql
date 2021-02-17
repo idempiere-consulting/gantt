@@ -25,7 +25,8 @@ SELECT 10000000::numeric + h.lit_hour_id AS lit_gantt_hours_v_id,
     h.updated,
     h.updatedby,
 -- OK  dateworkstart
- qty as duration          --# quale unità di misura?? ovviamenet ORE!
+    qty as duration   ,       --# quale unità di misura?? ovviamenet ORE!
+    h.description
  -- OK salesrep_id
 
    FROM lit_hour h
@@ -53,10 +54,10 @@ UNION
       1000006 AS ad_client_id,
       c.updated,
       c.updatedby,
-      EXTRACT(epoch FROM (enddate-startdate)/3600)::INTEGER as duration         -- devo calcolare la durata in ore in modo che sia compatibile con sopra? boh...
+      EXTRACT(epoch FROM (enddate-startdate)/3600)::INTEGER as duration  ,       -- devo calcolare la durata in ore in modo che sia compatibile con sopra? boh...
 --  devo aggiungere i seguenti campi obbligatori altrimenti non funziona
 
---  description
+      c.description
 --  OKstartdate
 --  contactactivitytype
 
