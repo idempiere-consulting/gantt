@@ -19,8 +19,8 @@
 	{% block script_scale  %}{% endblock %}
 	gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	gantt.config.fit_tasks = true; 
-			// reordering tasks within the whole gantt
-			gantt.config.order_branch = true;
+	// reordering tasks within the whole gantt
+	gantt.config.order_branch = true;
 	gantt.config.order_branch_free = true;
 
 	 gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
@@ -36,7 +36,7 @@
 		.then(function(data){
 			console.log('ho caricato i task, i link e le risorse\n',data.response)
 			console.log('\necco il gantt\n',gantt)
-            gantt.message({ text: "task,link e risorse caricati", expire: 2000 });
+            gantt.message({ text: "ekfmvkemfvkemfvkmekfmvekmfkemkemfvkemfkvmetask,link e risorse caricati", expire: 2000 });
 			gantt.render();
 			
 
