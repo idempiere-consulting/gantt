@@ -23,7 +23,11 @@ SELECT 10000000::numeric + h.lit_hour_id AS lit_gantt_hours_v_id,
     h.isactive  AS isactive,
     1000006 AS ad_client_id,
     h.updated,
-    h.updatedby
+    h.updatedby,
+-- OK  dateworkstart
+ qty as duration
+ -- OK salesrep_id
+
    FROM lit_hour h
   WHERE h.name IS NOT NULL AND h.dateworkstart::timestamp > (NOW() - INTERVAL '333 days' )
   and
@@ -49,6 +53,15 @@ UNION
       1000006 AS ad_client_id,
       c.updated,
       c.updatedby
+--  devo aggiungere i seguenti campi obbligatori altrimenti non funziona
+
+--  description
+--  OKstartdate
+--  contactactivitytype
+
+
+
+
    FROM c_contactactivity c
      JOIN r_status r ON c.r_status_id = r.r_status_id
   --WHERE c.name IS NOT NULL  AND c.startdate::timestamp > NOW() - INTERVAL '333 days'

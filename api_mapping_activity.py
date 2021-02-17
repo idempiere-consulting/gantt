@@ -35,22 +35,35 @@ mapping={
 }
 # quindi la procedura corretta da seguiere è:
 # - ANDATA
-# creare la vista  su Postgres
+# analizzare le tabelle di interese e PRENDERE NOTA dei campi obbligatori con la select sotto
+# creare la vista  su Postgres avendo cura di inswerire anche i campi sopra
 # creare la vista su idempiere ed importare i campi 
-# creare la API getGantt
-# indicare sul file di configurazione il nome della query
+# creare la API getGantt (esempio ma può essere qualsiasi cosa)
+# indicare sul file di configurazione il nome della API appena creata
+# procedere così per tutti gli insiemi di dati che mi interessano (Links, resources....)
 # - RITORNO
-# creare la API verso la tabella di riferimento
-# creare la voce di dizionrio nel file mapping con lo stesso nome della tabella
+# creare la API verso la tabella di riferimento 
+# nella tab field out inserire 
+# - come PRIMO campo l'id della tabella 
+# - i campi obbligatori 
+# - i campi che ci interessa salvare 
+# creare la voce di dizionario nel file mapping con lo stesso nome della tabella
 # creare le chiavi con lo stesso nome indicato nella API (case sensitive)
 # impostare i valori come 
 #   - valore secco se il tipo ed i valori passati sono corretti
 #   - lista di due valori:
 #     * il primo è il nome del campo che arriva dal dhtmlx
 #     * il secondo è il nome della funzione di "traduzione"
+# aggiungere la chiave "api" che indicherà quale endpoint contattare su idempiere
 
+""" 
 
-
+select column_name from information_schema.columns 
+where table_name='INSERISCI' 
+    and is_nullable='NO' 
+    and column_default is  null 
+    and column_name not in ('ad_client_id','ad_org_id','createdby','updatedby');
+ """
 }
 import datetime
 class translator(object):

@@ -146,6 +146,8 @@ class TASK_add(Resource):
         r=request.values.to_dict()
         print('aggiungo task, ecco cosa mi arriva\n',r)
         #TODO TODO tutta da implementare, molto molto male!!!!!
+        # quello che segue è l'implementazione vecchia
+    
         print('\n*********************\nprogetto..',r['text'])
 
         # devo aggiungefe i campi che sono indispendabili ad idempiere ma che non vengono indicati dal DHTMLX
