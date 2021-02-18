@@ -417,13 +417,13 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			}
 		});
 		console.log('ho caricato le seguenti risorse:\n',myresources)
-		gantt.updateCollection("my_resources", myresources);
+		gantt.updateCollection(gantt.config.resource_property /*my_resources*/, myresources);
 		gantt.config.lightbox.sections = [
 		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
 		{name: "split", type:"checkbox", map_to: "render", options:[
         {key:"split", label:"Split Task"}
         ]},
-		{name: "myresource",  height: 22, map_to: "S_Resource_ID", type: "select", options: gantt.serverList(gantt.config.resource_store)}, 
+		{name: "myresource",  height: 22, map_to: gantt.config.resource_property, type: "select", options: gantt.serverList(gantt.config.resource_store)}, 
 		{name: "constraint",  type: "constraint" },
 		// FIXME 
 		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
@@ -453,7 +453,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 
   	gantt.config.lightbox.sections = [
 		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
-		{name: "myresource",  height: 22, map_to: "S_Resource_ID", type: "select", options: gantt.serverList(gantt.config.resource_store)}, 
+		{name: "myresource",  height: 22, map_to: gantt.config.resource_property, type: "select", options: gantt.serverList(gantt.config.resource_store)}, 
 		{name: "constraint",  type: "constraint" },
 		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
 			{key: 'project', label: "project"},
@@ -853,7 +853,7 @@ function customSetScale(value){
  	.then(function(data){
 		//console.log('ho caricato \n',gantt.serverList("my_resources"))
 		gantt.message({ text: "dati caricati", expire: 2000 });
-		resourcesStore.parse(gantt.serverList("my_resources"))
+		resourcesStore.parse(gantt.serverList(gantt.config.resource_property))
 		var textEditor = { type: "text", map_to: "text" };
 
 		gantt.config.columns = [
@@ -898,7 +898,7 @@ function customSetScale(value){
 			{name: "my_resource",label:"RISORSA",width:80,align: "center",resize: true ,template: function (task) {
 			 	// console.log('mostro cosa mi arriva in my_resource\n',task);
 			// mi arriva la riga del task selezionato
-					return ResById(gantt.serverList('my_resources'),task.S_Resource_ID)
+					return ResById(gantt.serverList(gantt.config.resource_property),task.S_Resource_ID)
 				}
 			},// fine
 			{name:"add",        label:"",           width:30 }
