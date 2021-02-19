@@ -44,26 +44,33 @@ class api(object):
         """ reinitialize api object with specific config file passed in"""
         cfg_file = self.config_file if config_file == "" else config_file
         self.__init__(cfg_file)
+    def delete(self,endpoint,id):
+        endpoint=endpoint + "_" + id
+        method="delete"
+        self.query(method,endpoint)
     def query(self,method_NaMe,endpoint,payload=None): #, *vartuple):
         """try to call the specific API passing all of parameters needed"""
         #for var in vartuple:
         #    print (var)
         print(method_NaMe,endpoint,payload)
-
+        # mi assicuro che il case sia corretto: minuscolo
         method_name= method_NaMe.lower()
-    #    print(method_name)
+        #    print(method_name)
+        # "mi prendo il metodo come funzione" della classe importata requests (non c'entra flask)
         method = getattr(requests,method_name, lambda: 'invalide choise')
         print(method)
+        # costruisco l'url da contattare nella sua interezza
         url=self.get_url() + endpoint
         print(url)
         print('intestazioni',self.headers)
         try:
+            # provo a chiamare la API
             response = method(url,json=payload,headers=self.headers)  
         except Exception as error:
             print(error)
         except AttributeError as error:
             print('ecco errore',error)
-            
+        # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
         #print(response.request.method)        
         print(response)
         return response
