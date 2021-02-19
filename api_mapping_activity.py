@@ -27,16 +27,18 @@ mapping={
 },
 "c_contactactivity" : {
     "id":["id","strip_id"],
-    "Name":"text",
-    "AssignDateFrom":["start_date","format_date"],
-    "AssignDateTo":["end_date","format_date"],
+    "Description":"Description",
+    "StartDate":["start_date","format_date"],
     "SalesRep_ID":["S_Resource_ID","intero"],
+    "ContactActivityType":"ctype",
     "api":"putActivity"
 }
 # quindi la procedura corretta da seguiere è:
+# (disclaimer: non dimenticarsi dell'azzeramento cache se qualcosa non torna)
 # - ANDATA
 # analizzare le tabelle di interese e PRENDERE NOTA dei campi obbligatori con la select sotto
 # creare la vista  su Postgres avendo cura di inswerire anche i campi sopra
+# importante creare un campo id che sia uguale all'  ..._id della tabella
 # creare la vista su idempiere ed importare i campi 
 # creare la API getGantt (esempio ma può essere qualsiasi cosa)
 # indicare sul file di configurazione il nome della API appena creata
@@ -55,16 +57,16 @@ mapping={
 #     * il primo è il nome del campo che arriva dal dhtmlx
 #     * il secondo è il nome della funzione di "traduzione"
 # aggiungere la chiave "api" che indicherà quale endpoint contattare su idempiere
-
+}
 """ 
-
+query per elencare tutti i campi obbligatori (meno i 4 che le API gestiscono di default)
 select column_name from information_schema.columns 
 where table_name='INSERISCI' 
     and is_nullable='NO' 
     and column_default is  null 
     and column_name not in ('ad_client_id','ad_org_id','createdby','updatedby');
  """
-}
+
 import datetime
 class translator(object):
     @staticmethod

@@ -124,7 +124,7 @@ class TASK_change(Resource):
         r=request.values.to_dict()
         print('change task\n',r)
         # costruisco la parte finale della endPoint da contattare
-        api='put' + mapping[r['table_from']]['api']
+        api= mapping[r['table_from']]['api']
         # trasformo il payload
         payload=translate_data(r,myid)
         # finalmente eseguo la PUT API
@@ -132,11 +132,11 @@ class TASK_change(Resource):
         print('finished change',myid,'\n-------------------\n')
     # quando ELIMINO un task
     def  delete(self,myid):
-        ''' id è una stringa'''
+        ''' myid è una stringa'''
         print('tipo id \n',myid)
         print('\n*********************\nNidificazione progetto..',myid[0])
-        # questa chiamata è la più semplice, basta indicare l'id da cancellare e fornire il token
-        idapi.delete_project(gantt.token,myid[1:])
+        # questa chiamata è la più semplice, basta indicare l'id da cancellare e l'endpoint
+        idapi.delete(gantt.token,myid[1:])
         print('finished delete',myid,'\n-------------------\n')
 # quando AGGIUNGO un task        
 class TASK_add(Resource):
