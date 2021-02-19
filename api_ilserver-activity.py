@@ -16,64 +16,63 @@ def pretty_json(json_obj):
     print(dumps(json_obj, sort_keys=False, indent=2))
 
 def translate_data(data_from_gantt,gantt_id):
-    # arriva questo :
+    # arriva qualcosa del tipo :
     #{'S_Resource_ID': '', 'constraint_date': '', 'constraint_type': '', 'end_date': '1598652000000', 'parent': '0', 'progress': '0.71538461', 
     # 'sortorder': '0', 'start_date': '1593554400000', 'table_from': 'c_project', 'text': 'Commessa XXX', 'type': 'Task', 'duration': '59'}
-    # la mia mappa è fatta così:
-    """ mapping= {
-    "c_project" : {
-            "id":               ["id","strip_id"],
-            "DateContract":     "start_date",
-            "DateFinish":       "end_date",
-            "Name":             "text",
-            "ProjectLineLevel": "type",     
-            "progress":         "progress",
-            "sortorder":        "sortorder",
-            "S_Resource_ID":    "S_Resource_ID",
-            "LIT_gantt_constraint_date":"constraint_date",
-            "LIT_gantt_constraint_type":"constraint_type",
-            "parent":"parent",
-            "api":"Project"
-    }, 
-    "c_projectphase" : {
-    ......
-    }
-    """
     # inizializzo il payload vuoto
-    data=dict()
+    payload=dict()
     print('/////////////////')
-    # ESTRAGGO dai dati che mi arrivano dal gantt la tabella da modificare
+    # ESTRAGGO dai dati che mi arrivano dal DHTMLX la TABELLA da modificare
     tbl=data_from_gantt.pop('table_from')
+    # AGGIUNGO la chiave id indispensabile per le API
     data_from_gantt['id']=gantt_id
     print('devo modificare la tabella:  ',tbl)
     #mapping[tbl].pop('api')
+    # questa è la LISTA delle chiavi che mi ARRIVANO da DHTMLX
     gantt_keys=data_from_gantt.keys()
+    # adesso ciclo i VALORI della struttura mapping 
+    # (vedere mapping.py per la descrizione precisa ma:
+    # chiave = nome campo su idempiere
+    # valore = chiave in arrivo DAL DHTMLX)
     for k,v in mapping[tbl].items():
-        print(k,v)
+        # k è la chiave (--idempiere)
+        # v è il valore (--DHTMLX)
+        print(k,' <- campo in idempiere in cui scrivere il valore di->',v)
+        # imposto un'etichetta in caso sia da ignorare, solo per debug
+        api_value='chiave ignorata'
         # se è presente una funzione di traduzione la devo usare!
         if isinstance(v,list):
-            # il primo elemento della lista è il valore che arriva... malformato per idempiere
+            # il primo elemento della lista è QUALE chiave contiene il valore che arriva... MALFORMATO per idempiere
             gantt_key=v[0]
             # il secondo è il nome della funzione di traduzione
-            key_tr=v[1]
-            trl=getattr(translator,key_tr, lambda: 'invalide choise')
-            # siccome è una lista sono sicuro che la chiave esiste da entrambe le parti
-            # quindi trasformo il dato 
+            key_tr_func=v[1]
+            # cerco nella classe translator il metodo indicato e "me lo prendo come funzione"
+            trl=getattr(translator,key_tr_func, lambda: 'invalide choise')
+            # siccome è una lista sono sicuro che la chiave esiste da entrambe le parti (idempiere e DHTMLX)
+            # quindi trasformo il dato tramite "la funzione presa sopra"
             api_value=trl(data_from_gantt[gantt_key])
             # e lo aggiungo al payload
-            data[k]=api_value
+            payload[k]=api_value
             print('\t',k,api_value)
 
         else:
-            # qui potrebbe essere un campo di appoggio (api o table from)
+            # è indicata una chiave secca, senza funzione di traduzione, va bene così com'è se esiste,
+            # infatti qui potrebbe essere un campo di appoggio (api o table from)
+            # solo per leggibilità "cambio nome alla variabile"
             gantt_key=v
+            # quindi se la chiave è presente nella LISTA delle chiavi che mi ARRIVANO da DHTMLX
             if gantt_key in gantt_keys:
-                # solo se la chiave è valida la aggiungo
+                # qui la chiave è valida, non è campo di appoggio
+                # quindi prendo il valore in arrivo che mi interessa
                 api_value=(data_from_gantt[gantt_key])
-                data[k]=api_value if api_value != '' else None
-    print('payload:\n',data)
+                # e aggiungo la chiave nel payload (data) aggiungo (in caso contrario resta l'etichetta di debug)
+                payload[k]=api_value if api_value != '' else None
+                print('\t',gantt_key,api_value)
+        print('\t',k,api_value)
+
+    print('payload:\n',payload)
     print('/////////////////')
-    return data
+    return payload
 
 # inizializzo la app
 app = Flask(__name__)#,
@@ -147,27 +146,6 @@ class TASK_add(Resource):
         print('aggiungo task, ecco cosa mi arriva\n',r)
         #TODO TODO tutta da implementare, molto molto male!!!!!
         # quello che segue è l'implementazione vecchia
-    
-        print('\n*********************\nprogetto..',r['text'])
-
-        # devo aggiungefe i campi che sono indispendabili ad idempiere ma che non vengono indicati dal DHTMLX
-        data={  'C_Currency_ID' : '102',
-            'Seq_No'      : r['progress'],
-            'Name'          : r['text'],
-            'Value'         : r['text']
-           }
-        
-        data={  'C_Currency_ID' : '102',
-                'DateContract'  : format_date2( r['start_date']),
-                'DateFinish'    : format_date2( r['end_date']),
-                'Seq_No'      : r['progress'],
-                'Name'          : r['text'],
-                'Value'         : r['text'],
-                'Type'          : r['Type'],
-                #'S_Resource_ID' : '1000004',
-                'CopyFrom'        : r['parent']
-           }
-        #print('provo ad inserire \n',data)
         print('finished POST, non implementato','\n-------------------\n')
 
 class LINK_change(Resource):
