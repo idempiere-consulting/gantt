@@ -41,7 +41,11 @@ def translate_data(data_from_gantt,gantt_id):
         # imposto un'etichetta in caso sia da ignorare, solo per debug
         api_value='chiave ignorata'
         # se è presente una funzione di traduzione la devo usare!
+        #FIXME se è una post l'id non c'è, dovrei ignorarlo:
+        # trasformo tutti i valori in liste e aggiungo come terzo valore il metodo
+        # e filtro su quello? boh, ci penso....  CHE MOSTRO CHE STA DIVENTANDO!!
         if isinstance(v,list):
+            
             # il primo elemento della lista è QUALE chiave contiene il valore che arriva... MALFORMATO per idempiere
             gantt_key=v[0]
             # il secondo è il nome della funzione di traduzione
@@ -145,7 +149,19 @@ class TASK_add(Resource):
         r=request.values.to_dict()
         print('aggiungo task, ecco cosa mi arriva\n',r)
         #TODO TODO tutta da implementare, molto molto male!!!!!
-        # quello che segue è l'implementazione vecchia
+        # prima di tuto si tratta di distinguere il livello, ricordo che l'unico modo a me noto
+        # che DHTMLX usa è quello del 'parent', quindo credo che questo sia il fattore determinante
+        # non mi torna infatti la table from a meno che non la inserisca a forza ma mi pare complicato
+        # costruisco la parte finale della endPoint da contattare
+        #api= mapping[r['table_from']]['apipost']
+        first_char=r['parent'][0]
+        print(mapping[first_char])
+        api= mapping[mapping[first_char]]['apipost']
+        # trasformo il payload
+        r['table_from']=mapping[first_char]
+        payload=translate_data(r,'fake')
+        # finalmente eseguo la POST API
+        gantt.query('post',api,payload)
         print('finished POST, non implementato','\n-------------------\n')
 
 class LINK_change(Resource):
