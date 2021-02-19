@@ -12,6 +12,9 @@
 # la chiave (a sx) è il     il valore a dx è in arrivo
 #    nome su IDEMPIERE          DAL GANTT
 mapping={
+"1"    : "lit_hour",
+"9"     : "c_contactactivity",
+"0"     : "c_contactactivity",
 "lit_hour" : {
     "id":["id","strip_id"],
     "DateWorkStart":["start_date","format_date"],
@@ -23,7 +26,8 @@ mapping={
     "S_Resource_ID": ["S_Resource_ID","intero"],
     #"LIT_gantt_constraint_date":["constraint_date","format_date"],
     #"LIT_gantt_constraint_type":["constraint_type","not_null"],
-    "api":"putHour"
+    "api":"putHour",
+    "apipost":"postHourDettaglio"
 },
 "c_contactactivity" : {
     "id":["id","strip_id"],
@@ -31,7 +35,8 @@ mapping={
     "StartDate":["start_date","format_date"],
     "SalesRep_ID":["S_Resource_ID","intero"],
     "ContactActivityType":"ctype",
-    "api":"putActivity"
+    "api":"putActivity",
+    "apipost":"postContactActivity"
 }
 # quindi la procedura corretta da seguiere è:
 # (disclaimer: non dimenticarsi dell'azzeramento cache se qualcosa non torna)
