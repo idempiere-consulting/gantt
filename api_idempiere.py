@@ -62,9 +62,10 @@ class api(object):
         # costruisco l'url da contattare nella sua interezza
         url=self.get_url() + endpoint
         print('eseguo la chiamata:')
-        print(url)
-        print('json=',payload)
-        print('headers=',self.headers)
+        print("requests.",method.__name__,"('")
+        print(url,"',")
+        print('json=',payload,",")
+        print('headers=',self.headers,")")
         try:
             # provo a chiamare la API
             response = method(url,json=payload,headers=self.headers)  

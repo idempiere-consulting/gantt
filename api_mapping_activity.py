@@ -13,7 +13,7 @@
 #    nome su IDEMPIERE          DAL GANTT
 mapping={
 "1"    : "lit_hour",
-"9"     : "c_contactactivity",
+"9"     : "lit_hour",
 "0"     : "c_contactactivity",
 "lit_hour" : {
     "id":["id","strip_id"],
@@ -25,6 +25,7 @@ mapping={
     "isConfirmed":"progress",
     "sortorder":"sortorder",
     "SalesRep_ID": ["S_Resource_ID","intero"],
+    "C_ContatActivity_ID":["parent","strip_id"],
     #"LIT_gantt_constraint_date":["constraint_date","format_date"],
     #"LIT_gantt_constraint_type":["constraint_type","not_null"],
     "api":"putHourDettaglio",
@@ -36,6 +37,7 @@ mapping={
     "StartDate":["start_date","format_date"],
     "SalesRep_ID":["S_Resource_ID","intero"],
     "ContactActivityType":"ctype",
+    "C_Activity_ID":["C_Activity_ID","intero"],
     "api":"putActivity",
     "apipost":"postContactActivity"
 }

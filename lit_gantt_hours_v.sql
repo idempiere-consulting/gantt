@@ -26,14 +26,16 @@ SELECT 10000000::numeric + h.lit_hour_id AS lit_gantt_hours_v_id,
     h.updatedby,
 -- OK  dateworkstart
     qty as duration   ,       --# quale unità di misura?? ovviamenet ORE!
-    h.description
+    h.description,
+    '' as ctype
  -- OK salesrep_id
 
    FROM lit_hour h
-  WHERE h.name IS NOT NULL AND h.dateworkstart::timestamp > (NOW() - INTERVAL '333 days' )
-  and
-   h.name IS NOT NULL AND h.dateworkstart::timestamp < (NOW() - INTERVAL '332 days' )
-   and h.isactive='Y'
+  --WHERE h.name IS NOT NULL AND h.dateworkstart::timestamp > (NOW() - INTERVAL '333 days' )
+  --and   h.name IS NOT NULL AND h.dateworkstart::timestamp < (NOW() - INTERVAL '332 days' )
+  --and h.isactive='Y'
+  WHERE  h.C_ContactActivity_ID=1002093
+
 UNION
  SELECT 90000000::numeric + c.c_contactactivity_id AS lit_gantt_hours_v_id,
     90000000::numeric + c.c_contactactivity_id AS id,
@@ -57,9 +59,9 @@ UNION
       EXTRACT(epoch FROM (enddate-startdate)/3600)::INTEGER as duration  ,       -- devo calcolare la durata in ore in modo che sia compatibile con sopra? boh...
 --  devo aggiungere i seguenti campi obbligatori altrimenti non funziona
 
-      c.description
+      c.description,
 --  OKstartdate
---  contactactivitytype
+      c.contactactivitytype as ctype    -- must have solo per cactivity
 
 
 
@@ -70,7 +72,9 @@ UNION
   --where start_date::timestamp > NOW() - INTERVAL '33 days'
   --and
  --c.name IS NOT NULL  AND c.startdate::timestamp > NOW() - INTERVAL '332 days'
- where  (enddate - startdate) > interval '33 days'
+-- where  (enddate - startdate) > interval '33 days'
+   where  c.C_ContactActivity_ID=1002093
+
 
   --where start_date < NOW() - INTERVAL '32 days'
   order by start_date asc;
