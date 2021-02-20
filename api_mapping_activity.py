@@ -18,15 +18,16 @@ mapping={
 "lit_hour" : {
     "id":["id","strip_id"],
     "DateWorkStart":["start_date","format_date"],
-    "DateFinish":["end_date","format_date"],
+    #"DateFinish":["end_date","format_date"],
+    "Qty":"duration",
     "Name":"text",
     "ProjectLineLevel":["Type","get_first"],     
     "isConfirmed":"progress",
     "sortorder":"sortorder",
-    "S_Resource_ID": ["S_Resource_ID","intero"],
+    "SalesRep_ID": ["S_Resource_ID","intero"],
     #"LIT_gantt_constraint_date":["constraint_date","format_date"],
     #"LIT_gantt_constraint_type":["constraint_type","not_null"],
-    "api":"putHour",
+    "api":"putHourDettaglio",
     "apipost":"postHourDettaglio"
 },
 "c_contactactivity" : {

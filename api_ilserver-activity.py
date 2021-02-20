@@ -15,7 +15,7 @@ import datetime
 def pretty_json(json_obj):
     print(dumps(json_obj, sort_keys=False, indent=2))
 
-def translate_data(data_from_gantt,gantt_id):
+def translate_data(data_from_gantt,gantt_id=None):
     # arriva qualcosa del tipo :
     #{'S_Resource_ID': '', 'constraint_date': '', 'constraint_type': '', 'end_date': '1598652000000', 'parent': '0', 'progress': '0.71538461', 
     # 'sortorder': '0', 'start_date': '1593554400000', 'table_from': 'c_project', 'text': 'Commessa XXX', 'type': 'Task', 'duration': '59'}
@@ -24,12 +24,14 @@ def translate_data(data_from_gantt,gantt_id):
     print('/////////////////')
     # ESTRAGGO dai dati che mi arrivano dal DHTMLX la TABELLA da modificare
     tbl=data_from_gantt.pop('table_from')
-    # AGGIUNGO la chiave id indispensabile per le API
-    data_from_gantt['id']=gantt_id
+    # SOLE SE passata AGGIUNGO la chiave id indispensabile per le API PUT
+    if gantt_id :
+        data_from_gantt['id']=gantt_id
     print('devo modificare la tabella:  ',tbl)
     #mapping[tbl].pop('api')
     # questa è la LISTA delle chiavi che mi ARRIVANO da DHTMLX
     gantt_keys=data_from_gantt.keys()
+    print(gantt_keys)
     # adesso ciclo i VALORI della struttura mapping 
     # (vedere mapping.py per la descrizione precisa ma:
     # chiave = nome campo su idempiere
@@ -48,16 +50,18 @@ def translate_data(data_from_gantt,gantt_id):
             
             # il primo elemento della lista è QUALE chiave contiene il valore che arriva... MALFORMATO per idempiere
             gantt_key=v[0]
-            # il secondo è il nome della funzione di traduzione
-            key_tr_func=v[1]
-            # cerco nella classe translator il metodo indicato e "me lo prendo come funzione"
-            trl=getattr(translator,key_tr_func, lambda: 'invalide choise')
-            # siccome è una lista sono sicuro che la chiave esiste da entrambe le parti (idempiere e DHTMLX)
-            # quindi trasformo il dato tramite "la funzione presa sopra"
-            api_value=trl(data_from_gantt[gantt_key])
-            # e lo aggiungo al payload
-            payload[k]=api_value
-            print('\t',k,api_value)
+            if gantt_key in gantt_keys:
+
+                # il secondo è il nome della funzione di traduzione
+                key_tr_func=v[1]
+                # cerco nella classe translator il metodo indicato e "me lo prendo come funzione"
+                trl=getattr(translator,key_tr_func, lambda: 'invalide choise')
+                # siccome è una lista sono sicuro che la chiave esiste da entrambe le parti (idempiere e DHTMLX)
+                # quindi trasformo il dato tramite "la funzione presa sopra"
+                api_value=trl(data_from_gantt[gantt_key])
+                # e lo aggiungo al payload
+                payload[k]=api_value
+                print('\t',k,api_value)
 
         else:
             # è indicata una chiave secca, senza funzione di traduzione, va bene così com'è se esiste,
@@ -149,7 +153,7 @@ class TASK_add(Resource):
         r=request.values.to_dict()
         print('aggiungo task, ecco cosa mi arriva\n',r)
         #TODO TODO tutta da implementare, molto molto male!!!!!
-        # prima di tuto si tratta di distinguere il livello, ricordo che l'unico modo a me noto
+        # prima di tutto si tratta di distinguere il livello, ricordo che l'unico modo a me noto
         # che DHTMLX usa è quello del 'parent', quindo credo che questo sia il fattore determinante
         # non mi torna infatti la table from a meno che non la inserisca a forza ma mi pare complicato
         # costruisco la parte finale della endPoint da contattare
@@ -159,7 +163,7 @@ class TASK_add(Resource):
         api= mapping[mapping[first_char]]['apipost']
         # trasformo il payload
         r['table_from']=mapping[first_char]
-        payload=translate_data(r,'fake')
+        payload=translate_data(r)
         # finalmente eseguo la POST API
         gantt.query('post',api,payload)
         print('finished POST, non implementato','\n-------------------\n')

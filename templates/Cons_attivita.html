@@ -30,6 +30,24 @@
 	// format to UNIX timestamps before sending the update to the server
 	return Math.floor(date.valueOf() );// / 1000);
 	};
+	// in questo modo quando creo un task posso aggiungere al payload una proprietà
+	// FIXME!!!!!!  hardcoded e dipendente dalla tabella, ma modifica minore quindi...
+	// bisogna implementare i campi nella finestrella!!!!!
+
+	gantt.attachEvent("onTaskCreated", function(task){
+		console.log(task)
+    	task.Description = task.text;
+		task.S_Resource_ID = '';
+		task.ctype = 'TA';
+		
+    	return true;
+	});
+
+	gantt.attachEvent("onTaskLoading", function(task){
+		console.log(task)
+    	task.nuovo = task.text;
+    	return true;
+	});
 	
 	/////////////////////////
 	/*
@@ -112,7 +130,7 @@
 		.then(function(data){
 			console.log('ho caricato i task, i link e le risorse\n',data.response)
 			console.log('\necco il gantt\n',gantt)
-            gantt.message({ text: "ekfmvkemfvkemfvkmekfmvekmfkemkemfvkemfkvmetask,link e risorse caricati", expire: 2000 });
+            gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
 			gantt.render();
 			
 
