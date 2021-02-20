@@ -25,7 +25,6 @@ mapping={
     "isConfirmed":"progress",
     "sortorder":"sortorder",
     "SalesRep_ID": ["S_Resource_ID","intero"],
-    "C_ContatActivity_ID":["parent","strip_id"],
     #"LIT_gantt_constraint_date":["constraint_date","format_date"],
     #"LIT_gantt_constraint_type":["constraint_type","not_null"],
     "api":"putHourDettaglio",
