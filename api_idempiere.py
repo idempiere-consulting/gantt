@@ -58,11 +58,13 @@ class api(object):
         #    print(method_name)
         # "mi prendo il metodo come funzione" della classe importata requests (non c'entra flask)
         method = getattr(requests,method_name, lambda: 'invalide choise')
-        print(method)
+        #print(method)
         # costruisco l'url da contattare nella sua interezza
         url=self.get_url() + endpoint
+        print('eseguo la chiamata:')
         print(url)
-        print('intestazioni',self.headers)
+        print('json=',payload)
+        print('headers=',self.headers)
         try:
             # provo a chiamare la API
             response = method(url,json=payload,headers=self.headers)  
@@ -72,7 +74,7 @@ class api(object):
             print('ecco errore',error)
         # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
         #print(response.request.method)        
-        print(response)
+        print(response.content)
         return response
     def login(self):
         try:
