@@ -178,12 +178,22 @@
 	  <button onClick="rowHeightDecrease()"> Decrease</button>
 	  <button onClick="rowHeightIncrease()"> Increase</button>
 	  <input type='button' id='default' onclick="toggleTooltip(this)" value="Nascondi InfoBox">
+	  <input type='button' id='undo' onclick="undo()" value="UNDO">
+	  <input type='button' id='redo' onclick="redo()" value="REDO">
 	
-	
+
 </div>
 
 <div id="gantt_here"></div>
 <script>
+	function undo(){
+		gantt.ext.undo.undo();
+		gantt.render()
+	}
+	function redo(){
+		gantt.ext.undo.redo();
+		gantt.render()
+	}
 
 	gantt.plugins({
 		auto_scheduling: true,

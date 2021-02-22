@@ -13,11 +13,22 @@
 </head>
 <body>
 	{% block button_scale  %}{% endblock %}
+	<input type='button' id='undo' onclick="gantt.undo()" value="UNDO">
+	<input type='button' id='redo' onclick="gantt.redo()" value="REDO">
+  
+
+
 
 	<div id="gantt_here" style='width:100%; height:100%;'></div>
 	<script>
 	{% block script_scale  %}{% endblock %}
+	{% block duration_formatter  %}{% endblock %}
+	gantt.plugins({
+    	undo: true
+	});
 	gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+	//gantt.config.scale_unit = "hour";
+
 	gantt.config.fit_tasks = true; 
 	// reordering tasks within the whole gantt
 	gantt.config.order_branch = true;
@@ -30,6 +41,7 @@
 	// format to UNIX timestamps before sending the update to the server
 	return Math.floor(date.valueOf() );// / 1000);
 	};
+
 	// in questo modo quando creo un task posso aggiungere al payload una proprietà
 	// FIXME!!!!!!  hardcoded e dipendente dalla tabella, ma modifica minore quindi...
 	// bisogna implementare i campi nella finestrella!!!!!
@@ -39,16 +51,36 @@
     	task.Description = task.text;
 		task.S_Resource_ID = '';
 		task.ctype = 'TA';
+		task.C_Activity_ID = 1000008;
 		
     	return true;
 	});
+	// aggiungere qui i campi necessari indicati sopra
+/* 	gantt.config.lightbox.sections = [
+		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
+/* 		{name: "owner_id", height: 22, map_to: "owner_id", type: "select", options: gantt.serverList("options", [
+			{key: 1000004, label: "Marco"},
+			{key: 1000005, label: "Andrea"},
+			{key: 1000006, label: "Mauro"}])},
+ 		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
+			{key: 'project', label: "project"},
+			{key: 'task', label: "task"},
+			{key: 'milestone', label: "milestone"}]
 
-	gantt.attachEvent("onTaskLoading", function(task){
-		console.log(task)
-    	task.nuovo = task.text;
-    	return true;
-	});
-	
+
+		)}, 
+			{name: "time", type: "duration", map_to: "duration"}
+		];
+ */		var textEditor = { type: "text", map_to: "text" };
+/* 
+		gantt.config.columns = [
+    {name:"text",       label:"Attività",  width:"*", tree:true,resize: true ,editor:textEditor},
+    {name:"start_date", label:"Inizio", align:"center",resize: true,  width:80 },
+     {name:"duration",   label:"Durata",   align:"center",resize: true , width:40 }, 
+    {name:"S_Resource_ID",      label:"Assegnato",   align:"center",resize: true,  width:60 },
+    {name:"add",        label:"",           width:44 }
+];
+ */ 
 	/////////////////////////
 	/*
 	var resourceConfig = {
@@ -124,12 +156,16 @@
 	};
 	*/
 	////////////////////////
- 
+	console.log("1  ora: ",formatter.parse("1 hour"));
+	console.log("24 ore: ",formatter.parse("24 hours"));
+	console.log(" 1 giorno: ",formatter.parse("1 day"));
+	console.log("30 giorn1: ",formatter.parse("30 days"));
+
 		gantt.init("gantt_here");
 		gantt.load('/data')
 		.then(function(data){
-			console.log('ho caricato i task, i link e le risorse\n',data.response)
-			console.log('\necco il gantt\n',gantt)
+			//console.log('ho caricato i task, i link e le risorse\n',data.response)
+			// console.log('\necco il gantt\n',gantt)
             gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
 			gantt.render();
 			
