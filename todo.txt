@@ -1,0 +1,5 @@
+Ciao Vincezo, ho fatto qualche piccolo passo avanti, ho migliorato la leggibilità della duration 
+sulla "column", mostrando più funzioni di formattazione, ho capito che la chiave enter è quella 
+"della lunghezza della barretta" ed è "gestita anche da 	gantt.config.duration_unit = "hour";
+
+vedi cosa riesci a fare con le varie xxxFormatter
