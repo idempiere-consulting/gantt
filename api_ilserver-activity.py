@@ -159,7 +159,7 @@ class TASK_add(Resource):
         # costruisco la parte finale della endPoint da contattare
         #api= mapping[r['table_from']]['apipost']
         first_char=r['parent'][0]
-        print(mapping[first_char])
+        print(mapping[first_char])  # devo prima cercare il n
         api= mapping[mapping[first_char]]['apipost']
         # trasformo il payload
         r['table_from']=mapping[first_char]
@@ -170,6 +170,10 @@ class TASK_add(Resource):
 
 class LINK_change(Resource):
     def put(self,id):
+        r=request.values.to_dict()
+        payload=r
+        gantt.query('put',api,payload)
+
         print(id)
     def delete(self,myid):
         global token
@@ -225,10 +229,12 @@ def home_gantt(task=''):
         #html=render_template('risorse_test.html')
         #html= render_template('04_resource_usage_diagram.html')
         #html= render_template('05_resource_usage_templates copy.html')   # ok  funziona quasi tutto
-        #html= render_template('risorse_e_vincoli.html')
+#        html= render_template('risorse_e_vincoli.html')
         #html= render_template('attivita.html')
         #html = render_template('01_basic_init copy.html')
-        html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
+        #html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
+#        html = render_template('qtyduration copy.html')
+        html = render_template('qtyduration.html')
         #html= render_template('vincoli.html')   #esempio funzionante
         #html= render_template('25_click_drag_select_by_drag.html')
         # 19_constraints_scheduling copy  
