@@ -3,9 +3,10 @@ create or replace view lit_gantt_hours_v as
 -- 
 SELECT 10000000::numeric + h.lit_hour_id AS lit_gantt_hours_v_id,
     10000000::numeric + h.lit_hour_id AS id,
-    h.name AS text,
+    h.description AS text,
     h.dateworkstart AS start_date,
-    h.dateworkstart + '01:00:00'::interval hour * h.qty::double precision AS end_date,
+    --h.dateworkstart + '01:00:00'::interval hour * h.qty::double precision AS end_date,
+    null AS end_date,
     --to_char(h.dateworkstart, 'yyyy-mm-dd hh24:mi:ss'::text) AS start_date2,
     --to_char(h.dateworkstart + '01:00:00'::interval hour * h.qty::double precision, 'yyyy-mm-dd hh24:mi:ss'::text) AS end_date2,
     --coalesce (h.dateworkstart,date (h.dateworkstart + interval '1000 year')) AS coalesceenddate,
@@ -26,7 +27,7 @@ SELECT 10000000::numeric + h.lit_hour_id AS lit_gantt_hours_v_id,
     h.updatedby,
 -- OK  dateworkstart
     qty as duration   ,       --# quale unità di misura?? ovviamenet ORE!
-    h.description,
+    h.name as description,
     '' as ctype
  -- OK salesrep_id
 
@@ -50,7 +51,10 @@ UNION
       0 AS parent,
       '0.5'::text AS progress,
       'c_contactactivity'::text AS table_from,
-      'project'::text AS type,
+      'p
+      
+      
+      roject'::text AS type,
       '0'::text AS sortorder,
       c.isactive AS isactive,
       1000006 AS ad_client_id,
