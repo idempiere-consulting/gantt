@@ -58,7 +58,7 @@
 	gantt.config.columns = [
 		{name: "text", tree: true, width: 170, resize: true},//, editor: textEditor},
 		{name: "start_date", align: "center", resize: true, editor: dateEditor},
-		{name: "duration", label:"Duration", resize: true, align: "center", template: function(task) {
+		{name: "duration", label:"Duration ", resize: true, align: "center", template: function(task) {
 			return autoFormatter.format(task.duration);
 		}, editor: durationEditor, width: 100},
 		{name: "hourDuration", label:"Duration (hours)", resize: true, align: "center", template: function(task) {

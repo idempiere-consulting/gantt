@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Decimal durations for tasks</title>
+
+	<!-- <link rel="stylesheet" href="../common/controls_styles.css?v=7.0.13"> -->
+    <link rel="stylesheet"       href="{{ url_for('static', filename='dhtmlxgantt.css') }}">
+
+<script src="{{ url_for('static', filename='dhtmlxgantt.js') }}" type="text/javascript"></script>
+<!-- {/* /* <script src="{{ url_for('static', filename='resource_project_single_resource_diagram.js') }}" type="text/javascript"></script> */} */} -->
+
+	 <!-- <script src="../common/testdata.js?v=7.0.13"></script>  -->
+	<style>
+		html, body {
+			height: 100%;
+			padding: 0px;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		.gantt_task_cell.week_end, .gantt_task_cell.no_work_hour {
+			background-color: #F5F5F5;
+		}
+
+		.gantt_task_row.gantt_selected .gantt_task_cell.week_end {
+			background-color: #F8EC9C;
+		}
+	</style>
+</head>
+
+<body>
+<div id="gantt_here" style='width:100%; height:100vh;'></div>
+
+<script>
+gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+	 gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
+	return new Date(rawDate ); // * 1000);// UNIX timestamps
+	};
+	gantt.templates.xml_format = gantt.templates.format_date = function(date){
+	// format to UNIX timestamps before sending the update to the server
+	return Math.floor(date.valueOf() );// / 1000);
+	};
+
+	// scale settings
+	gantt.config.scales = [
+		{unit: "month", step: 1, format:"%M %Y"},
+		{unit: "day", step: 1, format: "%d, %l"},
+		{unit: "hour", step: 1, format: "%H"},
+	];
+	gantt.config.scale_height = 20 * 3;
+	gantt.config.min_column_width = 18;
+	gantt.ignore_time = function(date) {
+		return !gantt.isWorkTime(date, "hour");
+	};
+
+	// work time and duration
+	gantt.config.duration_unit = "hour";
+	gantt.config.work_time = true;
+	gantt.config.time_step = 1;
+	gantt.config.round_dnd_dates = false;
+	gantt.config.open_tree_initially = true;
+
+	gantt.setWorkTime({hours: [9, 13, 14, 18]});//global working hours. 8:00-12:00, 13:00-17:00
+	// formatting durations
+	var autoNOFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "hour", 
+		format: "hour", // è l'etichetta che compare (ed usa il plurale se serve)
+		minutesPerHour:60, 
+		hoursPerDay: 8,
+		hoursPerWeek: 40,
+		daysPerMonth: 30,
+		short: false	
+	});
+	var dayFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "hour", 
+		format: "day",
+		hoursPerDay: 8,
+		hoursPerWeek: 40,
+		daysPerMonth: 30,
+		short: false	
+	});
+	var minuteFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "minute", 
+		store: "hour", 
+		format: "minute",
+		minutesPerHour: 60,
+		minutesPerDay: 480,
+		hoursPerDay: 8,
+		hoursPerWeek: 40,
+		daysPerMonth: 30,
+		short: false	
+	});
+	var hourFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "minute", 
+		store: "hour", 
+		format: "hour",
+		short: true	
+	});
+	var autoFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "hour", 
+		store: "hour", 
+		format: "hour",
+		short: true	
+	});
+	var customFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "hour", 
+		format: "auto",
+
+	});
+
+
+	var textEditor = {type: "text", map_to: "text"};
+	var dateEditor = {type: "date", map_to: "start_date", min: new Date(2018, 0, 1), max: new Date(2019, 0, 1)};
+	var durationEditor = {type: "duration", map_to: "duration", formatter: autoFormatter, min:0, max:1000};
+	var dayDurationEditor = {type: "duration", map_to: "duration", formatter: dayFormatter, min:0, max:1000};
+	var hourDurationEditor = {type: "duration", map_to: "duration", formatter: hourFormatter, min:0, max:1000};
+/* 
+	gantt.config.columns = [
+		{name: "text", tree: true, width: 170, resize: true, editor: textEditor},
+		{name: "start_date", align: "center", resize: true, editor: dateEditor},
+		{name: "duration", label:"Duration", resize: true, align: "center", template: function(task) {
+			return autoFormatter.format(task.duration);
+		}, editor: durationEditor, width: 100},
+		{name: "dayDuration", label:"Duration (days)", resize: true, align: "center", template: function(task) {
+			return dayFormatter.format(task.duration);
+		}, editor: dayDurationEditor, width: 100},
+		{name: "hourDuration", label:"Duration (hours)", resize: true, align: "center", template: function(task) {
+			return hourFormatter.format(task.duration);
+		}, editor: hourDurationEditor, width: 100},
+		{name: "add", width: 44}
+ ];*/	
+	gantt.config.columns = [
+		{name: "text", tree: true, width: 170, resize: true, editor: textEditor},
+		{name: "start_date", align: "center", resize: true, editor: dateEditor},
+		{name: "end_date", align: "center", resize: true, editor: dateEditor},
+
+		{name: "duration", label:"D puro", resize: true, align: "center", map_to:"duration"},
+		
+		{name: "duration", label:"D auto", resize: true, align: "center", template: function(task) {
+			console.log(task)
+			return autoFormatter.format(task.duration);
+		}, editor: durationEditor, width: 100},
+		{name: "dayDuration", label:"D (days)", resize: true, align: "center", template: function(task) {
+			return dayFormatter.format(task.duration);
+		}, editor: dayDurationEditor, width: 100},
+		{name: "hourDuration", label:"D (hours)", resize: true, align: "center", template: function(task) {
+			return hourFormatter.format(task.duration);
+		}, editor: hourDurationEditor, width: 100},
+		{name: "minuteDuration", label:"D (minute)", resize: true, align: "center", template: function(task) {
+			return minuteFormatter.format(task.duration);
+		},  width: 100},
+		{name: "customDuration", label:"D (custom)", resize: true, align: "center", template: function(task) {
+			return customFormatter.format(task.duration);
+		},  width: 100},
+		{name: "add", width: 44}
+	];
+
+	gantt.config.lightbox.sections = [
+		{name: "name", height: 70, map_to: "text", type: "textarea", focus: true},
+		{name: "description", height: 70, map_to: "description", type: "textarea", focus: true},
+
+		{name: "time", type: "duration", map_to: "auto", formatter: hourFormatter}
+	];
+
+	gantt.templates.timeline_cell_class = function (task, date) {
+		var css = [];
+
+		if (!gantt.isWorkTime(date, 'day')) {
+			css.push("week_end");
+		}
+
+		return css.join(" ");
+	};
+
+
+
+	gantt.init("gantt_here");
+/* 	gantt.parse({
+		data: [
+			{ id: 1, text: "Office itinerancy", type: "project", start_date: "02-04-2019 00:00", duration: 58*60, progress: 0.4, parent: 0},
+			{ id: 2, text: "Office facing", type: "project", start_date: "02-04-2019 00:00", duration: 64*60, progress: 0.6, parent: "1"},
+			{ id: 3, text: "Furniture installation", type: "project", start_date: "11-04-2019 00:00", duration: 64*60, parent: "1", progress: 0.6, owner_id: "5"},
+			{ id: 4, text: "The employee relocation", type: "project", start_date: "13-04-2019 00:00", duration: 40*60, parent: "1", progress: 0.5, priority:3},
+			{ id: 5, text: "Interior office", type: "task", start_date: "03-04-2019 00:00", duration: 56*60, parent: "2", progress: 0.6, priority:1},
+			{ id: 6, text: "Air conditioners check", type: "task", start_date: "03-04-2019 00:00", duration: 4*60, parent: "2", progress: 0.6, priority:2},
+			{ id: 7, text: "Workplaces preparation", type: "task", start_date: "12-04-2019 00:00", duration: 4*60, parent: "3", progress: 0.6, owner_id: "10"},
+			{ id: 8, text: "Preparing workplaces", type: "task", start_date: "14-04-2019 00:00", duration: 12*60, parent: "4", progress: 0.5, priority:1},
+			{ id: 9, text: "Workplaces importation", type: "task", start_date: "21-04-2019 00:00", duration: 32*60, parent: "4", progress: 0.5, owner_id: "7"},
+			{ id: 10, text: "Workplaces exportation", type: "task", start_date: "27-04-2019 00:00", duration: 26*60, parent: "4", progress: 0.5, priority:2},
+			{ id: 11, text: "Product launch", type: "project", progress: 0.6, start_date: "02-04-2019 00:00", duration: 120*60, parent: 0},
+			{ id: 12, text: "Perform Initial testing", type: "task", start_date: "03-04-2019 00:00", duration: 40*60, parent: "11", progress: 1, owner_id: "7"},
+			{ id: 13, text: "Development", type: "project", start_date: "03-04-2019 00:00", duration: 88*60, parent: "11", progress: 0.5, owner_id: "5"},
+			{ id: 14, text: "Analysis", type: "task", start_date: "03-04-2019 00:00", duration: 48*60, parent: "11", progress: 0.8, owner_id: "5"},
+			{ id: 15, text: "Design", type: "project", start_date: "03-04-2019 00:00", duration: 40*60, parent: "11", progress: 0.2, owner_id: "5"},
+			{ id: 16, text: "Documentation creation", type: "task", start_date: "03-04-2019 00:00", duration: 56*60, parent: "11", progress: 0, priority:1},
+			{ id: 17, text: "Develop System", type: "task", start_date: "03-04-2019 00:00", duration: 16*60, parent: "13", progress: 1, priority:2},
+			{ id: 25, text: "Beta Release", type: "milestone", start_date: "06-04-2019 00:00", parent: "13", progress: 0, duration: 0},
+			{ id: 18, text: "Integrate System", type: "task", start_date: "10-04-2019 00:00", duration: 16*60, parent: "13", progress: 0.8, priority:3},
+			{ id: 19, text: "Test", type: "task", start_date: "13-04-2019 00:00", duration: 32*60, parent: "13", progress: 0.2, owner_id: "6"},
+			{ id: 20, text: "Marketing", type: "task", start_date: "13-04-2019 00:00", duration: 32*60, parent: "13", progress: 0, priority:1},
+			{ id: 21, text: "Design database", type: "task", start_date: "03-04-2019 00:00", duration: 32*60, parent: "15", progress: 0.5, owner_id: "6"},
+			{ id: 22, text: "Software design", type: "task", start_date: "03-04-2019 00:00", duration: 32*60, parent: "15", progress: 0.1, priority:1},
+			{ id: 23, text: "Interface setup", type: "task", start_date: "03-04-2019 00:00", duration: 40*60, parent: "15", progress: 0, priority:1},
+			{ id: 24, text: "Release v1.0", type: "milestone", start_date: "20-04-2019 00:00", parent: "11", progress: 0, duration: 0}
+
+		],
+		links: [
+
+			{ id: "2", source: "2", target: "3", type: "0" },
+			{ id: "3", source: "3", target: "4", type: "0" },
+			{ id: "7", source: "8", target: "9", type: "0" },
+			{ id: "8", source: "9", target: "10", type: "0" },
+			{ id: "16", source: "17", target: "25", type: "0" },
+			{ id: "17", source: "18", target: "19", type: "0" },
+			{ id: "18", source: "19", target: "20", type: "0" },
+			{ id: "22", source: "13", target: "24", type: "0" },
+			{ id: "23", source: "25", target: "18", type: "0" }
+
+		]
+	});
+ */
+ 	// questa sotto è la parte che carica i dati dalle api di idempiere
+	 gantt.init("gantt_here");
+	gantt.load('/data')
+	.then(function(data){
+		//console.log('ho caricato i task, i link e le risorse\n',data.response)
+		// console.log('\necco il gantt\n',gantt)
+		gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
+		gantt.render();
+		
+
+	}); 
+	
+	gantt.render();
+	var dp = gantt.createDataProcessor({
+		url: "/api",
+		mode: "REST"
+	});
+
+ </script>
+
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-11031269-1', 'auto');
+	ga('send', 'pageview');
+</script>
+<script src="https://cdn.ravenjs.com/3.10.0/raven.min.js"></script>
+<script>Raven.config('https://25a6d5e8c35148d195a1967d8374ffca@sentry.dhtmlx.ru/6').install()</script></body>

@@ -26,14 +26,14 @@
 	gantt.plugins({
     	undo: true
 	});
-	gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	//gantt.config.scale_unit = "hour";
-
+	
 	gantt.config.fit_tasks = true; 
 	// reordering tasks within the whole gantt
 	gantt.config.order_branch = true;
 	gantt.config.order_branch_free = true;
-
+	
+	gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	 gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
 	return new Date(rawDate ); // * 1000);// UNIX timestamps
 	};
@@ -160,20 +160,24 @@
 	console.log("24 ore: ",formatter.parse("24 hours"));
 	console.log(" 1 giorno: ",formatter.parse("1 day"));
 	console.log("30 giorn1: ",formatter.parse("30 days"));
+	// questa sotto è la parte che carica i dati dalle api di idempiere
+	gantt.init("gantt_here");
+	gantt.load('/data')
+	.then(function(data){
+		//console.log('ho caricato i task, i link e le risorse\n',data.response)
+		// console.log('\necco il gantt\n',gantt)
+		gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
+		gantt.render();
+		
 
-		gantt.init("gantt_here");
-		gantt.load('/data')
-		.then(function(data){
-			//console.log('ho caricato i task, i link e le risorse\n',data.response)
-			// console.log('\necco il gantt\n',gantt)
-            gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
-			gantt.render();
-			
+	}); 
+	
+	gantt.render();
+	var dp = gantt.createDataProcessor({
+		url: "/api",
+		mode: "REST"
+	});
 
-             }); 
-        
-				 gantt.render();
- 
 //		gantt.render();
          //dp.init(gantt);
 
@@ -208,10 +212,6 @@
 				{id: 2, source: 2, target: 3, type: "0"}
 			]
 		});
- */		var dp = gantt.createDataProcessor({
-		    url: "/api",
-		    mode: "REST"
-		});
-
+ */
 	</script>
 </body>

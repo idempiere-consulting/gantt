@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Decimal durations for tasks</title>
+
+	<!-- <link rel="stylesheet" href="../common/controls_styles.css?v=7.0.13"> -->
+    <link rel="stylesheet"       href="{{ url_for('static', filename='dhtmlxgantt.css') }}">
+
+<script src="{{ url_for('static', filename='dhtmlxgantt.js') }}" type="text/javascript"></script>
+<!-- {/* /* <script src="{{ url_for('static', filename='resource_project_single_resource_diagram.js') }}" type="text/javascript"></script> */} */} -->
+
+	 <!-- <script src="../common/testdata.js?v=7.0.13"></script>  -->
+	<style>
+		html, body {
+			height: 100%;
+			padding: 0px;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		.gantt_task_cell.week_end, .gantt_task_cell.no_work_hour {
+			background-color: #F5F5F5;
+		}
+
+		.gantt_task_row.gantt_selected .gantt_task_cell.week_end {
+			background-color: #F8EC9C;
+		}
+	</style>
+</head>
+
+<body>
+<div id="gantt_here" style='width:100%; height:100vh;'></div>
+
+<script>
+
+	// scale settings
+	gantt.config.scales = [
+		{unit: "month", step: 1, format:"%M %Y"},
+		{unit: "day", step: 1, format: "%d, %l"},
+		{unit: "hour", step: 1, format: "%H"},
+	];
+	gantt.config.scale_height = 20 * 3;
+	gantt.config.min_column_width = 18;
+	gantt.ignore_time = function(date) {
+		return !gantt.isWorkTime(date, "hour");
+	};
+
+	// work time and duration
+	gantt.config.duration_unit = "hour";
+	gantt.config.work_time = true;
+	gantt.config.time_step = 1;
+	gantt.config.round_dnd_dates = false;
+	gantt.config.open_tree_initially = true;
+
+	gantt.setWorkTime({hours: [9, 13, 14, 18]});//global working hours. 8:00-12:00, 13:00-17:00
+
+	// formatting durations
+	var customFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "hour", 
+		format: "hour", // è l'etichetta che compare (ed usa il plurale se serve)
+		minutesPerHour:60, 
+		hoursPerDay: 8,
+		hoursPerWeek: 40,
+		daysPerMonth: 30,
+		short: false	
+	});
+	var dayFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "minute", 
+		format: "day",
+		hoursPerDay: 8,
+		hoursPerWeek: 40,
+		daysPerMonth: 30,
+		short: false	
+	});
+	var hourFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "hour", 
+		store: "minute", 
+		format: "hour",
+		short: true	
+	});
+	var autoFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "hour", 
+		format: "auto",
+
+	});
+
+	var textEditor = {type: "text", map_to: "text"};
+
+	var durationEditor = {type: "duration", map_to: "duration", formatter: autoFormatter, min:0, max:1000};
+	var dayDurationEditor = {type: "duration", map_to: "duration", formatter: dayFormatter, min:0, max:1000};
+	var hourDurationEditor = {type: "duration", map_to: "duration", formatter: hourFormatter, min:0, max:1000};
+
+	gantt.config.columns = [
+		{name: "text", tree: true, width: 170, resize: true, editor: textEditor},
+
+		{name: "duration", label:"D puro", resize: true, align: "center", map_to:"duration"},
+		
+		{name: "duration", label:"D auto", resize: true, align: "center", template: function(task) {
+			console.log(task)
+			return autoFormatter.format(task.duration);
+		}, editor: durationEditor, width: 100},
+		{name: "dayDuration", label:"D (days)", resize: true, align: "center", template: function(task) {
+			return dayFormatter.format(task.duration);
+		}, editor: dayDurationEditor, width: 100},
+		{name: "hourDuration", label:"D (hours)", resize: true, align: "center", template: function(task) {
+			return hourFormatter.format(task.duration);
+		}, editor: hourDurationEditor, width: 100},
+		{name: "customDuration", label:"D (custom)", resize: true, align: "center", template: function(task) {
+			return customFormatter.format(task.duration);
+		},  width: 100},
+		{name: "add", width: 44}
+	];
+	gantt.config.lightbox.sections = [
+		{name: "description", height: 70, map_to: "text", type: "textarea", focus: true},
+		{name: "time", type: "duration", map_to: "auto", formatter: autoFormatter}
+	];
+
+	gantt.templates.timeline_cell_class = function (task, date) {
+		var css = [];
+
+		if (!gantt.isWorkTime(date, 'day')) {
+			css.push("week_end");
+		}
+
+		return css.join(" ");
+	};
+
+
+
+	gantt.init("gantt_here");
+	gantt.parse({
+		data: [
+
+
+
+			{ id: 101, text: "1", type: "project", start_date: "02-04-2019 00:00", duration: 1, progress: 0.4, parent: 0},
+			{ id: 111, text: "24", type: "project", start_date: "02-04-2019 00:00", duration: 24, progress: 0.4, parent: 0},
+			{ id: 121, text: "60", type: "project", start_date: "02-04-2019 00:00", duration: 60, progress: 0.4, parent: 0},
+			{ id: 131, text: "30", type: "project", start_date: "02-04-2019 00:00", duration: 30, progress: 0.4, parent: 0},
+			{ id: 141, text: "4", type: "project", start_date: "02-04-2019 00:00", duration: 4, progress: 0.4, parent: 0},
+			{ id: 151, text: "1", type: "project", start_date: "02-04-2019 00:00", duration: 1, progress: 0.4, parent: 141},
+			{ id: 161, text: "2", type: "project", start_date: "02-04-2019 00:00", duration: 2, progress: 0.4, parent: 141},
+			{ id: 171, text: "4", type: "project", start_date: "02-04-2019 00:00", duration: 4, progress: 0.4, parent: 141}
+		],
+		links: [
+
+	
+		]
+	});
+</script>
+
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-11031269-1', 'auto');
+	ga('send', 'pageview');
+</script>
+<script src="https://cdn.ravenjs.com/3.10.0/raven.min.js"></script>
+<script>Raven.config('https://25a6d5e8c35148d195a1967d8374ffca@sentry.dhtmlx.ru/6').install()</script></body>
