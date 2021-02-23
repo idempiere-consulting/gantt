@@ -9,7 +9,9 @@ Per cambiare il puntamento della macchina devi creare un file
 api_configXXXXXX.json ed indicarlo al momento della creazione dell'oggetto api
 nel server:
 (api_ilserver-activity  riga 94)
+
 gantt = idapi(config_file="api_config ConsultingAndrea.json")
+
 questo punta alla macchina di Andrea a Torino :-)
 
 se non lo indichi di default prende ...Consulting
