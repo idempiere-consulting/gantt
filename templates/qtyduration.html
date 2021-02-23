@@ -79,11 +79,24 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
     function byId(list, id) {
 		for (var i = 0; i < list.length; i++) {
 			if (list[i].key == id)
-				return list[i].text || "";
+				return list[i].label || "";
 		}
 		return "";
 	}
 	
+	gantt.serverList("people", [
+    {key: 1000001, label: "Marco Longo"},
+    {key: 1000002, label: "Lucia Zanchetta"},
+    {key: 1000003, label: "Andrea Cecchia"},
+    {key: 1000004, label: "Andrea Bellotto"},
+    {key: 1000005, label: "Stagista 2"},
+    {key: 1000006, label: "Gianni Sonego"},
+    {key: 1000009, label: "Matteo Longo"},
+    {key: 1000010, label: "Mauro Biasutti"},
+    {key: 1000011, label: "Vincenzo Di Staso"} ,
+    {key: 1000012, label: "MA.AC.AB"},
+    {key: 1000013, label: "Stefano Cattarin"}
+    ]);
 	
 
 	// scale settings
@@ -207,7 +220,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	
 	gantt.config.lightbox.sections = [
 		{name: "name", height: 70, map_to: "text", type: "textarea", focus: true},
-        //{name: "owner", height: 22, map_to: "my_resources", type: "select", options: gantt.serverList("my_resources")},
+        {name: "owner", height: 22, map_to: "owner", type: "select", options: gantt.serverList("people")},
 		{name: "description", height: 70, map_to: "description", type: "textarea", focus: true},
 
 		{name: "time", type: "duration", map_to: "auto", formatter: hourFormatter}
@@ -278,6 +291,8 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		
 
 	}); 
+	
+	//resourcesStore.parse(gantt.config.resource_store);
 	
 	gantt.render();
 	var dp = gantt.createDataProcessor({
