@@ -41,6 +41,50 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	// format to UNIX timestamps before sending the update to the server
 	return Math.floor(date.valueOf() );// / 1000);
 	};
+	
+	// resource config
+	var labels = gantt.locale.labels;
+	labels.column_owner = labels.section_owner = "Owner";
+    gantt.config.resource_store = "my_resources";
+	gantt.config.resource_property = "S_Resource_ID";
+	
+	var resourcesStore= gantt.$resourcesStore
+	resourcesStore= gantt.createDatastore({
+		name: gantt.config.resource_store,
+		type: "treeDatastore",
+		initItem: function (item) {
+			//console.log('createdatastore, item',item)
+			item.parent = item.parent || gantt.config.root_id;
+			item[gantt.config.resource_property] = item.parent;
+			item.open = true;
+			return item;
+		}
+	});
+	
+	
+	resourcesStore.attachEvent("onParse", function(){
+		var myresources = [];
+		resourcesStore.eachItem(function(res){
+			if(!resourcesStore.hasChild(res.id)){
+			
+			var copy = gantt.copy(res);
+			copy.key = res.id;
+			copy.label = res.text;
+			myresources.push(copy);
+			}
+		})
+		gantt.updateCollection("my_resources"/*my_resources*/, myresources);
+		});
+    
+    function byId(list, id) {
+		for (var i = 0; i < list.length; i++) {
+			if (list[i].key == id)
+				return list[i].text || "";
+		}
+		return "";
+	}
+	
+	
 
 	// scale settings
 	gantt.config.scales = [
@@ -135,32 +179,35 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
  ];*/	
 	gantt.config.columns = [
 		{name: "text", tree: true, width: 170, resize: true, editor: textEditor},
-		{name: "start_date", align: "center", resize: true, editor: dateEditor},
-		{name: "end_date", align: "center", resize: true, editor: dateEditor},
-
-		{name: "duration", label:"D puro", resize: true, align: "center", map_to:"duration"},
+		{name: "start_date",label:"Data inizio", align: "center", resize: true, editor: dateEditor, width: 100},
+		{name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
+		{name: "owner", label: "Risorsa", align: "center", template: function (item) {
+				return byId(gantt.serverList('my_resources'), item.S_Resource_ID)}, width: 100},
+		/*{name: "duration", label:"D puro", resize: true, align: "center", map_to:"duration"},
 		
 		{name: "duration", label:"D auto", resize: true, align: "center", template: function(task) {
 			console.log(task)
 			return autoFormatter.format(task.duration);
-		}, editor: durationEditor, width: 100},
-		{name: "dayDuration", label:"D (days)", resize: true, align: "center", template: function(task) {
+		}, editor: durationEditor, width: 100},*/
+		{name: "dayDuration", label:"Tot giorni", resize: true, align: "center", template: function(task) {
 			return dayFormatter.format(task.duration);
 		}, editor: dayDurationEditor, width: 100},
-		{name: "hourDuration", label:"D (hours)", resize: true, align: "center", template: function(task) {
+		{name: "hourDuration", label:"Tot ore", resize: true, align: "center", template: function(task) {
 			return hourFormatter.format(task.duration);
 		}, editor: hourDurationEditor, width: 100},
-		{name: "minuteDuration", label:"D (minute)", resize: true, align: "center", template: function(task) {
+		/*{name: "minuteDuration", label:"D (minute)", resize: true, align: "center", template: function(task) {
 			return minuteFormatter.format(task.duration);
 		},  width: 100},
 		{name: "customDuration", label:"D (custom)", resize: true, align: "center", template: function(task) {
 			return customFormatter.format(task.duration);
-		},  width: 100},
+		},  width: 100},*/
 		{name: "add", width: 44}
 	];
 
+	
 	gantt.config.lightbox.sections = [
 		{name: "name", height: 70, map_to: "text", type: "textarea", focus: true},
+        //{name: "owner", height: 22, map_to: "my_resources", type: "select", options: gantt.serverList("my_resources")},
 		{name: "description", height: 70, map_to: "description", type: "textarea", focus: true},
 
 		{name: "time", type: "duration", map_to: "auto", formatter: hourFormatter}
@@ -176,9 +223,6 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		return css.join(" ");
 	};
 
-
-
-	gantt.init("gantt_here");
 /* 	gantt.parse({
 		data: [
 			{ id: 1, text: "Office itinerancy", type: "project", start_date: "02-04-2019 00:00", duration: 58*60, progress: 0.4, parent: 0},
@@ -224,7 +268,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	});
  */
  	// questa sotto è la parte che carica i dati dalle api di idempiere
-	 gantt.init("gantt_here");
+    gantt.init("gantt_here");
 	gantt.load('/data')
 	.then(function(data){
 		//console.log('ho caricato i task, i link e le risorse\n',data.response)
@@ -242,15 +286,4 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	});
 
  </script>
-
-<script>
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-	ga('create', 'UA-11031269-1', 'auto');
-	ga('send', 'pageview');
-</script>
-<script src="https://cdn.ravenjs.com/3.10.0/raven.min.js"></script>
-<script>Raven.config('https://25a6d5e8c35148d195a1967d8374ffca@sentry.dhtmlx.ru/6').install()</script></body>
+</body>
