@@ -40,6 +40,7 @@ mapping={
     "api":"putActivity",
     "apipost":"postContactActivity"
 }
+
 # quindi la procedura corretta da seguiere è:
 # (disclaimer: non dimenticarsi dell'azzeramento cache se qualcosa non torna)
 # - ANDATA
@@ -86,7 +87,9 @@ class translator(object):
     def format_date(epoch):
         if epoch == '':
             return None
-        return datetime.datetime.fromtimestamp(int( epoch)/1000).strftime('%Y-%m-%d %H:%M:%S')
+        data= datetime.datetime.fromtimestamp(int( epoch)/1000).strftime('%Y-%m-%d %H:%M:%S')
+        print('la data modificata:',data,type(data))
+        return(data)
         
     @staticmethod
     def intero(string):
