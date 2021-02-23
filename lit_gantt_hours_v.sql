@@ -51,16 +51,14 @@ UNION
       0 AS parent,
       '0.5'::text AS progress,
       'c_contactactivity'::text AS table_from,
-      'p
-      
-      
-      roject'::text AS type,
+      'project'::text AS type,
       '0'::text AS sortorder,
       c.isactive AS isactive,
       1000006 AS ad_client_id,
       c.updated,
       c.updatedby,
-      EXTRACT(epoch FROM (enddate-startdate)/3600)::INTEGER as duration  ,       -- devo calcolare la durata in ore in modo che sia compatibile con sopra? boh...
+      null as duration,
+      --EXTRACT(epoch FROM (enddate-startdate)/3600)::INTEGER as duration  ,       -- devo calcolare la durata in ore in modo che sia compatibile con sopra? boh...
 --  devo aggiungere i seguenti campi obbligatori altrimenti non funziona
 
       c.description,
