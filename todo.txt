@@ -1,5 +1,15 @@
-Ciao Vincezo, ho fatto qualche piccolo passo avanti, ho migliorato la leggibilità della duration 
-sulla "column", mostrando più funzioni di formattazione, ho capito che la chiave enter è quella 
-"della lunghezza della barretta" ed è "gestita anche da 	gantt.config.duration_unit = "hour";
+ Ciao Vincenzo:
 
-vedi cosa riesci a fare con le varie xxxFormatter
+ select dateworkstart,qty,name  from lit_hour
+  where lit_hour_id=1006065 or lit_hour_id=1006876 or lit_hour_id=1006901;
+
+questa è la select per vedere i task prima e seconda e terzo.
+
+Per cambiare il puntamento della macchina devi creare un file 
+api_configXXXXXX.json ed indicarlo al momento della creazione dell'oggetto api
+nel server:
+(api_ilserver-activity  riga 94)
+gantt = idapi(config_file="api_config ConsultingAndrea.json")
+questo punta alla macchina di Andrea a Torino :-)
+
+se non lo indichi di default prende ...Consulting
