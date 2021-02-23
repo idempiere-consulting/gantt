@@ -90,7 +90,7 @@ app = Flask(__name__)#,
 # lo rendo RESTFUL COMPLIANT             
 api = Api(app)
 # inizializzo l'oggetto che comunicherà con iDempiere
-gantt = idapi(config_file="api_config Consulting.json")
+gantt = idapi(config_file="api_config ConsultingAndrea.json")
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
 gantt.login()
 print('ecco il token: ',gantt.token)
