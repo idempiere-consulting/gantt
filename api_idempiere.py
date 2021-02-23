@@ -5,7 +5,7 @@ import datetime
 
 class api(object):
     """base class to manage iDempiere API REST"""
-    def __init__(self,config_file="api_config Demo.json"):
+    def __init__(self,config_file="api_config Consulting.json"):
         """initialize api class, bringing the config file explicitally 
            it manages parameters according to"""
         with open(config_file, "r") as read_file:
