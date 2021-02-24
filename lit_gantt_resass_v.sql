@@ -6,6 +6,10 @@ create or replace view lit_gantt_resass_v as
     10000000::numeric + h.s_resourceassignment_id AS id,
     h.description AS text,
     h.assigndatefrom AS start_date,
+    --h.assigndateto   AS end_date,
+    -- sono costretto a scegliere solo 2 valori tra i tre:
+    -- start date,end_date, duration
+    -- infatti il dhtmlx calcola il terzo a partire dai due forniti
     NULL::timestamp without time zone AS end_date,
     h.s_resource_id AS owner,
     h.s_resource_id,
@@ -19,14 +23,17 @@ create or replace view lit_gantt_resass_v as
     'task'::text AS type,
     '0'::text AS sortorder,
     h.isactive,
-    1000006 AS ad_client_id,
     h.updated,
     h.updatedby,
+    h.ad_client_id,
     h.qty AS duration,
     h.name AS description,
     ''::character varying AS ctype
    FROM s_resourceassignment h
-   where date_part('year'::text, assigndatefrom)<= '2004'
+   where date_part('year'::text, assigndatefrom) = '2018'
+    AND
+    h.ad_client_id=1000006
+
 UNION
  SELECT 90000000::numeric + c.c_contactactivity_id AS lit_gantt_resass_v_id,
     90000000::numeric + c.c_contactactivity_id AS id,
@@ -41,13 +48,15 @@ UNION
     'project'::text AS type,
     '0'::text AS sortorder,
     c.isactive,
-    1000006 AS ad_client_id,
     c.updated,
     c.updatedby,
+    c.ad_client_id,    
     NULL::numeric AS duration,
     c.description,
     c.contactactivitytype AS ctype
    FROM c_contactactivity c
      JOIN r_status r ON c.r_status_id = r.r_status_id
-  WHERE c.c_contactactivity_id = 1002093::numeric
+  WHERE  date_part('year'::text, startdate)= '2018'
+      AND
+    c.ad_client_id=1000006
   ORDER BY 4;
