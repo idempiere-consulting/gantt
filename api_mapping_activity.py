@@ -12,19 +12,19 @@
 # la chiave (a sx) è il     il valore a dx è in arrivo
 #    nome su IDEMPIERE          DAL GANTT
 mapping={
-"1"    : "lit_hour",
-"9"     : "lit_hour",
+"1"    : "s_resourceassignment",
+"9"     : "s_resourceassignment",
 "0"     : "c_contactactivity",
-"lit_hour" : {
+"s_resourceassignment" : {
     "id":["id","strip_id"],
-    "DateWorkStart":["start_date","format_date"],
+    "assigndatefrom":["start_date","format_date"],
     #"DateFinish":["end_date","format_date"],
     "Qty":"duration",
     "Name":"text",
     "ProjectLineLevel":["Type","get_first"],     
     "isConfirmed":"progress",
     "sortorder":"sortorder",
-    "SalesRep_ID": ["S_Resource_ID","intero"],
+    "S_Resoiurce_ID": ["S_Resource_ID","intero"],
     #"LIT_gantt_constraint_date":["constraint_date","format_date"],
     #"LIT_gantt_constraint_type":["constraint_type","not_null"],
     "api":"putHourDettaglio",
