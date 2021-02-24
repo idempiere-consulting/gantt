@@ -191,7 +191,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		{name: "add", width: 44}
  ];*/	
 	gantt.config.columns = [
-		{name: "text", tree: true, width: 170, resize: true, editor: textEditor},
+		{name: "text", tree: true, width: 170, resize: true},//, editor: textEditor},
 		{name: "start_date",label:"Data inizio", align: "center", resize: true, editor: dateEditor, width: 100},
 		{name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
 		{name: "owner", label: "Risorsa", align: "center", template: function (item) {
