@@ -5,6 +5,9 @@
 # se presente un secondo elemento questo è il nome della funzione di "traduzione" per ripristinare il 
 # valore "originale" presente come metodo statico della classe in coda alla struttura: vedasi il campo id per esempio banale
 # il campo "api" indica l'endpoint da contattare.
+# Fare attenzione al campo tab nella maschera delle api, serve a simulare il comportamento di gestione 
+# tramite questa finestra, quindi aprire tale maschera e controllare quali sono i campi obbligatori, quelli con 
+# asterisco, oppure fare nuovo record e inserire tutti i campi rossi
 # Quindi questa struttura serve nel "viaggio" dei dati DAL gantt AD idempiere
 # mnemonicamente uso la tabella rispondendo a questa domanda:
 # Per scrivere sulla colonna di IDEMPIERE(SX)    quale campo cerco sul GANTT(DX) e COME lo devo trattare?
@@ -17,7 +20,7 @@ mapping={
 "0"     : "c_contactactivity",
 "s_resourceassignment" : {
     "id":["id","strip_id"],
-    "assigndatefrom":["start_date","format_date"],
+    "AssignDateFrom":["start_date","format_date"],
     #"DateFinish":["end_date","format_date"],
     "Qty":"duration",
     "Name":"text",
