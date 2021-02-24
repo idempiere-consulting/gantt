@@ -24,7 +24,7 @@ mapping={
     "ProjectLineLevel":["Type","get_first"],     
     "isConfirmed":"progress",
     "sortorder":"sortorder",
-    "S_Resoiurce_ID": ["S_Resource_ID","intero"],
+    "S_Resource_ID": ["S_Resource_ID","intero"],
     #"LIT_gantt_constraint_date":["constraint_date","format_date"],
     #"LIT_gantt_constraint_type":["constraint_type","not_null"],
     "api":"putHourDettaglio",
