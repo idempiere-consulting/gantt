@@ -74,7 +74,10 @@ class api(object):
         except AttributeError as error:
             print('ecco errore',error)
         # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
-        #print(response.request.method)        
+        #print(response.request.method)  
+        except:
+            print('errororne')      
+            return response
         print(response.content)
         return response
     def login(self):
