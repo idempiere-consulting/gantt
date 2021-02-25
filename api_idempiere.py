@@ -49,10 +49,16 @@ class api(object):
         method="delete"
         self.query(method,endpoint)
     def post_links(self,payload=None):
-        print(payload)
+        url=self.get_url() + 'postLink'
+        print('eseguo la chiamata:')
+        print("requests.post('")
+        print(url,"',")
+        print('json=',payload,",")
+        print('headers=',self.headers,")")
+
         try:
             # provo a chiamare la API
-            response = requests.post('http://173.249.60.71:6080/services/api/idempierepara/web/search/postLink',json=payload,headers= {'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYmlhc3V0dCIsIm5hbWUiOiJNYXVybyBCaWFzdXR0aSIsImlkVXNlciI6MTAwMDY0Mn0.MrCWRIRP-1hj86GNUY78VjryYBxgO3Gwi4Hg8vb32Oc'})
+            response = requests.post(url,json=payload,headers=self.headers)
         except Exception as error:
             print(error)
         except AttributeError as error:
