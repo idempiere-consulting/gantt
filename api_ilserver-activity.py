@@ -198,6 +198,7 @@ class LINK_add(Resource):
     def post(self):
         print('aggiungo link')
         r=request.values.to_dict()
+        r['name']='pippo'
         print('\n*********************\link..',r)
         print('add link\n',r)
         idapi.post_links(r)
