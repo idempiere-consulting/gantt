@@ -201,7 +201,7 @@ class LINK_add(Resource):
         r['name']='pippo'
         print('\n*********************\link..',r)
         print('add link\n',r)
-        idapi.post_links(r)
+        idapi.post_links(payload=r)
         print('finished add link','\n-------------------\n')
         """ 
 DEVO CAPIRE come fare a renderizzare il template jinja!!!
