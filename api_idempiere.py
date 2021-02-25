@@ -49,7 +49,8 @@ class api(object):
         method="delete"
         self.query(method,endpoint)
     def post_links(self,payload=None):
-        url=self.get_url() + 'postLink'
+        url2='http://173.249.60.71:6080/services/api/idempierepara/web/search/'
+        url=url2 + 'postLink'
         print('eseguo la chiamata:')
         print("requests.post('")
         print(url,"',")
