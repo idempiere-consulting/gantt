@@ -51,11 +51,11 @@ class api(object):
     def post_links(self,payload=None):
         url2='http://173.249.60.71:6080/services/api/idempierepara/web/search/'
         url=url2 + 'postLink'
-        print('eseguo la chiamata:')
+        print('+++++++++++++++eseguo la chiamata postlink:')
         print("requests.post('")
         print(url,"',")
         print('json=',payload,",")
-        print('headers=',self.headers,")")
+        #print('headers=',self.headers,")")
 
         try:
             # provo a chiamare la API
