@@ -1,13 +1,21 @@
 from flask import Flask, request, render_template
 from flask_restful import Resource, Api
 from json import dumps,loads
+import datetime
 #import json
 # la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
+
+""" import argparse
+parser = argparse.ArgumentParser(description='Server GANTT configurabile verso idempiere.')
+parser.add_argument('config_file',nargs='?',help='filename of configuration',default='api_config Consulting.json')
+parser.add_argument('mapping_file',nargs='?',help='filename of mapping',default='api_mapping_activity')
+args = parser.parse_args()
+print(args)
+ """#exit
 # la struttura di mappatura tra i campi del gantt e le tabelle di iDempiere
 from api_mapping_activity import mapping,translator
 
-import datetime
 # questa funzione è quella che si occupa "materialmente" di restituire il payload corretto 
 # da spedire ad iDempiere traducendo quello in arrivo dal DHTMLX
 # devo inserire come parametro l'id perchè non è dentro il payload
@@ -55,7 +63,7 @@ def translate_data(data_from_gantt,gantt_id=None):
                 # il secondo è il nome della funzione di traduzione
                 key_tr_func=v[1]
                 # cerco nella classe translator il metodo indicato e "me lo prendo come funzione"
-                trl=getattr(translator,key_tr_func, lambda: 'invalide choise')
+                trl=getattr(translator,key_tr_func, lambda: 'invalide choice')
                 # siccome è una lista sono sicuro che la chiave esiste da entrambe le parti (idempiere e DHTMLX)
                 # quindi trasformo il dato tramite "la funzione presa sopra"
                 api_value=trl(data_from_gantt[gantt_key])
@@ -90,7 +98,7 @@ app = Flask(__name__)#,
 # lo rendo RESTFUL COMPLIANT             
 api = Api(app)
 # inizializzo l'oggetto che comunicherà con iDempiere
-gantt = idapi(config_file="api_config ConsultingAndrea.json")
+gantt = idapi(config_file="api_config Consulting.json")
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
 gantt.login()
 print('ecco il token: ',gantt.token)
@@ -192,7 +200,7 @@ class LINK_add(Resource):
         r=request.values.to_dict()
         print('\n*********************\link..',r)
         print('add link\n',r)
-        idapi.post_links(gantt.token,r)
+        idapi.post_links(r)
         print('finished add link','\n-------------------\n')
         """ 
 DEVO CAPIRE come fare a renderizzare il template jinja!!!
@@ -229,12 +237,12 @@ def home_gantt(task=''):
         #html=render_template('risorse_test.html')
         #html= render_template('04_resource_usage_diagram.html')
         #html= render_template('05_resource_usage_templates copy.html')   # ok  funziona quasi tutto
-#        html= render_template('risorse_e_vincoli.html')
+        html= render_template('risorse_e_vincoli.html')
         #html= render_template('attivita.html')
         #html = render_template('01_basic_init copy.html')
         #html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
 #        html = render_template('qtyduration copy.html')
-        html = render_template('qtyduration.html')
+ #       html = render_template('qtyduration.html')
         #html= render_template('vincoli.html')   #esempio funzionante
         #html= render_template('25_click_drag_select_by_drag.html')
         # 19_constraints_scheduling copy  

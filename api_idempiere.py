@@ -48,6 +48,23 @@ class api(object):
         endpoint=endpoint + "_" + id
         method="delete"
         self.query(method,endpoint)
+    def post_links(self,payload=None):
+        try:
+            # provo a chiamare la API
+            response = requests.post('http://173.249.60.71:6080/services/api/idempierepara/web/search/postLink',json=payload,headers= {'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYmlhc3V0dCIsIm5hbWUiOiJNYXVybyBCaWFzdXR0aSIsImlkVXNlciI6MTAwMDY0Mn0.MrCWRIRP-1hj86GNUY78VjryYBxgO3Gwi4Hg8vb32Oc'})
+        except Exception as error:
+            print(error)
+        except AttributeError as error:
+            print('ecco errore',error)
+        # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
+        #print(response.request.method)  
+        except:
+            print('errorone')      
+            return response
+        print(response.content)
+        return response
+
+
     def query(self,method_NaMe,endpoint,payload=None): #, *vartuple):
         """try to call the specific API passing all of parameters needed"""
         #for var in vartuple:
@@ -76,7 +93,7 @@ class api(object):
         # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
         #print(response.request.method)  
         except:
-            print('errororne')      
+            print('errorone')      
             return response
         print(response.content)
         return response
