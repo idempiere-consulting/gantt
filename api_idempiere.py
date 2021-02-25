@@ -69,7 +69,7 @@ class api(object):
         except:
             print('errorone')      
             return response
-        print(response.content)
+        #print(response.content)
         return response
 
 
