@@ -90,7 +90,7 @@ app = Flask(__name__)#,
 # lo rendo RESTFUL COMPLIANT             
 api = Api(app)
 # inizializzo l'oggetto che comunicherà con iDempiere
-gantt = idapi(config_file="api_config ConsultingAndrea.json")
+gantt = idapi(config_file="api_config Consulting.json")
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
 gantt.login()
 print('ecco il token: ',gantt.token)
@@ -229,12 +229,13 @@ def home_gantt(task=''):
         #html=render_template('risorse_test.html')
         #html= render_template('04_resource_usage_diagram.html')
         #html= render_template('05_resource_usage_templates copy.html')   # ok  funziona quasi tutto
-#        html= render_template('risorse_e_vincoli.html')
+        #html= render_template('risorse_e_vincoli.html')
         #html= render_template('attivita.html')
         #html = render_template('01_basic_init copy.html')
         #html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
 #        html = render_template('qtyduration copy.html')
         html = render_template('qtyduration.html')
+        #html = render_template('V_test.html')
         #html= render_template('vincoli.html')   #esempio funzionante
         #html= render_template('25_click_drag_select_by_drag.html')
         # 19_constraints_scheduling copy  
