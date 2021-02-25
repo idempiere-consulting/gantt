@@ -1,8 +1,8 @@
- -- drop VIEW lit_gantt_resources_v  CASCADE;
+  drop VIEW lit_gantt_resources_v  CASCADE;
 create or replace view lit_gantt_resources_v as 
 SELECT s_resource.s_resource_id AS lit_gantt_resources_v_id,
-    s_resource.s_resource_id AS id,
-    s_resource.value AS text,
+    s_resource.s_resource_id AS key,
+    s_resource.value AS label,
     s_resource.name,
     s_resource.s_resourcetype_id,
     s_resource.m_warehouse_id,

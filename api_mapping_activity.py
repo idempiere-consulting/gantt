@@ -24,6 +24,7 @@ mapping={
     #"DateFinish":["end_date","format_date"],
     "Qty":"duration",
     "Name":"text",
+    "Description":"Description",
     #"ProjectLineLevel":["Type","get_first"],     
     #"isConfirmed":"progress",
     "sortorder":"sortorder",
@@ -42,7 +43,18 @@ mapping={
     "C_Activity_ID":["C_Activity_ID","intero"],
     "api":"putActivity",
     "apipost":"postContactActivity"
+},
+"lit_gantt_links" : {
+    "id":["id","strip_id"],
+    "lit_target":["target","intero"],
+    "source":["source","intero"],
+    "lit_type":["type","intero"],
+    "Name": ["new","new"],
+    "api":"Link"
+    "apipost":"postLink"
+
 }
+
 
 # quindi la procedura corretta da seguiere è:
 # (disclaimer: non dimenticarsi dell'azzeramento cache se qualcosa non torna)
