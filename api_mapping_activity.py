@@ -50,7 +50,7 @@ mapping={
     "source":["source","intero"],
     "lit_type":["type","intero"],
     "Name": ["new","new"],
-    "api":"Link"
+    "api":"Link",
     "apipost":"postLink"
 
 }
