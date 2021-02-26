@@ -1,17 +1,7 @@
  Ciao Vincenzo:
+ho implementato la chiamata (funziona) per cancellare link, ho dovuto "abilitare"
+nel javascript la effettiva chiamanta di tale api a riga 163 qtyduration.html
+prendendo un pezzettino da:
+https://snippet.dhtmlx.com/5/7c812e5bd
+che probabilmente sarebbe bello implementare basta inserire quel pezzo di codice lì.
 
- select dateworkstart,qty,name  from lit_hour
-  where lit_hour_id=1006065 or lit_hour_id=1006876 or lit_hour_id=1006901;
-
-questa è la select per vedere i task prima e seconda e terzo.
-
-Per cambiare il puntamento della macchina devi creare un file 
-api_configXXXXXX.json ed indicarlo al momento della creazione dell'oggetto api
-nel server:
-(api_ilserver-activity  riga 94)
-
-gantt = idapi(config_file="api_config ConsultingAndrea.json")
-
-questo punta alla macchina di Andrea a Torino :-)
-
-se non lo indichi di default prende ...Consulting
