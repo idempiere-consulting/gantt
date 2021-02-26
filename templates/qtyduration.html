@@ -30,7 +30,8 @@
 
 gantt.plugins({
 			auto_scheduling: true,
-			marker: true
+			marker: true,
+			tooltip: true 
 		});
 		
 gantt.config.auto_scheduling = true;
@@ -87,22 +88,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		return "";
 	}
 	  
-	 
-	
-	gantt.serverList("people", [
-    {key: 1000001, label: "Marco Longo"},
-    {key: 1000002, label: "Lucia Zanchetta"},
-    {key: 1000003, label: "Andrea Cecchia"},
-    {key: 1000004, label: "Andrea Bellotto"},
-    {key: 1000005, label: "Stagista 2"},
-    {key: 1000006, label: "Gianni Sonego"},
-    {key: 1000009, label: "Matteo Longo"},
-    {key: 1000010, label: "Mauro Biasutti"},
-    {key: 1000011, label: "Vincenzo Di Staso"} ,
-    {key: 1000012, label: "MA.AC.AB"},
-    {key: 1000013, label: "Stefano Cattarin"}
-    ]);
-	
+
 
 	// scale settings
 	gantt.config.scales = [
@@ -241,6 +227,25 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		return css.join(" ");
 	};
 
+	/*
+	gantt.attachEvent("onGanttReady", function(){
+		var tooltips = gantt.ext.tooltips;
+		tooltips.tooltip.setViewport(gantt.$task_data);
+	});*/
+	
+	gantt.templates.tooltip_text = function(start,end,task){
+	
+	var risorsa = byId(gantt.serverList(gantt.config.resource_store), task.S_Resource_ID);
+	var totGiorni = dayFormatter.format(task.duration);
+	var totOre = hourFormatter.format(task.duration);
+	
+    return "<b>Task:</b> "+task.text+
+    "<br/><b>Risorsa:</b> "+ risorsa +
+    "<br/><b>Start date:</b> " + gantt.templates.tooltip_date_format(start)+ 
+    "<br/><b>End date:</b> "+gantt.templates.tooltip_date_format(end)+
+    "<br/><b>totGiorni:</b> "+ totGiorni+
+    "<br/><b>totOre:</b> "+ totOre;
+};
 
  	// questa sotto è la parte che carica i dati dalle api di idempiere
     gantt.init("gantt_here");
@@ -254,7 +259,6 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 
 	}); 
 	
-	//resourcesStore.parse(gantt.config.resource_store);
 	
 	gantt.render();
 	var dp = gantt.createDataProcessor({
