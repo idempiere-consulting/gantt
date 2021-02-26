@@ -160,7 +160,12 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 
 	});
 
-
+	gantt.attachEvent("onLinkDblClick", function(id,e){
+		//console.log('cancello link',id)
+		
+		gantt.deleteLink(id);
+		//console.log('cancellato')
+	});
 	var textEditor = {type: "text", map_to: "text"};
 	var dateEditor = {type: "date", map_to: "start_date", min: new Date(2018, 0, 1), max: new Date(2019, 0, 1)};
 	var durationEditor = {type: "duration", map_to: "duration", formatter: autoFormatter, min:0, max:1000};
