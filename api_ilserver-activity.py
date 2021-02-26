@@ -59,6 +59,7 @@ def translate_data(data_from_gantt,gantt_id=None):
             # il primo elemento della lista è QUALE chiave contiene il valore che arriva... MALFORMATO per idempiere
             gantt_key=v[0]
             if gantt_key in gantt_keys:
+                print('sto processando la chiave DHTMLX: ',gantt_key)
 
                 # il secondo è il nome della funzione di traduzione
                 key_tr_func=v[1]
@@ -108,23 +109,34 @@ class Data(Resource):
     # una funzione per metodo, qui basta la GET, sto prendendo i dati da iDempiere
     def get(self):
         # prendo i dati separatamente e poi li assemblo
-        # FIXME qui devo trovare il modo di usare la stringa che imposto in fase di configurazione
-        print(gantt)
+        #print(gantt)
         tasks=gantt.query('get',gantt.cfg['getTasks'])
         tasks_json=loads(tasks.text)
-    #    links=gantt.query('get','getLinks')
-    #    links_json=loads(links.text)
+        links=gantt.query('get','getLinks')
+        links_json=loads(links.text)
+        print('LINKS:\n',links_json)
+        # FIXME!!!!!!
+        # minuscolizzo i nomi che mi arrivano dal dhrmlx
+        def minuscolizza(di):
+            newd={k.lower():v  for k,v in di.items()}
+            newd['Name']='pippo'
+            return newd
+        links_json=list(map(minuscolizza ,links_json))
+        print("funge?\n",links_json)
+        
+        #links_dict=links_json.values.to_dict()
+        #links_dict['target']=links_dict['Target']
         
         resources=gantt.query('get','getResources')
         resources_json=loads(resources.text)
         #print(resources_json)
         # qualsiasi altro dato che volessi far processare al gantt devo metterlo dentro a collections e poi importarlo dentro al javascript
-        links_json=[]
+        #links_json=[]
         #resources_json=[]
         # assemblamento finale
         result= {'tasks': tasks_json,"links": links_json ,'collections':{'my_resources':resources_json,'otherone':[]}}
-        print(result)
-        pretty_json(result)
+        #print(result)
+        #pretty_json(result)
         return  result
         
 # quando MODIFICO un "task" viene eseguita questa
@@ -198,11 +210,15 @@ class LINK_add(Resource):
     def post(self):
         print('aggiungo link')
         r=request.values.to_dict()
-        r['name']='pippo'
-        print('\n*********************\link..',r)
-        print('add link\n',r)
-        idapi.post_links(self,payload=r)
-        print('finished add link','\n-------------------\n')
+        r['Name']='pippo'
+        r['table_from']='lit_gantt_links'
+        payload=translate_data(r)
+
+        print('\n*********************\nadd link..',payload)
+        response=gantt.query('post','postLink',payload)
+
+        #idapi.post_links(self,payload=r)
+        print('finished add link','\n-------------------\n',response.request.body)
         """ 
 DEVO CAPIRE come fare a renderizzare il template jinja!!!
 class home_ganttt(Resource):

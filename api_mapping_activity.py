@@ -37,7 +37,8 @@ mapping={
 "c_contactactivity" : {
     "id":["id","strip_id"],
     "Description":"Description",
-    "StartDate":["start_date","format_date"],
+    "StartDate":["start_date","format_date"],    
+    "EndDate":["end_date","format_date"],
     "SalesRep_ID":["S_Resource_ID","intero"],
     "ContactActivityType":"ctype",
     "C_Activity_ID":["C_Activity_ID","intero"],
@@ -46,15 +47,16 @@ mapping={
 },
 "lit_gantt_links" : {
     "id":["id","strip_id"],
-    "lit_target":["target","intero"],
-    "source":["source","intero"],
-    "lit_type":["type","intero"],
-    "Name": ["new","new"],
-    "api":"Link",
+    "Target":"target",
+    "source":"source",
+    "Type":"type",
+    "Name": "Name",
+    "api":"putLink",
     "apipost":"postLink"
 
 }
 
+# class java.lang.Integer cannot be cast to class java.lang.String (java.lang.Integer and java.lang.String are in module java.base of loader 'bootstrap')
 
 # quindi la procedura corretta da seguiere è:
 # (disclaimer: non dimenticarsi dell'azzeramento cache se qualcosa non torna)

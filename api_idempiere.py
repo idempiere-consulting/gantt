@@ -69,7 +69,7 @@ class api(object):
         except:
             print('errorone')      
             return response
-        #print(response.content)
+        print(response.content)
         return response
 
 
@@ -103,7 +103,7 @@ class api(object):
         except:
             print('errorone')      
             return response
-        print(response.content)
+        print('risposta del server:\n',response.content)
         return response
     def login(self):
         try:
