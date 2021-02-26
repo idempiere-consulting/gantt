@@ -163,7 +163,7 @@ class TASK_change(Resource):
         print('tipo id \n',myid)
         print('\n*********************\nNidificazione progetto..',myid[0])
         # questa chiamata è la più semplice, basta indicare l'id da cancellare e l'endpoint
-        idapi.delete(gantt.token,myid[1:])
+        #idapi.delete(gantt.token,myid[1:])
         print('finished delete',myid,'\n-------------------\n')
 # quando AGGIUNGO un task        
 class TASK_add(Resource):
@@ -195,15 +195,13 @@ class LINK_change(Resource):
         gantt.query('put',api,payload)
 
         print(id)
-    def delete(self,myid):
-        global token
-        ''' id è una stringa'''
-        print('cancello link: ',myid)
-        idapi.delete_link(token,myid[1:])
+    def delete(self,id):
+        print('cancello link: ',id)
+        gantt.delete('deleteLink',id)
         rr=request.values.to_dict()
         r=(rr,request.method)
         print('delete link\n',r) 
-        print('finished link change non implementato',myid,'\n-------------------\n')
+        print('finished link change',id,'\n-------------------\n')
 
 class LINK_add(Resource):
 
