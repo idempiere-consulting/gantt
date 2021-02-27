@@ -1,10 +1,11 @@
-   drop VIEW lit_gantt_resass_v  CASCADE;
+   drop VIEW lit_gantt_resass_v  
+   CASCADE;
 create or replace view lit_gantt_resass_v as 
 
  
  SELECT 10000000::numeric + h.s_resourceassignment_id AS lit_gantt_resass_v_id,
     10000000::numeric + h.s_resourceassignment_id AS id,
-    h.description AS text,
+    coalesce(NULLIF(h.name,''),h.description) AS text,
     h.assigndatefrom AS start_date,
     --h.assigndateto   AS end_date,
     -- sono costretto a scegliere solo 2 valori tra i tre:
@@ -27,13 +28,17 @@ create or replace view lit_gantt_resass_v as
     h.updatedby,
     h.ad_client_id,
     h.qty AS duration,
-    h.name AS description,
+    COALESCE(h.description, h.name) AS description,
     ''::character varying AS ctype
    FROM s_resourceassignment h
-   where date_part('year'::text, assigndatefrom) = '2018'
+    where date_part('year'::text, assigndatefrom) = '2000'
+   /*AND
+    date_part('month'::text, assigndatefrom) = '01'
+   
     AND
     h.ad_client_id=1000006
-
+ */    
+    --WHERE s_resourceassignment_id=1003049
 UNION
  SELECT 90000000::numeric + c.c_contactactivity_id AS lit_gantt_resass_v_id,
     90000000::numeric + c.c_contactactivity_id AS id,
@@ -55,8 +60,13 @@ UNION
     c.description,
     c.contactactivitytype AS ctype
    FROM c_contactactivity c
-     JOIN r_status r ON c.r_status_id = r.r_status_id
-  WHERE  date_part('year'::text, startdate)= '2018'
+     --JOIN r_status r ON c.r_status_id = r.r_status_id
+  WHERE   date_part('year'::text, c.startdate)= '2000'/*
       AND
+   date_part('month'::text, c.startdate) = '01'
+   
+         AND
+
     c.ad_client_id=1000006
-  ORDER BY 4;
+     and c_contactactivity_id=1002341*/
+  ORDER BY start_date;
