@@ -50,7 +50,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	labels.column_owner = labels.section_owner = "Owner";
 	gantt.locale.labels.section_name = "Name";
     gantt.config.resource_store = "my_resources";
-	gantt.config.resource_property = "S_Resource_ID";
+	gantt.config.resource_property = "s_resource_id";
 	
 	var resourcesStore= gantt.$resourcesStore
 	resourcesStore= gantt.createDatastore({
@@ -77,7 +77,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 			myresources.push(copy);
 			}
 		})
-		gantt.updateCollection("my_resources"/*my_resources*/, myresources);
+		gantt.updateCollection("my_resources", myresources);
 		});
     
     function byId(list, id) {
@@ -159,7 +159,6 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		format: "auto",
 
 	});
-
 	gantt.attachEvent("onLinkDblClick", function(id,e){
 		//console.log('cancello link',id)
 		
@@ -191,7 +190,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		{name: "start_date",label:"Data inizio", align: "center", resize: true, editor: dateEditor, width: 100},
 		{name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
 		{name: "owner", label: "Risorsa", align: "center", template: function (item) {
-				return byId(gantt.serverList(gantt.config.resource_store), item.S_Resource_ID)}, width: 100},
+				return byId(gantt.serverList(gantt.config.resource_store), item.s_resource_id)}, width: 100},
 		/*{name: "duration", label:"D puro", resize: true, align: "center", map_to:"duration"},
 		
 		{name: "duration", label:"D auto", resize: true, align: "center", template: function(task) {
@@ -215,13 +214,79 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 
 	
 	gantt.config.lightbox.sections = [
+		//{name: "c_activity_id", height: 70, map_to: "c_activity_id", type: "textarea", focus: true},
 		{name: "name", height: 70, map_to: "text", type: "textarea", focus: true},
-        {name: "owner", height: 22, map_to: "S_Resource_ID", type: "select", options: gantt.serverList(gantt.config.resource_store)},
+        {name: "owner", height: 22, map_to: "s_resource_id", type: "select", options: gantt.serverList(gantt.config.resource_store)},
 		{name: "description", height: 70, map_to: "description", type: "textarea", focus: true},
+		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
+    {key: 'project', label: "project"},
+    {key: 'task', label: "task"},
+    {key: 'milestone', label: "milestone"}])},
+
+		{name: "ctype", label:"TIPO",height: 22, map_to: "ctype", type: "select", options: gantt.serverList("options", [
+			{key: "TA",label:"TA"},
+			{key: "PR",label:"PC"},
+			{key: "EM",label:"EM"}])},
+		
+        {name: "c_activity", label:"ATTIVITA'",height: 22, map_to: "c_activity_id", type: "select", options: gantt.serverList("options", [
+			{key: 1000008,label:"Task IC"},
+       		{key: 1000004, label: "Marco"},
+       		{key: 1000000,label:"Lucia"},
+       		{key: 1000002,label:"Standard"},
+       		{key: 1000003,label:"System"},
+       		{key: 1000004,label:"Progetti iDempiere"},
+       		{key: 1000010,label:"Reports"},
+       		{key: 1000012,label:"Sales Task"},
+       		{key: 1000013,label:"Task Clienti"},
+       		{key: 1000014,label:"Task"},
+       		{key: 1000015,label:"Chiamata"},
+       		{key: 1000016,label:"Incontro"},
+       		{key: 1000017,label:"Email"},
+       		{key: 1000018,label:"Implem/Supporto"},
+       		{key: 1000019,label:"CDC*"},
+       		{key: 1000020,label:"Amm.Condomini"},
+       		{key: 1000021,label:"Giulia"},
+       		{key: 1000022,label:"Matteo"},
+       		{key: 1000023,label:"Famiglia"},
+       		{key: 1000024,label:"Marco"},
+       		{key: 1000026,label:"Task Bug"},
+       		{key: 1000027,label:"Plugin ID"}])},
+
 
 		{name: "time", type: "duration", map_to: "auto", formatter: hourFormatter}
 	];
 
+
+
+/* 	gantt.attachEvent("onTaskDblClick", function(id,e){
+		var userTasks = gantt.getTaskBy("id", id);
+
+    	console.log('ecco il task cliccato',userTasks)
+		userTasks.type = 'task'
+		gantt.render()
+    	//return true;
+	});
+
+	gantt.attachEvent("onTaskCreated", function(task){
+ 		var level = gantt.calculateTaskLevel(task),
+   		types = gantt.config.types;
+ 
+ 		//assign task type based on task level
+ 		switch (level){
+			case 0:
+				task.type = types.project;
+				break;
+			case 1:
+				task.type = types.subproject;
+				break;
+			default:
+				task.type = types.task;
+				break;
+		}
+		console.log('creato task livello: ',task.type)
+		return true;
+	});
+ */
 	gantt.templates.timeline_cell_class = function (task, date) {
 		var css = [];
 
@@ -240,7 +305,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	
 	gantt.templates.tooltip_text = function(start,end,task){
 	
-	var risorsa = byId(gantt.serverList(gantt.config.resource_store), task.S_Resource_ID);
+	var risorsa = byId(gantt.serverList(gantt.config.resource_store), task.s_resource_id);
 	var totGiorni = dayFormatter.format(task.duration);
 	var totOre = hourFormatter.format(task.duration);
 	
@@ -259,6 +324,9 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		//console.log('ho caricato i task, i link e le risorse\n',data.response)
 		// console.log('\necco il gantt\n',gantt)
 		gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
+		var type= gantt.config.types
+		console.log('progetto',type)
+		// console.log(gantt)
 		gantt.render();
 		
 
@@ -273,3 +341,61 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 
  </script>
 </body>
+
+
+{'Description':'taskone',
+'SalesRep_ID':'1000010', 
+'StartDate':'2018-01-01 11:00:00', 
+'ContactActivityType':'TA', 
+'EndDate':'2018-01-01 13:00:00'}
+
+{'Description': None, 
+'SalesRep_ID': 1000003, 
+'StartDate': '2018-01-01 11:00:00', 
+'ContactActivityType': 'TA', 
+'EndDate': '2018-01-01 12:00:00', 
+'C_Activity_ID': 1000008}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+    "description": "Incontro con Daniela",
+    "s_resource_id": 1000001,
+    "type": "task",
+    "ctype": "",
+    "duration": 6,
+    "end_date": null,
+    "id": 11000125,
+    "progress": "0",
+    "sortorder": "0",
+    "start_date": 1517234400000,
+    "table_from": "s_resourceassignment",
+    "text": "Incontro con Daniela"
+  },
+  {
+    "description": "Ciao Marco, mi servirebbe spazio disco aggiuntivo per i seguenti server:   ORSRV32    E: aggiungere 20 GB.   ORSRV33    W: aggiungere 50 GB.  ",
+    "s_resource_id": 1000054,
+    "type": "project",
+    "ctype": "TA",
+    "duration": null,
+    "end_date": 1523527200000,
+    "id": 91001187,
+    "progress": "0.5",
+    "sortorder": "0",
+    "start_date": 1517311200000,
+    "table_from": "c_contactactivity",
+    "text": "1000319 Ormet  Spazio HD"
+  },
