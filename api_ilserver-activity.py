@@ -102,25 +102,29 @@ api = Api(app)
 gantt = idapi(config_file="api_config Consulting.json")
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
 gantt.login()
-print('ecco il token: ',gantt.token)
-print(gantt.cfg['getTasks'])
+#print('ecco il token: ',gantt.token)
+#print(gantt.cfg['getTasks'])
 # questa è la chiamata principale, quella di inizializzazione dei dati della pagina html
 class Data(Resource):
     # una funzione per metodo, qui basta la GET, sto prendendo i dati da iDempiere
+
     def get(self):
         # prendo i dati separatamente e poi li assemblo
         #print(gantt)
+        def minuscolizza(dict):
+            newd={k.lower():v  for k,v in dict.items()}
+            # newd['Name']='pippo'
+            return newd
         tasks=gantt.query('get',gantt.cfg['getTasks'])
         tasks_json=loads(tasks.text)
+        tasks_json=list(map(minuscolizza ,tasks_json))
+        pretty_json(tasks_json)
         links=gantt.query('get','getLinks')
         links_json=loads(links.text)
-        print('LINKS:\n',links_json)
+        #print('LINKS:\n',links_json)
         # FIXME!!!!!!
         # minuscolizzo i nomi che mi arrivano dal dhrmlx
-        def minuscolizza(di):
-            newd={k.lower():v  for k,v in di.items()}
-            newd['Name']='pippo'
-            return newd
+        
         links_json=list(map(minuscolizza ,links_json))
         print("funge?\n",links_json)
         
@@ -155,8 +159,8 @@ class TASK_change(Resource):
         # trasformo il payload
         payload=translate_data(r,myid)
         # finalmente eseguo la PUT API
-        gantt.query('put',api,payload)
-        print('finished change',myid,'\n-------------------\n')
+        r=gantt.query('put',api,payload)
+        print(r.content,'\nfinished change',myid,'\n-------------------\n')
     # quando ELIMINO un task
     def  delete(self,myid):
         ''' myid è una stringa'''
@@ -185,8 +189,8 @@ class TASK_add(Resource):
         r['table_from']=mapping[first_char]
         payload=translate_data(r)
         # finalmente eseguo la POST API
-        gantt.query('post',api,payload)
-        print('finished POST, non implementato','\n-------------------\n')
+        r=gantt.query('post',api,payload)
+        print(r.content,'\nfinished POST, quasi implementato','\n-------------------\n')
 
 class LINK_change(Resource):
     def put(self,id):
