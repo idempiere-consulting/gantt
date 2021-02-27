@@ -24,10 +24,11 @@ mapping={
     #"DateFinish":["end_date","format_date"],
     "Qty":"duration",
     "Name":"text",
-    "Description":"Description",
+    "Description":"description",
     #"ProjectLineLevel":["Type","get_first"],     
     #"isConfirmed":"progress",
     "sortorder":"sortorder",
+    "C_ContactActivity_ID":["parent","strip_id"],
     # "S_Resource_ID": ["S_Resource_ID","intero"],    NOT UPDATABLE
     #"LIT_gantt_constraint_date":["constraint_date","format_date"],
     #"LIT_gantt_constraint_type":["constraint_type","not_null"],
@@ -36,14 +37,21 @@ mapping={
 },
 "c_contactactivity" : {
     "id":["id","strip_id"],
-    "Description":"Description",
+    "Description":"description",
     "StartDate":["start_date","format_date"],    
     "EndDate":["end_date","format_date"],
-    "SalesRep_ID":["S_Resource_ID","intero"],
+    "SalesRep_ID":["s_resource_id","intero"],
     "ContactActivityType":"ctype",
-    "C_Activity_ID":["C_Activity_ID","intero"],
+    "C_Activity_ID":["c_activity_id","intero"],
     "api":"putActivity",
     "apipost":"postContactActivity"
+# payload={'Description':'taskone','SalesRep_ID':'1000010', 'StartDate':'2018-01-01 11:00:00',
+#  'ContactActivityType':'TA', 'EndDate':'2018-01-01 13:00:00', 'C_Activity_ID':'1000008'}
+#                   C_Activity_ID [4499]
+#FillMandatory - ContactActivityType [4499]
+#FillMandatory - Description [4499]
+#FillMandatory - Descrizione - Description [4499]
+
 },
 "lit_gantt_links" : {
     "id":["id","strip_id"],
