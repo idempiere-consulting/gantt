@@ -49,6 +49,21 @@
 	io penso meglio no bootstrap.... jquery needed
 -->
 
+<!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
+
+	FIXME solo chrome/opera/edge supportati  ma ci sono soluzioni da adottare-->
+<label for="minimo">a partire da:</label>
+
+<input  onchange="set_min_date(this.value)" type="datetime-local" id="minimo"
+name="minimo" value="2018-06-12T19:30"
+min="2018-06-07T00:00" max="2018-06-14T00:00">
+<label for="massimo">fino a:</label>
+<input  onchange="set_max_date(this.name,this.value,)" type="datetime-local" id="massimo"
+       name="massimo" value="2018-06-12T19:30"
+       min="2018-06-07T00:00" max="2018-06-14T00:00">
+
+<!-- https://docs.dhtmlx.com/scheduler/timeline_view_templates.html -->
+
 
 
 
@@ -60,7 +75,28 @@
 
 <div id="gantt_here" style='width:100%; height:100%;'></div>
 
-<script>
+<script> 
+//console.log(gantt)
+//var formatFunc = gantt.date.str_to_date("%d/%m/%Y");
+gantt.config.auto_scheduling = true;
+
+gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+var formatFunc = gantt.date.str_to_date("%Y-%m-%dT%H:%i");
+
+
+
+console.log(formatFunc("2018-06-14T19:31"))
+//var date = formatFunc("29/06/2019"); // -> 29 June, 2019 00:00:00
+// 2018-06-14T19:31   questo mi arriva
+
+function set_min_date(date_min)	{
+	
+	console.log(date_min,formatFunc(date_min.replace("T"," ")))
+}
+function set_max_date(name,date_max)	{
+	console.log(name,date_max,formatFunc(date_max))
+
+}
 
 var show_only_resource = "All";
 function show_owners(selected_owner){
