@@ -85,16 +85,20 @@ var formatFunc = gantt.date.str_to_date("%Y-%m-%dT%H:%i");
 
 
 
-console.log(formatFunc("2018-06-14T19:31"))
 //var date = formatFunc("29/06/2019"); // -> 29 June, 2019 00:00:00
 // 2018-06-14T19:31   questo mi arriva
-
+var min_date=formatFunc("2001-01-01 00:00")
 function set_min_date(date_min)	{
 	
 	console.log(date_min,formatFunc(date_min.replace("T"," ")))
+	min_date=date_min,formatFunc(date_min.replace("T"," "))
+	gantt.render();
+
 }
 function set_max_date(name,date_max)	{
-	console.log(name,date_max,formatFunc(date_max))
+
+	max_date=name,date_max,formatFunc(date_max)
+	gantt.render();
 
 }
 
@@ -114,6 +118,9 @@ gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
 	//if (task.type == "project") return false;
 	if (show_only_resource == "All") return true;
 	if (task.s_resource_id == show_only_resource) return true;
+	t=(task.start_date > min_date) 
+	if ( task.start_date > min_date || task.start_date<max_date ) return true
+	console.log('iiii',t)
 	// di default non mostra niente a meno che non sia verificata una condizione sopra
 	return false;
 });
