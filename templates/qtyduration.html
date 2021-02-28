@@ -24,9 +24,64 @@
 </head>
 
 <body>
+ <!-- FIXME parametrizzare in base a jinja2?? 	 -->
+<select onchange="show_owners(this.value)">
+	<option value="All">All</option>
+	<option value="1000004">default</option>
+	<option value="1000003">Andrea Checchia</option>
+    <option value="1000002">Lucia Zanchetta</option>
+    <option value="1000006">Gianni Sonego</option>
+    <option value="1000000">Mirko Sari </option>
+    <option value="1000007">Paola Ongaro</option>
+    <option value="1000008">Giorgia Corradin</option>
+    <option value="1000004">Andrea Bellotto</option>
+    <option value="1000009">Matteo Longo</option>
+    <option value="1000001">Marco Longo</option>
+    <option value="1000012">Marco AndreaC AndreaB</option>
+    <option value="1000010">Mauro Biasutti</option>
+    <option value="1000005">Stagista2</option>
+    <option value="1000011">Vincenzo Di Staso</option>
+    <option value="1000013">Stefano</option>
+
+</select>
+<!-- per multiselect vedere
+    https://stackoverflow.com/questions/17714705/how-to-use-checkbox-inside-select-option
+	io penso meglio no bootstrap.... jquery needed
+-->
+
+
+
+
+
+
+<input type='button' id='undo' onclick="gantt.undo()" value="UNDO">
+<input type='button' id='redo' onclick="gantt.redo()" value="REDO">
+
+
 <div id="gantt_here" style='width:100%; height:100%;'></div>
 
 <script>
+
+var show_only_resource = "All";
+function show_owners(selected_owner){
+	console.log('scelto per filtro',selected_owner,find_resource_by_id(selected_owner).label)
+
+	show_only_resource = selected_owner;
+
+  gantt.render();
+}
+
+
+gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
+	// sono id del task ed anche il task intero
+	// questa funzione determina se il task caricato verrà visualizzato oppure no
+	//if (task.type == "project") return false;
+	if (show_only_resource == "All") return true;
+	if (task.s_resource_id == show_only_resource) return true;
+	// di default non mostra niente a meno che non sia verificata una condizione sopra
+	return false;
+});
+
 
 gantt.plugins({
 			auto_scheduling: true,
@@ -87,6 +142,17 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		}
 		return "";
 	}
+	function find_resource_by_id(owner_id) {
+		// FIXME hardcoded
+		var risorse=gantt.serverList(gantt.config.resource_store)
+		//var risorse = gantt.myresources
+  		for (var i = 0; i < risorse.length; i++){
+    		if (risorse[i].key == owner_id) return risorse[i];
+  		}
+  		return risorse[0]
+
+};
+
 	  
 
 
@@ -399,3 +465,8 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
     "table_from": "c_contactactivity",
     "text": "1000319 Ormet  Spazio HD"
   },
+
+
+
+
+  
