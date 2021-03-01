@@ -29,9 +29,10 @@ create or replace view lit_gantt_resass_v as
     h.ad_client_id,
     h.qty AS duration,
     COALESCE(h.description, h.name) AS description,
-    ''::character varying AS ctype
+    ''::character varying AS ctype,
+    'http://173.249.60.71:6080/webui/index.zul?Action=Zoom&AD_Table_ID=485&Record_ID='||h.s_resourceassignment_id as idlink
    FROM s_resourceassignment h
-    where date_part('year'::text, assigndatefrom) = '2000'
+    where date_part('year'::text, assigndatefrom) > '2020'
    /*AND
     date_part('month'::text, assigndatefrom) = '01'
    
@@ -58,10 +59,11 @@ UNION
     c.ad_client_id,    
     NULL::numeric AS duration,
     c.description,
-    c.contactactivitytype AS ctype
+    c.contactactivitytype AS ctype,
+    'http://173.249.60.71:6080/webui/index.zul?Action=Zoom&AD_Table_ID=53354&Record_ID'||c.c_contactactivity_id as idlink
    FROM c_contactactivity c
      --JOIN r_status r ON c.r_status_id = r.r_status_id
-  WHERE   date_part('year'::text, c.startdate)= '2000'/*
+  WHERE   date_part('year'::text, c.startdate)= '2020'/*
       AND
    date_part('month'::text, c.startdate) = '01'
    
