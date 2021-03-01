@@ -69,13 +69,22 @@ min="2018-06-07T00:00" max="2018-06-14T00:00">
 
 
 
-<input type='button' id='undo' onclick="gantt.undo()" value="UNDO">
-<input type='button' id='redo' onclick="gantt.redo()" value="REDO">
+<input type='button' id='undo' onclick="undo()" value="UNDO">
+<input type='button' id='redo' onclick="redo()" value="REDO">
 
 
 <div id="gantt_here" style='width:100%; height:100%;'></div>
 
 <script> 
+	function undo(){
+		gantt.ext.undo.undo();
+		gantt.render()
+	}
+	function redo(){
+		gantt.ext.undo.redo();
+		gantt.render()
+	}
+
 //console.log(gantt)
 //var formatFunc = gantt.date.str_to_date("%d/%m/%Y");
 gantt.config.auto_scheduling = true;
@@ -88,6 +97,7 @@ var formatFunc = gantt.date.str_to_date("%Y-%m-%dT%H:%i");
 //var date = formatFunc("29/06/2019"); // -> 29 June, 2019 00:00:00
 // 2018-06-14T19:31   questo mi arriva
 var min_date=formatFunc("2001-01-01 00:00")
+var max_date=formatFunc("2031-01-01 00:00")
 function set_min_date(date_min)	{
 	
 	console.log(date_min,formatFunc(date_min.replace("T"," ")))
@@ -108,7 +118,7 @@ function show_owners(selected_owner){
 
 	show_only_resource = selected_owner;
 
-  gantt.render();
+  	gantt.render();
 }
 
 
@@ -116,10 +126,12 @@ gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
 	// sono id del task ed anche il task intero
 	// questa funzione determina se il task caricato verrà visualizzato oppure no
 	//if (task.type == "project") return false;
+	//return true
+	//console.log()
 	if (show_only_resource == "All") return true;
 	if (task.s_resource_id == show_only_resource) return true;
 	t=(task.start_date > min_date) 
-	if ( task.start_date > min_date || task.start_date<max_date ) return true
+	//if ( task.start_date > min_date || task.start_date<max_date ) return true
 	console.log('iiii',t)
 	// di default non mostra niente a meno che non sia verificata una condizione sopra
 	return false;
