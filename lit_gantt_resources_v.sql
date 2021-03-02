@@ -1,6 +1,6 @@
   drop VIEW lit_gantt_resources_v  CASCADE;
 create or replace view lit_gantt_resources_v as 
-SELECT s_resource.s_resource_id AS lit_gantt_resources_v_id,
+SELECT r.s_resource_id AS lit_gantt_resources_v_id,
     r.s_resource_id AS key,
     r.value AS label,
     r.name,
@@ -20,4 +20,4 @@ SELECT s_resource.s_resource_id AS lit_gantt_resources_v_id,
  
    JOIN s_resourcetype t on t.s_resourcetype_id = r.s_resourcetype_id
 
-  WHERE s_resource.ad_client_id = 1000006::numeric;
+  WHERE r.ad_client_id = 1000006::numeric;
