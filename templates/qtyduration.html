@@ -350,7 +350,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	gantt.config.columns = [
 		{name: "text", tree: true, width: 170, resize: true},//, editor: textEditor},
 		{name: "start_date",label:"Data inizio", align: "center", resize: true, editor: dateEditor, width: 100},
-		{name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
+		// {name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
 		{name: "owner", label: "Risorsa", align: "center", template: function (item) {
 				return byId(gantt.serverList(gantt.config.resource_store), item.s_resource_id)}, width: 100},
 		/*{name: "duration", label:"D puro", resize: true, align: "center", map_to:"duration"},
