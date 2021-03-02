@@ -18,6 +18,10 @@
 			margin: 0px;
 			overflow: hidden;
 		}
+		
+		.gantt_task_progress {
+			background: #547dab;
+		}
 
 
 	</style>
@@ -26,7 +30,7 @@
 <body>
  <!-- FIXME parametrizzare in base a jinja2?? 	 -->
 <select onchange="show_owners(this.value)">
-	<option value="All">All</option>
+	<option value="All" selected >All</option>
 	<option value="1000004">default</option>
 	<option value="1000003">Andrea Checchia</option>
     <option value="1000002">Lucia Zanchetta</option>
@@ -145,6 +149,7 @@ gantt.plugins({
 		});
 		
 gantt.config.auto_scheduling = true;
+gantt.config.sort = true;
 
 gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	 gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
@@ -318,9 +323,9 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 			console.log(task)
 			return autoFormatter.format(task.duration);
 		}, editor: durationEditor, width: 100},*/
-		{name: "dayDuration", label:"Tot giorni", resize: true, align: "center", template: function(task) {
+		/*{name: "dayDuration", label:"Tot giorni", resize: true, align: "center", template: function(task) {
 			return dayFormatter.format(task.duration);
-		}, editor: dayDurationEditor, width: 100},
+		}, editor: dayDurationEditor, width: 100},*/
 		{name: "hourDuration", label:"Tot ore", resize: true, align: "center", template: function(task) {
 			return hourFormatter.format(task.duration);
 		}, editor: hourDurationEditor, width: 100},
