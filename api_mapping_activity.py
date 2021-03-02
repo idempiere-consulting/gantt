@@ -27,6 +27,7 @@ mapping={
     "Description":"description",
     #"ProjectLineLevel":["Type","get_first"],     
     #"isConfirmed":"progress",
+    "Percent":"progress",
     "sortorder":"sortorder",
     "C_ContactActivity_ID":["parent","strip_id"],
     # "S_Resource_ID": ["S_Resource_ID","intero"],    NOT UPDATABLE
@@ -37,6 +38,7 @@ mapping={
 },
 "c_contactactivity" : {
     "id":["id","strip_id"],
+    "Name":"text",
     "Description":"description",
     "StartDate":["start_date","format_date"],    
     "EndDate":["end_date","format_date"],
