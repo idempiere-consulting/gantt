@@ -15,11 +15,12 @@ create or replace view lit_gantt_resass_v as
     h.s_resource_id AS owner,
     h.s_resource_id,
     h.c_contactactivity_id + 90000000::numeric AS parent,
-        CASE
+    /*     CASE
             WHEN h.isconfirmed = 'Y'::bpchar THEN '1'::text
             WHEN h.isconfirmed = 'N'::bpchar THEN '0'::text
             ELSE '0.5'::text
-        END AS progress,
+        END  */
+    h.percent::TEXT AS progress,
     's_resourceassignment'::text AS table_from,
     'task'::text AS type,
     '0'::text AS sortorder,
@@ -51,7 +52,7 @@ UNION
     0 AS parent,
     '0.5'::text AS progress,
     'c_contactactivity'::text AS table_from,
-    'project'::text AS type,
+    'task'::text AS type,
     '0'::text AS sortorder,
     c.isactive,
     c.updated,
