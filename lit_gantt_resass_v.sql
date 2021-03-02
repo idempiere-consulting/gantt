@@ -6,6 +6,7 @@ create or replace view lit_gantt_resass_v as
  SELECT 10000000::numeric + h.s_resourceassignment_id AS lit_gantt_resass_v_id,
     10000000::numeric + h.s_resourceassignment_id AS id,
     coalesce(NULLIF(h.name,''),h.description) AS text,
+       bp.name as bp_name,
     h.assigndatefrom AS start_date,
     --h.assigndateto   AS end_date,
     -- sono costretto a scegliere solo 2 valori tra i tre:
@@ -33,7 +34,9 @@ create or replace view lit_gantt_resass_v as
     ''::character varying AS ctype,
     'http://173.249.60.71:6080/webui/index.zul?Action=Zoom&AD_Table_ID=485&Record_ID='||h.s_resourceassignment_id as idlink
    FROM s_resourceassignment h
-    where date_part('year'::text, assigndatefrom) > '2020'
+   left join c_contactactivity c on h.c_contactactivity_id=c.c_contactactivity_id
+    left join c_bpartner bp on c.c_bpartner_id=bp.c_bpartner_id
+    where  h.assigndatefrom > '20201231'
    /*AND
     date_part('month'::text, assigndatefrom) = '01'
    
@@ -45,6 +48,7 @@ UNION
  SELECT 90000000::numeric + c.c_contactactivity_id AS lit_gantt_resass_v_id,
     90000000::numeric + c.c_contactactivity_id AS id,
     (c.documentno::text || ' '::text) || c.name::text AS text,
+    bp.name as bp_name,
     c.startdate AS start_date,
     COALESCE(c.enddate, date(c.startdate + '08:00:00'::interval)::timestamp without time zone) AS end_date,
     c.salesrep_id AS owner,
@@ -61,10 +65,11 @@ UNION
     NULL::numeric AS duration,
     c.description,
     c.contactactivitytype AS ctype,
-    'http://173.249.60.71:6080/webui/index.zul?Action=Zoom&AD_Table_ID=53354&Record_ID'||c.c_contactactivity_id as idlink
+    'http://173.249.60.71:6080/webui/index.zul?Action=Zoom&AD_Table_ID=53354&Record_ID='||c.c_contactactivity_id as idlink
    FROM c_contactactivity c
+   left join c_bpartner bp on c.c_bpartner_id=bp.c_bpartner_id
      --JOIN r_status r ON c.r_status_id = r.r_status_id
-  WHERE   date_part('year'::text, c.startdate)= '2020'/*
+  WHERE    c.startdate> '20201231'/*
       AND
    date_part('month'::text, c.startdate) = '01'
    
