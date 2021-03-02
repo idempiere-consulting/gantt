@@ -152,7 +152,42 @@ function sortByOwner() {
 		}
 		n_direction = !n_direction;
 	}
+///////////bottoni lightbox
+gantt.locale.labels["complete_button"] = "Complete";
+	gantt.locale.labels["idlink"] = "ZOOM IN";
+	
+	gantt.config.buttons_left = ["dhx_save_btn", "dhx_cancel_btn", "complete_button","idlink"];
 
+	gantt.templates.task_class = function (start, end, task) {
+		if (task.progress == 1)
+			return "completed_task";
+		return "";
+	};
+
+gantt.attachEvent("onLightboxButton", function (button_id, node, e) {
+		if (button_id == "complete_button") {
+			var id = gantt.getState().lightbox;
+			gantt.getTask(id).progress = 1;
+			gantt.updateTask(id)
+			gantt.hideLightbox();
+		}
+		if (button_id == "idlink") {
+			var id = gantt.getState().lightbox;
+			
+			vai(gantt.getTask(id).idlink)
+			gantt.message({ text: '<p style="color:red;background:blue">funzione da implementare a piacimento</p>', expire: 2000 })
+			gantt.hideLightbox();
+		}
+	});
+	gantt.attachEvent("onBeforeLightbox", function (id) {
+		var task = gantt.getTask(id);
+		if (task.progress == 1) {
+			gantt.message({text: "The task is already completed!", type: "completed"});
+			return false;
+		}
+		return true;
+	});
+///////////bottoni lightbox
 
 gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
 	// sono id del task ed anche il task intero
@@ -377,10 +412,10 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	
 	gantt.config.lightbox.sections = [
 		//{name: "c_activity_id", height: 70, map_to: "c_activity_id", type: "textarea", focus: true},
-		{name: "name", height: 70, map_to: "text", type: "textarea", focus: true},
+		{name: "name", height: 38, map_to: "text", type: "textarea", focus: true},
         {name: "owner", height: 22, map_to: "s_resource_id", type: "select", options: gantt.serverList(gantt.config.resource_store)},
-		{name: "description", height: 70, map_to: "description", type: "textarea", focus: true},
-		{name: "idlink", height: 70, map_to: "idlink", type: "textarea", focus: true},
+		{name: "description", height: 38, map_to: "description", type: "textarea", focus: true},
+		{name: "idlink", height: 38, map_to: "idlink", type: "textarea", focus: true},
 		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
     {key: 'project', label: "project"},
     {key: 'task', label: "task"},
@@ -468,16 +503,16 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	
 	gantt.templates.tooltip_text = function(start,end,task){
 	
-	var risorsa = byId(gantt.serverList(gantt.config.resource_store), task.s_resource_id);
-	var totGiorni = dayFormatter.format(task.duration);
-	var totOre = hourFormatter.format(task.duration);
-	
-    return "<b>Task:</b> "+task.text+
-    "<br/><b>Risorsa:</b> "+ risorsa +
-    "<br/><b>Start date:</b> " + gantt.templates.tooltip_date_format(start)+ 
-    "<br/><b>End date:</b> "+gantt.templates.tooltip_date_format(end)+
-    "<br/><b>totGiorni:</b> "+ totGiorni+
-    "<br/><b>totOre:</b> "+ totOre;
+		var risorsa = byId(gantt.serverList(gantt.config.resource_store), task.s_resource_id);
+		var totGiorni = dayFormatter.format(task.duration);
+		var totOre = hourFormatter.format(task.duration);
+		
+		return       "<b>Task:</b> "+task.text+
+			    "<br/><b>Risorsa:</b> "+ risorsa +
+			    "<br/><b>Start date:</b> " + gantt.templates.tooltip_date_format(start)+ 
+			    "<br/><b>End date:</b> "+gantt.templates.tooltip_date_format(end)+
+			    "<br/><b>totGiorni:</b> "+ totGiorni+
+			    "<br/><b>totOre:</b> "+ totOre;
 };
 
     //gantt.config.columns[0].sort = false;
