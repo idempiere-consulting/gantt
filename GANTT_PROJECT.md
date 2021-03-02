@@ -104,3 +104,7 @@ procedura:
 
 il campo che mi arriva dal Gantt con nome id viene mappato, grazie al campo `table_from`  nella API della  tabella corrispondebìnte di idempieere con il nome che trovo dopo i due punti quindi n
 
+
+sono costretto a scegliere solo 2 valori tra i tre:
+    -- start date,end_date, duration
+    -- infatti il dhtmlx calcola il terzo a partire dai due forniti
