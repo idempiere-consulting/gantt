@@ -59,7 +59,7 @@ def translate_data(data_from_gantt,gantt_id=None):
             # il primo elemento della lista è QUALE chiave contiene il valore che arriva... MALFORMATO per idempiere
             gantt_key=v[0]
             if gantt_key in gantt_keys:
-                print('sto processando la chiave DHTMLX: ',gantt_key)
+                print('sto processando la chiave DHTMLX: ',gantt_key,' : ',data_from_gantt[gantt_key])
 
                 # il secondo è il nome della funzione di traduzione
                 key_tr_func=v[1]
