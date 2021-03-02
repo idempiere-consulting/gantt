@@ -105,6 +105,12 @@ gantt.login()
 #print('ecco il token: ',gantt.token)
 #print(gantt.cfg['getTasks'])
 # questa è la chiamata principale, quella di inizializzazione dei dati della pagina html
+class Login(Resource):
+    # una funzione per metodo, qui basta la GET, sto prendendo i dati da iDempiere
+
+    def get(self):
+        print('login class')
+        pass
 class Data(Resource):
     # una funzione per metodo, qui basta la GET, sto prendendo i dati da iDempiere
 
@@ -133,7 +139,7 @@ class Data(Resource):
         
         resources=gantt.query('get','getResources')
         resources_json=loads(resources.text)
-        #print(resources_json)
+        #pretty_json(resources_json)
         # qualsiasi altro dato che volessi far processare al gantt devo metterlo dentro a collections e poi importarlo dentro al javascript
         #links_json=[]
         #resources_json=[]
@@ -236,6 +242,21 @@ api.add_resource(TASK_change,'/api/task/<myid>')
 api.add_resource(TASK_add,'/api/task')
 api.add_resource(LINK_change,'/api/link/<id>')
 api.add_resource(LINK_add,'/api/link')
+#api.add_resource(LOGIN,'/api/login/')
+
+@app.route('/login/')
+#@app.route('/api/login/<name>/<pswd>')
+def login():
+    templateData = {
+      'name' : 'mauro',
+      'pswd'  : 'mauro',
+   }
+
+    return render_template('loginf.html', **templateData)
+
+    
+    
+
 
 # decoratore per "interfacciare" la chiamata API con le funzioni interne alla classe
 # API principale
@@ -261,8 +282,10 @@ def home_gantt(task=''):
         #html = render_template('01_basic_init copy.html')
         #html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
 #        html = render_template('qtyduration copy.html')
- #       html = render_template('qtyduration.html')
         html = render_template('qtyduration.html')
+#        html = render_template('qtyduration.html')
+        #html = render_template('login.html')
+
         #html = render_template('V_test.html')
         #html= render_template('vincoli.html')   #esempio funzionante
         #html= render_template('25_click_drag_select_by_drag.html')
