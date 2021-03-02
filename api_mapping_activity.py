@@ -106,6 +106,9 @@ import datetime
 class translator(object):
     @staticmethod
     def strip_id(id):
+        stripped=id[1:]
+        if len(stripped) <=1:
+            return 0
         return int(id[1:])
     @staticmethod
     def get_first(type):
