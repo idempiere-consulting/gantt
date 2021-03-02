@@ -52,7 +52,7 @@ UNION
     0 AS parent,
     '0.5'::text AS progress,
     'c_contactactivity'::text AS table_from,
-    'task'::text AS type,
+    'project'::text AS type,
     '0'::text AS sortorder,
     c.isactive,
     c.updated,
