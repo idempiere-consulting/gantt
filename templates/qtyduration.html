@@ -75,6 +75,8 @@ min="2018-06-07T00:00" max="2018-06-14T00:00">
 
 <input type='button' id='undo' onclick="undo()" value="UNDO">
 <input type='button' id='redo' onclick="redo()" value="REDO">
+<input type='button' value='Ordina per Nome task' onclick='sortByName()'>
+<input type='button'  value='Ordina per Risorsa' onclick='sortByOwner()'>
 
 
 <div id="gantt_here" style='width:100%; height:100%;'></div>
@@ -124,6 +126,26 @@ function show_owners(selected_owner){
 
   	gantt.render();
 }
+
+var n_direction = false;
+function sortByName() {
+		if (n_direction) {
+			gantt.sort("text", false);
+		} else {
+			gantt.sort("text", true);
+		}
+		n_direction = !n_direction;
+	}
+	
+var r_direction = false;
+function sortByOwner() {
+		if (n_direction) {
+			gantt.sort("owner", false);
+		} else {
+			gantt.sort("owner", true);
+		}
+		n_direction = !n_direction;
+	}
 
 
 gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
@@ -442,6 +464,10 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
     "<br/><b>totGiorni:</b> "+ totGiorni+
     "<br/><b>totOre:</b> "+ totOre;
 };
+
+    //gantt.config.columns[0].sort = false;
+    //gantt.config.columns[3].sort = false;
+    //gantt.config.columns[4].sort = false;
 
  	// questa sotto è la parte che carica i dati dalle api di idempiere
     gantt.init("gantt_here");
