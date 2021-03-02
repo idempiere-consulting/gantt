@@ -75,6 +75,7 @@ min="2018-06-07T00:00" max="2018-06-14T00:00">
 
 <input type='button' id='undo' onclick="undo()" value="UNDO">
 <input type='button' id='redo' onclick="redo()" value="REDO">
+<input type='button' id='vai' onclick="vai()" value="VAI">
 <input type='button' value='Ordina per Nome task' onclick='sortByName()'>
 <input type='button'  value='Ordina per Risorsa' onclick='sortByOwner()'>
 
@@ -86,6 +87,11 @@ min="2018-06-07T00:00" max="2018-06-14T00:00">
 		gantt.ext.undo.undo();
 		gantt.render()
 	}
+	function vai(url){
+		var win = window.open(url, '_blank');
+		win.focus();
+	}
+	
 	function redo(){
 		gantt.ext.undo.redo();
 		gantt.render()
