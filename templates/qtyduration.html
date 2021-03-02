@@ -163,6 +163,13 @@ gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
 	return false;
 });
 
+gantt.attachEvent("onBeforeLightbox", function (id) { 
+var task = gantt.getTask(id); 
+if (task.progress == 1) { 
+gantt.message({text: "The task is already completed!", type: "completed"}); 
+return false; }
+return true; });
+
 
 gantt.plugins({
 			auto_scheduling: true,
@@ -186,6 +193,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	var labels = gantt.locale.labels;
 	labels.column_owner = labels.section_owner = "Owner";
 	gantt.locale.labels.section_name = "Name";
+	gantt.locale.labels.section_idlink = "Idlink";
     gantt.config.resource_store = "my_resources";
 	gantt.config.resource_property = "s_resource_id";
 	
@@ -366,6 +374,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		{name: "name", height: 70, map_to: "text", type: "textarea", focus: true},
         {name: "owner", height: 22, map_to: "s_resource_id", type: "select", options: gantt.serverList(gantt.config.resource_store)},
 		{name: "description", height: 70, map_to: "description", type: "textarea", focus: true},
+		{name: "idlink", height: 70, map_to: "idlink", type: "textarea", focus: true},
 		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
     {key: 'project', label: "project"},
     {key: 'task', label: "task"},
