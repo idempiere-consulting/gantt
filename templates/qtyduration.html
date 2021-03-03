@@ -35,18 +35,15 @@
 	<option value="1000003">Andrea Checchia</option>
     <option value="1000002">Lucia Zanchetta</option>
     <option value="1000006">Gianni Sonego</option>
-    <option value="1000000">Mirko Sari </option>
-    <option value="1000007">Paola Ongaro</option>
-    <option value="1000008">Giorgia Corradin</option>
     <option value="1000004">Andrea Bellotto</option>
     <option value="1000009">Matteo Longo</option>
     <option value="1000001">Marco Longo</option>
-    <option value="1000012">Marco AndreaC AndreaB</option>
+    <!-- <option value="1000012">Marco AndreaC AndreaB</option> -->
     <option value="1000010">Mauro Biasutti</option>
     <option value="1000005">Stagista2</option>
     <option value="1000011">Vincenzo Di Staso</option>
     <option value="1000013">Stefano</option>
-
+ 
 </select>
 <!-- per multiselect vedere
     https://stackoverflow.com/questions/17714705/how-to-use-checkbox-inside-select-option
@@ -58,13 +55,14 @@
 	FIXME solo chrome/opera/edge supportati  ma ci sono soluzioni da adottare-->
 <label for="minimo">a partire da:</label>
 
-<input  onchange="set_min_date(this.value)" type="datetime-local" id="minimo"
-name="minimo" value="2018-06-12T19:30"
-min="2018-06-07T00:00" max="2018-06-14T00:00">
+<input  onchange="set_min_date(this.value)" type="date" id="minimo" name="minimo" 
+
+min="2017-06-07T00:00" max="2022-06-14T00:00">
 <label for="massimo">fino a:</label>
-<input  onchange="set_max_date(this.name,this.value,)" type="datetime-local" id="massimo"
-       name="massimo" value="2018-06-12T19:30"
-       min="2018-06-07T00:00" max="2018-06-14T00:00">
+<input  onchange="set_max_date(this.name,this.value)" type="date" id="massimo"
+       name="massimo"
+       min="2017-06-07T00:00" max="2022-06-14T00:00">
+
 
 <!-- https://docs.dhtmlx.com/scheduler/timeline_view_templates.html -->
 
@@ -75,14 +73,19 @@ min="2018-06-07T00:00" max="2018-06-14T00:00">
 
 <input type='button' id='undo' onclick="undo()" value="UNDO">
 <input type='button' id='redo' onclick="redo()" value="REDO">
-<input type='button' id='vai' onclick="vai()" value="VAI">
-<input type='button' value='Ordina per Nome task' onclick='sortByName()'>
-<input type='button'  value='Ordina per Risorsa' onclick='sortByOwner()'>
+<input type='button'  value='Ordina per Risorsa FIXME' onclick='sortByOwner()'>
 
 
 <div id="gantt_here" style='width:100%; height:100%;'></div>
 
 <script> 
+
+	gantt.plugins({
+			auto_scheduling: true,
+			marker: true,
+			tooltip: true 
+		});
+
 	function undo(){
 		gantt.ext.undo.undo();
 		gantt.render()
@@ -96,53 +99,23 @@ min="2018-06-07T00:00" max="2018-06-14T00:00">
 		gantt.ext.undo.redo();
 		gantt.render()
 	}
-
-//console.log(gantt)
-//var formatFunc = gantt.date.str_to_date("%d/%m/%Y");
 gantt.config.auto_scheduling = true;
-
+// imposto il formato che il gantt adopererà internamente
 gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
-var formatFunc = gantt.date.str_to_date("%Y-%m-%dT%H:%i");
 
 
-
-//var date = formatFunc("29/06/2019"); // -> 29 June, 2019 00:00:00
-// 2018-06-14T19:31   questo mi arriva
-var min_date=formatFunc("2001-01-01 00:00")
-var max_date=formatFunc("2031-01-01 00:00")
-function set_min_date(date_min)	{
-	
-	console.log(date_min,formatFunc(date_min.replace("T"," ")))
-	min_date=date_min,formatFunc(date_min.replace("T"," "))
-	gantt.render();
-
-}
-function set_max_date(name,date_max)	{
-
-	max_date=name,date_max,formatFunc(date_max)
-	gantt.render();
-
-}
-
+// variabile per filtrare le risorse, alla partenza settata a tutte visibili
 var show_only_resource = "All";
+// imposta la variabile all'id dellla risorsa scelta (oppure tutte)
 function show_owners(selected_owner){
 	console.log('scelto per filtro',selected_owner,find_resource_by_id(selected_owner).label)
-
 	show_only_resource = selected_owner;
-
   	gantt.render();
 }
+/////////////  ordinamento inizio
+gantt.config.sort = true;
 
 var n_direction = false;
-function sortByName() {
-		if (n_direction) {
-			gantt.sort("text", false);
-		} else {
-			gantt.sort("text", true);
-		}
-		n_direction = !n_direction;
-	}
-	
 var r_direction = false;
 function sortByOwner() {
 		if (n_direction) {
@@ -152,7 +125,10 @@ function sortByOwner() {
 		}
 		n_direction = !n_direction;
 	}
-///////////bottoni lightbox
+////////////// ordinamento fine
+
+
+///////////bottoni lightbox  INIZIO
 gantt.locale.labels["complete_button"] = "Complete";
 	gantt.locale.labels["idlink"] = "ZOOM IN";
 	
@@ -187,44 +163,63 @@ gantt.attachEvent("onLightboxButton", function (button_id, node, e) {
 		}
 		return true;
 	});
-///////////bottoni lightbox
+///////////bottoni lightbox  FINE
 
+
+
+/////////  filtro data inizio
+	// funzione di appoggio per convertire una stringa di formato specificato ad oggetto date del gantt
+	var formatFunc = gantt.date.str_to_date("%Y-%m-%d");
+	// dummy data minima
+	var min_date=formatFunc("2001-01-01 00:00")
+	// dummy data massima 
+	var max_date=formatFunc("2031-01-01 00:00")
+	function set_min_date(date_min)	{
+		// formatto la data e...		
+		min_date=formatFunc(date_min)
+		// setto la data minima della timelina
+		gantt.config.start_date = min_date;
+		console.log('input',date_min,'output',min_date)
+		// aggiorno per visualizzare le modifiche
+		gantt.render();
+		
+	}
+	function set_max_date(name,date_max)	{
+		max_date=formatFunc(date_max)
+		gantt.config.end_date = max_date;
+		console.log(max_date)
+		gantt.render();
+		
+	}
+	var count=0
 gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
 	// sono id del task ed anche il task intero
 	// questa funzione determina se il task caricato verrà visualizzato oppure no
 	//if (task.type == "project") return false;
 	//return true
-	//console.log()
-	if (show_only_resource == "All") return true;
-	if (task.s_resource_id == show_only_resource) return true;
-	t=(task.start_date > min_date) 
-	//if ( task.start_date > min_date || task.start_date<max_date ) return true
-	console.log('iiii',t)
-	// di default non mostra niente a meno che non sia verificata una condizione sopra
-	return false;
+	//console.log('processo ',id)
+	count=count+1
+	if (((show_only_resource == "All") || 
+		(task.s_resource_id == show_only_resource))&&
+		( task.start_date > min_date && task.end_date<max_date ))
+	{
+		console.log('visualizzato ',count,' ',task.text,' ' ,task.id );
+
+		return true
+		}
+	else {
+// di default non mostra niente a meno che non sia verificata una condizione sopra
+		console.log('scartato',count,' ',task.text,' ' ,task.id );
+		return false;
+	}
 });
-
-gantt.attachEvent("onBeforeLightbox", function (id) { 
-var task = gantt.getTask(id); 
-if (task.progress == 1) { 
-gantt.message({text: "The task is already completed!", type: "completed"}); 
-return false; }
-return true; });
-
-
-gantt.plugins({
-			auto_scheduling: true,
-			marker: true,
-			tooltip: true 
-		});
+////////////   filtro data fine
 		
-gantt.config.auto_scheduling = true;
-gantt.config.sort = true;
-
-gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+/////// necessario per formattare la data in arrivo da idempiere.....
 	 gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
 	return new Date(rawDate ); // * 1000);// UNIX timestamps
 	};
+///////// ... e per poter poi riscrivere
 	gantt.templates.xml_format = gantt.templates.format_date = function(date){
 	// format to UNIX timestamps before sending the update to the server
 	return Math.floor(date.valueOf() );// / 1000);
@@ -237,7 +232,8 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 	gantt.locale.labels.section_idlink = "Idlink";
     gantt.config.resource_store = "my_resources";
 	gantt.config.resource_property = "s_resource_id";
-	
+///////////////////////////////////////////////
+///////////  datastore   inizio	
 	var resourcesStore= gantt.$resourcesStore
 	resourcesStore= gantt.createDatastore({
 		name: gantt.config.resource_store,
@@ -250,7 +246,8 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 			return item;
 		}
 	});
-	
+//////////////// datastore fine
+
 	
 	resourcesStore.attachEvent("onParse", function(){
 		var myresources = [];
@@ -383,8 +380,8 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		{name: "add", width: 44}
  ];*/	
 	gantt.config.columns = [
-		{name: "text", tree: true, width: 170, resize: true},//, editor: textEditor},
- 		{name: "bp_name",label: "Cliente",  resize:true,width: 170, resize: true},//, editor: textEditor},
+		{name: "text", tree: true, align: "left",width: 170, resize: true},//, editor: textEditor},
+ 		{name: "bp_name",label: "Cliente", align: "center", resize:true,width: 170, resize: true},//, editor: textEditor},
 		{name: "start_date",label:"Data inizio", align: "center", resize: true, editor: dateEditor, width: 100},
 		// {name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
 		{name: "owner", label: "Risorsa", align: "center", template: function (item) {
@@ -400,7 +397,7 @@ gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 		}, editor: dayDurationEditor, width: 100},*/
 		{name: "hourDuration", label:"Tot ore", resize: true, align: "center", template: function(task) {
 			return hourFormatter.format(task.duration);
-		}, editor: hourDurationEditor, width: 100},
+		}, editor: hourDurationEditor, width: 90},
 		/*{name: "minuteDuration", label:"D (minute)", resize: true, align: "center", template: function(task) {
 			return minuteFormatter.format(task.duration);
 		},  width: 100},
