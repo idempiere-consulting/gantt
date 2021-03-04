@@ -2,9 +2,14 @@ from flask import Flask, request, render_template
 from flask_restful import Resource, Api
 from json import dumps,loads
 import datetime
+import user
 #import json
 # la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
+configuration_file="api_config Consulting.json"
+# la struttura di mappatura tra i campi del gantt e le tabelle di iDempiere
+from api_mapping_activity import mapping,translator
+
 
 """ import argparse
 parser = argparse.ArgumentParser(description='Server GANTT configurabile verso idempiere.')
@@ -13,8 +18,6 @@ parser.add_argument('mapping_file',nargs='?',help='filename of mapping',default=
 args = parser.parse_args()
 print(args)
  """#exit
-# la struttura di mappatura tra i campi del gantt e le tabelle di iDempiere
-from api_mapping_activity import mapping,translator
 
 # questa funzione è quella che si occupa "materialmente" di restituire il payload corretto 
 # da spedire ad iDempiere traducendo quello in arrivo dal DHTMLX
@@ -99,7 +102,7 @@ app = Flask(__name__)#,
 # lo rendo RESTFUL COMPLIANT             
 api = Api(app)
 # inizializzo l'oggetto che comunicherà con iDempiere
-gantt = idapi(config_file="api_config Consulting.json")
+gantt = idapi(config_file=configuration_file)
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
 gantt.login()
 #print('ecco il token: ',gantt.token)
@@ -247,15 +250,19 @@ api.add_resource(LINK_add,'/api/link')
 @app.route('/login/')
 #@app.route('/api/login/<name>/<pswd>')
 def login():
+    """    
     templateData = {
       'name' : 'mauro',
       'pswd'  : 'mauro',
    }
+    if token:
 
-    return render_template('loginf.html', **templateData)
+        return render_template('loginf.html', **templateData)
+    else:
+        return render_template('loginTrue.html')
+ """
+    return render_template('loginf.html')
 
-    
-    
 
 
 # decoratore per "interfacciare" la chiamata API con le funzioni interne alla classe
@@ -304,9 +311,8 @@ def after_request(response):
     return response        
 # potrei lanciare lo script direttamente allora prenderebbe il parametro indicato
 if __name__ == '__main__':
-     print('giro')
-     app.run(port='5002')
-
+    print('giro')
+    #app.run(host='127.0.0.1', port=8090, debug=True)
 
 
 
