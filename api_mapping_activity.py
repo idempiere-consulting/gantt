@@ -27,7 +27,7 @@ mapping={
     "Description":"description",
     #"ProjectLineLevel":["Type","get_first"],     
     #"isConfirmed":"progress",
-    "Percent":"progress",
+    "Percent":["progress","percentizza"],
     "sortorder":"sortorder",
     "C_ContactActivity_ID":["parent","strip_id"],
     # "S_Resource_ID": ["S_Resource_ID","intero"],    NOT UPDATABLE
@@ -104,12 +104,17 @@ where table_name='INSERISCI'
 
 import datetime
 class translator(object):
+
     @staticmethod
     def strip_id(id):
         stripped=id[1:]
         if len(stripped) <=1:
             return 0
         return int(id[1:])
+    @staticmethod
+    def percentizza(progress):
+        
+        return str(float(progress)*100)
     @staticmethod
     def get_first(type):
         return type[0].upper()

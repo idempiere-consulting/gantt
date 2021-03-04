@@ -21,7 +21,7 @@ create or replace view lit_gantt_resass_v as
             WHEN h.isconfirmed = 'N'::bpchar THEN '0'::text
             ELSE '0.5'::text
         END  */
-    h.percent::TEXT AS progress,
+    (h.percent/100)::TEXT AS progress,
     's_resourceassignment'::text AS table_from,
     'task'::text AS type,
     '0'::text AS sortorder,
