@@ -1,7 +1,7 @@
 # modifica il percorso dell'eseguibile più sotto
+# in caso di multiutenza scegliere l'utente più sotto
 # metti questo file in  /etc/systemd/system/ :
 # cp gantt.service /etc/systemd/system/
-# in caso di multiutenza scegliere l'utente più sotto
 # informare il sistema del cambiamneto:
 # systemctl daemon-reload
 # abilitare all'avvio volendo:
@@ -9,7 +9,8 @@
 # ricordarsi eventualmente in caso di modifiche di eseguire 
 # systemctl daemon-reload
 # ora avviare...
-# systemctl start gantt.service
+# systemctl start gantt.service oppure
+# service gantt start
 
 [Unit]
 Description=GANTT activity service
@@ -22,7 +23,7 @@ Restart=always
 RestartSec=1
 User=root
 ExecStart=/bin/bash /opt/repos/gantt/gantt_start.sh
-#ExecStart=/home/mauro/sviluppo/idempiere/gantt/gantV/bin/python3 /home/mauro/sviluppo/idempiere/gantt/gantt_start.sh
+#ExecStart=/bin/bash /home/mauro/sviluppo/idempiere/gantt/gantt_start.sh
 
 [Install]
 WantedBy=multi-user.target
