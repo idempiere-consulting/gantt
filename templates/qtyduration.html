@@ -240,12 +240,6 @@ gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
 	};
 	
 	// resource config
-	var labels = gantt.locale.labels;
-	labels.column_owner = labels.section_owner = "Owner";
-	gantt.locale.labels.section_name = "Name";
-	gantt.locale.labels.section_idlink = "Idlink";
-    gantt.config.resource_store = "my_resources";
-	gantt.config.resource_property = "s_resource_id";
 ///////////////////////////////////////////////
 ///////////  datastore   inizio	
 	var resourcesStore= gantt.$resourcesStore
@@ -405,12 +399,23 @@ gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
 		}, editor: hourDurationEditor, width: 100},
 		{name: "add", width: 44}
  ];*/	
+ 	var labels = gantt.locale.labels;
+	labels.column_text = labels.section_name = "TASK NAME";
+	labels.column_owner = labels.section_owner = "ASSEGNATO A";
+	labels.column_description = labels.section_description = "DESCRIZIONE";
+	labels.column_bpname = labels.section_bpname = "CLIENTE";
+	labels.column_type = labels.section_type = "LIVELLO";
+	labels.column_ctype = labels.section_ctype = "TIPO";
+							labels.section_cactivity = "ATTIVITA'";
+							labels.section_time = "TEMPISTICA";
+	gantt.config.resource_store = "my_resources";
+	gantt.config.resource_property = "s_resource_id";
 	gantt.config.columns = [
 		{name: "text", tree: true, align: "left",width: 170, resize: true},//, editor: textEditor},
- 		{name: "bp_name",label: "Cliente", align: "center", resize:true,width: 170, resize: true},//, editor: textEditor},
-		{name: "start_date",label:"Data inizio", align: "center", resize: true, editor: dateEditor, width: 100},
+ 		{name: "bpname", align: "center", resize:true,width: 170, resize: true},//, editor: textEditor},
+		{name: "start_date", align: "center", resize: true, editor: dateEditor, width: 100},
 		// {name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
-		{name: "owner", label: "Risorsa", align: "center", template: function (item) {
+		{name: "owner", align: "center", template: function (item) {
 				return byId(gantt.serverList(gantt.config.resource_store), item.s_resource_id)}, width: 100},
 		/*{name: "duration", label:"D puro", resize: true, align: "center", map_to:"duration"},
 		
@@ -439,18 +444,19 @@ gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
 		{name: "name", height: 38, map_to: "text", type: "textarea", focus: true},
         {name: "owner", height: 22, map_to: "s_resource_id", type: "select", options: gantt.serverList(gantt.config.resource_store)},
 		{name: "description", height: 38, map_to: "description", type: "textarea", focus: true},
-		{name: "idlink", height: 38, map_to: "idlink", type: "textarea", focus: true},
+
+		{name: "bpname", height: 22, map_to: "bp_name", type: "textarea", focus: true},
 		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
     {key: 'project', label: "project"},
     {key: 'task', label: "task"},
     {key: 'milestone', label: "milestone"}])},
 
-		{name: "ctype", label:"TIPO",height: 22, map_to: "ctype", type: "select", options: gantt.serverList("options", [
+		{name: "ctype",height: 22, map_to: "ctype", type: "select", options: gantt.serverList("options", [
 			{key: "TA",label:"TA"},
 			{key: "PR",label:"PC"},
 			{key: "EM",label:"EM"}])},
 		
-        {name: "c_activity", label:"ATTIVITA'",height: 22, map_to: "c_activity_id", type: "select", options: gantt.serverList("options", [
+        {name: "cactivity", label:"ATTIVITA'",height: 22, map_to: "c_activity_id", type: "select", options: gantt.serverList("options", [
 			{key: 1000008,label:"Task IC"},
        		{key: 1000004, label: "Marco"},
        		{key: 1000000,label:"Lucia"},
@@ -533,6 +539,9 @@ gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
 		var percentage = task.progress * 100;
 		
 		return       "<b>Task:</b> "+task.text+
+				"<br/><b>Descrizione:</b> "+ task.description +
+				"<br/><b>Cliente:</b> "+ task.bp_name +
+		
 			    "<br/><b>Risorsa:</b> "+ risorsa +
 			    "<br/><b>Start date:</b> " + gantt.templates.tooltip_date_format(start)+ 
 			    "<br/><b>End date:</b> "+gantt.templates.tooltip_date_format(end)+
