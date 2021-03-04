@@ -213,6 +213,20 @@ gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
 		return false;
 	}
 });
+
+gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
+    
+    var task = gantt.getTask(id);
+    
+    if(task.progress == 1){
+        
+        gantt.message({text: "The task is already completed!", type: "completed"});
+        return false;
+    }
+    
+    
+    return true;
+})
 ////////////   filtro data fine
 		
 /////// necessario per formattare la data in arrivo da idempiere.....
@@ -354,10 +368,22 @@ gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
 
 	});
 	gantt.attachEvent("onLinkDblClick", function(id,e){
-		//console.log('cancello link',id)
+		console.log('cancello link',id)
 		
 		gantt.deleteLink(id);
-		//console.log('cancellato')
+		/*gantt.load('/data')
+        .then(function(data){
+		//console.log('ho caricato i task, i link e le risorse\n',data.response)
+		// console.log('\necco il gantt\n',gantt)
+		gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
+		var type= gantt.config.types
+		console.log('progetto',type)*/
+		// console.log(gantt)
+		//gantt.render();
+		
+
+	});
+		console.log('cancellato')
 	});
 	var textEditor = {type: "text", map_to: "text"};
 	var dateEditor = {type: "date", map_to: "start_date", min: new Date(2018, 0, 1), max: new Date(2019, 0, 1)};
@@ -504,18 +530,21 @@ gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
 		var risorsa = byId(gantt.serverList(gantt.config.resource_store), task.s_resource_id);
 		var totGiorni = dayFormatter.format(task.duration);
 		var totOre = hourFormatter.format(task.duration);
+		var percentage = task.progress * 100;
 		
 		return       "<b>Task:</b> "+task.text+
 			    "<br/><b>Risorsa:</b> "+ risorsa +
 			    "<br/><b>Start date:</b> " + gantt.templates.tooltip_date_format(start)+ 
 			    "<br/><b>End date:</b> "+gantt.templates.tooltip_date_format(end)+
 			    "<br/><b>totGiorni:</b> "+ totGiorni+
-			    "<br/><b>totOre:</b> "+ totOre;
+			    "<br/><b>totOre:</b> "+ totOre +
+			    "<br/><b>Completamento:</b> "+ percentage+"<b>%</b>";
 };
 
     //gantt.config.columns[0].sort = false;
     //gantt.config.columns[3].sort = false;
     //gantt.config.columns[4].sort = false;
+    gantt.config.drag_project = true;
 
  	// questa sotto è la parte che carica i dati dalle api di idempiere
     gantt.init("gantt_here");
