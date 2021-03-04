@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Decimal durations for tasks</title>
+
+	<!-- <link rel="stylesheet" href="../common/controls_styles.css?v=7.0.13"> -->
+    <link rel="stylesheet"       href="{{ url_for('static', filename='dhtmlxgantt_broadway.css') }}">
+
+<script src="{{ url_for('static', filename='dhtmlxgantt.js') }}" type="text/javascript"></script>
+<!-- {/* /* <script src="{{ url_for('static', filename='resource_project_single_resource_diagram.js') }}" type="text/javascript"></script> */} */} -->
+
+	 <!-- <script src="../common/testdata.js?v=7.0.13"></script>  -->
+	<style>
+		html, body {
+			height: 100%;
+			padding: 0px;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+
+	</style>
+</head>
+
+<body>
+    <label for="name">Nome utente:</label>
+        <input type="text" id="name" name="name" required
+            minlength="1" maxlength="38" size="10">
+    <label for="name">Password:</label>
+        <input type="text" id="pswd" name="pswd" required
+            minlength="4" maxlength="48" size="10">
+
+    <a href="/login//" role="button">Entra nel GANTT</a></div></div>
+    <form action="login.php" method="POST">
+        <div>
+          <label for="say">What greeting do you want to say?</label>
+          <input name="say" id="say" value="Hi">
+        </div>
+        <div>
+          <label for="to">Who do you want to say it to?</label>
+          <input name="to" id="to" value="Mom">
+        </div>
+        <div>
+          <button>Send my greetings</button>
+        </div>
+      </form>
+
+    {% if name == 'mauro' %}
+        {% if pswd == 'mauro' %}
+        <a href="/gantt/" role="button">ok entra nel GANTT</a></div></div>
+
+        {% endif %}
+        
+    {% endif %}
+
+    
+    </body>
