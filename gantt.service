@@ -1,0 +1,29 @@
+# modifica il percorso dell'eseguibile più sotto
+# in caso di multiutenza scegliere l'utente più sotto
+# metti questo file in  /etc/systemd/system/ :
+# cp gantt.service /etc/systemd/system/
+# informare il sistema del cambiamneto:
+# systemctl daemon-reload
+# abilitare all'avvio volendo:
+# systemctl enable gantt.service
+# ricordarsi eventualmente in caso di modifiche di eseguire 
+# systemctl daemon-reload
+# ora avviare...
+# systemctl start gantt.service oppure
+# service gantt start
+
+[Unit]
+Description=GANTT activity service
+After=network.target
+StartLimitIntervalSec=1
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/bin/bash /opt/repos/gantt/gantt_start.sh
+#ExecStart=/bin/bash /home/mauro/sviluppo/idempiere/gantt/gantt_start.sh
+
+[Install]
+WantedBy=multi-user.target

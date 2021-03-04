@@ -1,0 +1,25 @@
+{
+    "ssl":false,
+    "host":"andreahost.ddns.net",
+    "port":"8085",
+    "path":{
+        "login":"services/api/auth/login",
+        "query":"services/api/idempierepara/web/search/"
+    },
+    "login_user":{
+        "username": "mauro.biasutti@gmail.com",
+        "password": "s1bar1Bella"
+    },
+    "headers":{
+        "Content-Type": "application/json"
+    },
+    "mapping":"api_mapping_activity",
+    "getTasks":"getTasks",
+    "getLinks":"getLinks",
+    "getResources":"getResources",
+    
+    "date_format":"%Y-%m-%d %H:%M:%S"
+
+
+     
+}

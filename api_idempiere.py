@@ -5,7 +5,7 @@ import datetime
 
 class api(object):
     """base class to manage iDempiere API REST"""
-    def __init__(self,config_file="api_config Demo.json"):
+    def __init__(self,config_file="api_config Consulting.json"):
         """initialize api class, bringing the config file explicitally 
            it manages parameters according to"""
         with open(config_file, "r") as read_file:
@@ -15,7 +15,7 @@ class api(object):
         self.login_path=self.get_login_url()
         self.query_path=self.get_url()
         self.config_file=config_file
-        self.login()
+        #self.login()
         self.method=""
         self.data = ""
     def get_base_url(self):
@@ -44,28 +44,74 @@ class api(object):
         """ reinitialize api object with specific config file passed in"""
         cfg_file = self.config_file if config_file == "" else config_file
         self.__init__(cfg_file)
+    def delete(self,endpoint,id):
+        endpoint=endpoint + "_" + id
+        print(endpoint)
+        url=self.get_url() + endpoint
+        print(url)
+        response = requests.delete(url,headers=self.headers)
+        print(response.content)
+        return response
+    def post_links(self,payload):
+        url2='http://173.249.60.71:6080/services/api/idempierepara/web/search/'
+        url=url2 + 'postLink'
+        print('+++++++++++++++eseguo la chiamata postlink:')
+        print("requests.post('")
+        print(url,"',")
+        print('json=',payload,",")
+        #print('headers=',self.headers,")")
+
+        try:
+            # provo a chiamare la API
+            response = requests.post(url,json=payload,headers=self.headers)
+        except Exception as error:
+            print(error)
+        except AttributeError as error:
+            print('ecco errore',error)
+        # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
+        #print(response.request.method)  
+        except:
+            print('errorone')      
+            return response
+        print(response.content)
+        return response
+
+
     def query(self,method_NaMe,endpoint,payload=None): #, *vartuple):
         """try to call the specific API passing all of parameters needed"""
         #for var in vartuple:
         #    print (var)
         print(method_NaMe,endpoint,payload)
-
+        # mi assicuro che il case sia corretto: minuscolo
         method_name= method_NaMe.lower()
-    #    print(method_name)
+        if method_name == 'delete':
+            #self.delete(endpoint)
+            print('ecco qui la chiamata')
+            print(payload['id'])
+        #    print(method_name)
+        # "mi prendo il metodo come funzione" della classe importata requests (non c'entra flask)
         method = getattr(requests,method_name, lambda: 'invalide choise')
-        print(method)
+        #print(method)
+        # costruisco l'url da contattare nella sua interezza
         url=self.get_url() + endpoint
-        print(url)
-        print('intestazioni',self.headers)
+        print('eseguo la chiamata:')
+        print("requests.",method.__name__,"('")
+        print(url,"',")
+        print('json=',payload,",")
+        print('headers=',self.headers,")")
         try:
+            # provo a chiamare la API
             response = method(url,json=payload,headers=self.headers)  
         except Exception as error:
             print(error)
         except AttributeError as error:
             print('ecco errore',error)
-            
-        #print(response.request.method)        
-        print(response)
+        # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
+        #print(response.request.method)  
+        except:
+            print('errorone')      
+            return response
+        #print('risposta del server:\n',response.content)
         return response
     def login(self):
         try:
@@ -74,10 +120,10 @@ class api(object):
             impostandolo anche nelle proprietà della classe"""  
             print("cfg")  
             print(self.cfg)  
-            print("path")  
-            print(self.login_path)
-            print("user")  
-            print(self.cfg.get("login_user"))
+            #print("path")  
+            #print(self.login_path)
+            #print("user")  
+            #print(self.cfg.get("login_user"))
             #print("token")  
             #print((self.cfg.get("login_user")).json())
             #     --------------------------------------------------------------
@@ -85,7 +131,7 @@ class api(object):
             #                                                                   ----------------
             #                             sintassi per estrarre il campo con chiave "token"
             token=requests.post(self.login_path,json=self.cfg.get("login_user")).json()["token"]
-            print(token)
+            #print(token)
         except Exception as error:
             print("ecco l'errore")
             print(error)
@@ -100,7 +146,7 @@ class api(object):
             self.set_query_header()
             return self.token
         finally:
-            print("eseguo SEMPRE")
+            print("eseguo SEMPRE (in realtà non faccio niente)")
             pass
 
 

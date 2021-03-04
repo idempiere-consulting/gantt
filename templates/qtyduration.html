@@ -1,0 +1,644 @@
+
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Decimal durations for tasks</title>
+
+	<!-- <link rel="stylesheet" href="../common/controls_styles.css?v=7.0.13"> -->
+    <link rel="stylesheet"       href="{{ url_for('static', filename='dhtmlxgantt_broadway.css') }}">
+
+<script src="{{ url_for('static', filename='dhtmlxgantt.js') }}" type="text/javascript"></script>
+<!-- {/* /* <script src="{{ url_for('static', filename='resource_project_single_resource_diagram.js') }}" type="text/javascript"></script> */} */} -->
+
+	 <!-- <script src="../common/testdata.js?v=7.0.13"></script>  -->
+	<style>
+		html, body {
+			height: 100%;
+			padding: 0px;
+			margin: 0px;
+			overflow: hidden;
+		}
+		
+		.gantt_task_progress {
+			background: #547dab;
+		}
+
+
+	</style>
+</head>
+
+<body>
+ <!-- FIXME parametrizzare in base a jinja2?? 	 -->
+<select onchange="show_owners(this.value)">
+	<option value="All" selected >All</option>
+	<option value="1000004">default</option>
+	<option value="1000003">Andrea Checchia</option>
+    <option value="1000002">Lucia Zanchetta</option>
+    <option value="1000006">Gianni Sonego</option>
+    <option value="1000004">Andrea Bellotto</option>
+    <option value="1000009">Matteo Longo</option>
+    <option value="1000001">Marco Longo</option>
+    <!-- <option value="1000012">Marco AndreaC AndreaB</option> -->
+    <option value="1000010">Mauro Biasutti</option>
+    <option value="1000005">Stagista2</option>
+    <option value="1000011">Vincenzo Di Staso</option>
+    <option value="1000013">Stefano</option>
+ 
+</select>
+<!-- per multiselect vedere
+    https://stackoverflow.com/questions/17714705/how-to-use-checkbox-inside-select-option
+	io penso meglio no bootstrap.... jquery needed
+-->
+
+<!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
+
+	FIXME solo chrome/opera/edge supportati  ma ci sono soluzioni da adottare-->
+<label for="minimo">a partire da:</label>
+
+<input  onchange="set_min_date(this.value)" type="date" id="minimo" name="minimo" 
+
+min="2017-06-07T00:00" max="2022-06-14T00:00">
+<label for="massimo">fino a:</label>
+<input  onchange="set_max_date(this.name,this.value)" type="date" id="massimo"
+       name="massimo"
+       min="2017-06-07T00:00" max="2022-06-14T00:00">
+
+
+<!-- https://docs.dhtmlx.com/scheduler/timeline_view_templates.html -->
+
+
+
+
+
+
+<input type='button' id='undo' onclick="undo()" value="UNDO">
+<input type='button' id='redo' onclick="redo()" value="REDO">
+<input type='button'  value='Ordina per Risorsa FIXME' onclick='sortByOwner()'>
+
+
+<div id="gantt_here" style='width:100%; height:100%;'></div>
+
+<script> 
+
+	gantt.plugins({
+			auto_scheduling: true,
+			marker: true,
+			tooltip: true 
+		});
+
+	function undo(){
+		gantt.ext.undo.undo();
+		gantt.render()
+	}
+	function vai(url){
+		var win = window.open(url, '_blank');
+		win.focus();
+	}
+	
+	function redo(){
+		gantt.ext.undo.redo();
+		gantt.render()
+	}
+gantt.config.auto_scheduling = true;
+// imposto il formato che il gantt adopererà internamente
+gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
+
+
+// variabile per filtrare le risorse, alla partenza settata a tutte visibili
+var show_only_resource = "All";
+// imposta la variabile all'id dellla risorsa scelta (oppure tutte)
+function show_owners(selected_owner){
+	console.log('scelto per filtro',selected_owner,find_resource_by_id(selected_owner).label)
+	show_only_resource = selected_owner;
+  	gantt.render();
+}
+/////////////  ordinamento inizio
+gantt.config.sort = true;
+
+var n_direction = false;
+var r_direction = false;
+function sortByOwner() {
+		if (n_direction) {
+			gantt.sort("owner", false);
+		} else {
+			gantt.sort("owner", true);
+		}
+		n_direction = !n_direction;
+	}
+////////////// ordinamento fine
+
+
+///////////bottoni lightbox  INIZIO
+gantt.locale.labels["complete_button"] = "Complete";
+	gantt.locale.labels["idlink"] = "ZOOM IN";
+	
+	gantt.config.buttons_left = ["dhx_save_btn", "dhx_cancel_btn", "complete_button","idlink"];
+
+	gantt.templates.task_class = function (start, end, task) {
+		if (task.progress == 1)
+			return "completed_task";
+		return "";
+	};
+
+gantt.attachEvent("onLightboxButton", function (button_id, node, e) {
+		if (button_id == "complete_button") {
+			var id = gantt.getState().lightbox;
+			gantt.getTask(id).progress = 1;
+			gantt.updateTask(id)
+			gantt.hideLightbox();
+		}
+		if (button_id == "idlink") {
+			var id = gantt.getState().lightbox;
+			
+			vai(gantt.getTask(id).idlink)
+			gantt.message({ text: '<p style="color:red;background:blue">funzione da implementare a piacimento</p>', expire: 2000 })
+			gantt.hideLightbox();
+		}
+	});
+	gantt.attachEvent("onBeforeLightbox", function (id) {
+		var task = gantt.getTask(id);
+		if (task.progress == 1) {
+			gantt.message({text: "The task is already completed!", type: "completed"});
+			return false;
+		}
+		return true;
+	});
+///////////bottoni lightbox  FINE
+
+
+
+/////////  filtro data inizio
+	// funzione di appoggio per convertire una stringa di formato specificato ad oggetto date del gantt
+	var formatFunc = gantt.date.str_to_date("%Y-%m-%d");
+	// dummy data minima
+	var min_date=formatFunc("2001-01-01 00:00")
+	// dummy data massima 
+	var max_date=formatFunc("2031-01-01 00:00")
+	function set_min_date(date_min)	{
+		// formatto la data e...		
+		min_date=formatFunc(date_min)
+		// setto la data minima della timelina
+		gantt.config.start_date = min_date;
+		console.log('input',date_min,'output',min_date)
+		// aggiorno per visualizzare le modifiche
+		gantt.render();
+		
+	}
+	function set_max_date(name,date_max)	{
+		max_date=formatFunc(date_max)
+		gantt.config.end_date = max_date;
+		console.log(max_date)
+		gantt.render();
+		
+	}
+	var count=0
+gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
+	// sono id del task ed anche il task intero
+	// questa funzione determina se il task caricato verrà visualizzato oppure no
+	//if (task.type == "project") return false;
+	//return true
+	//console.log('processo ',id)
+	count=count+1
+	if (((show_only_resource == "All") || 
+		(task.s_resource_id == show_only_resource))&&
+		( task.start_date > min_date && task.end_date<max_date ))
+	{
+		console.log('visualizzato ',count,' ',task.text,' ' ,task.id );
+
+		return true
+		}
+	else {
+// di default non mostra niente a meno che non sia verificata una condizione sopra
+		console.log('scartato',count,' ',task.text,' ' ,task.id );
+		return false;
+	}
+});
+
+gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
+    
+    var task = gantt.getTask(id);
+    
+    if(task.progress == 1){
+        
+        gantt.message({text: "The task is already completed!", type: "completed"});
+        return false;
+    }
+    
+    
+    return true;
+})
+////////////   filtro data fine
+		
+/////// necessario per formattare la data in arrivo da idempiere.....
+	 gantt.templates.xml_date = gantt.templates.parse_date = function(rawDate){
+	return new Date(rawDate ); // * 1000);// UNIX timestamps
+	};
+///////// ... e per poter poi riscrivere
+	gantt.templates.xml_format = gantt.templates.format_date = function(date){
+	// format to UNIX timestamps before sending the update to the server
+	return Math.floor(date.valueOf() );// / 1000);
+	};
+	
+	// resource config
+///////////////////////////////////////////////
+///////////  datastore   inizio	
+	var resourcesStore= gantt.$resourcesStore
+	resourcesStore= gantt.createDatastore({
+		name: gantt.config.resource_store,
+		type: "treeDatastore",
+		initItem: function (item) {
+			//console.log('createdatastore, item',item)
+			item.parent = item.parent || gantt.config.root_id;
+			item[gantt.config.resource_property] = item.parent;
+			item.open = true;
+			return item;
+		}
+	});
+//////////////// datastore fine
+
+	
+	resourcesStore.attachEvent("onParse", function(){
+		var myresources = [];
+		resourcesStore.eachItem(function(res){
+			if(!resourcesStore.hasChild(res.id)){
+			
+			var copy = gantt.copy(res);
+			copy.key = res.id;
+			copy.label = res.text;
+			myresources.push(copy);
+			}
+		})
+		gantt.updateCollection("my_resources", myresources);
+		});
+    
+    function byId(list, id) {
+		for (var i = 0; i < list.length; i++) {
+			if (list[i].key == id)
+				return list[i].label || "";
+		}
+		return "";
+	}
+	function find_resource_by_id(owner_id) {
+		// FIXME hardcoded
+		var risorse=gantt.serverList(gantt.config.resource_store)
+		//var risorse = gantt.myresources
+  		for (var i = 0; i < risorse.length; i++){
+    		if (risorse[i].key == owner_id) return risorse[i];
+  		}
+  		return risorse[0]
+
+};
+
+	  
+
+
+	// scale settings
+	gantt.config.scales = [
+		{unit: "month", step: 1, format:"%M %Y"},
+		{unit: "day", step: 1, format: "%d, %l"},
+		{unit: "hour", step: 1, format: "%H"},
+	];
+	gantt.config.scale_height = 20 * 3;
+	gantt.config.min_column_width = 18;
+	gantt.ignore_time = function(date) {
+		return !gantt.isWorkTime(date, "hour");
+	};
+
+	// work time and duration
+	gantt.config.duration_unit = "hour";
+	gantt.config.work_time = true;
+	gantt.config.time_step = 1;
+	gantt.config.round_dnd_dates = false;
+	gantt.config.open_tree_initially = true;
+
+	gantt.setWorkTime({hours: [9, 13, 14, 18]});//global working hours. 8:00-12:00, 13:00-17:00
+	// formatting durations
+	var autoNOFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "hour", 
+		format: "hour", // è l'etichetta che compare (ed usa il plurale se serve)
+		minutesPerHour:60, 
+		hoursPerDay: 8,
+		hoursPerWeek: 40,
+		daysPerMonth: 30,
+		short: false	
+	});
+	var dayFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "hour", 
+		format: "day",
+		hoursPerDay: 8,
+		hoursPerWeek: 40,
+		daysPerMonth: 30,
+		short: false	
+	});
+	var minuteFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "minute", 
+		store: "hour", 
+		format: "minute",
+		minutesPerHour: 60,
+		minutesPerDay: 480,
+		hoursPerDay: 8,
+		hoursPerWeek: 40,
+		daysPerMonth: 30,
+		short: false	
+	});
+	var hourFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "minute", 
+		store: "hour", 
+		format: "hour",
+		short: true	
+	});
+	var autoFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "hour", 
+		store: "hour", 
+		format: "hour",
+		short: true	
+	});
+	var customFormatter = gantt.ext.formatters.durationFormatter({
+		enter: "day", 
+		store: "hour", 
+		format: "auto",
+
+	});
+	gantt.attachEvent("onLinkDblClick", function(id,e){
+		console.log('cancello link',id)
+		
+		gantt.deleteLink(id);
+		/*gantt.load('/data')
+        .then(function(data){
+		//console.log('ho caricato i task, i link e le risorse\n',data.response)
+		// console.log('\necco il gantt\n',gantt)
+		gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
+		var type= gantt.config.types
+		console.log('progetto',type)*/
+		// console.log(gantt)
+		//gantt.render();
+		
+
+	});
+		console.log('cancellato')
+	});
+	var textEditor = {type: "text", map_to: "text"};
+	var dateEditor = {type: "date", map_to: "start_date", min: new Date(2018, 0, 1), max: new Date(2019, 0, 1)};
+	var durationEditor = {type: "duration", map_to: "duration", formatter: autoFormatter, min:0, max:1000};
+	var dayDurationEditor = {type: "duration", map_to: "duration", formatter: dayFormatter, min:0, max:1000};
+	var hourDurationEditor = {type: "duration", map_to: "duration", formatter: hourFormatter, min:0, max:1000};
+/* 
+	gantt.config.columns = [
+		{name: "text", tree: true, width: 170, resize: true, editor: textEditor},
+		{name: "start_date", align: "center", resize: true, editor: dateEditor},
+		{name: "duration", label:"Duration", resize: true, align: "center", template: function(task) {
+			return autoFormatter.format(task.duration);
+		}, editor: durationEditor, width: 100},
+		{name: "dayDuration", label:"Duration (days)", resize: true, align: "center", template: function(task) {
+			return dayFormatter.format(task.duration);
+		}, editor: dayDurationEditor, width: 100},
+		{name: "hourDuration", label:"Duration (hours)", resize: true, align: "center", template: function(task) {
+			return hourFormatter.format(task.duration);
+		}, editor: hourDurationEditor, width: 100},
+		{name: "add", width: 44}
+ ];*/	
+ 	var labels = gantt.locale.labels;
+	labels.column_text = labels.section_name = "TASK NAME";
+	labels.column_owner = labels.section_owner = "ASSEGNATO A";
+	labels.column_description = labels.section_description = "DESCRIZIONE";
+	labels.column_bpname = labels.section_bpname = "CLIENTE";
+	labels.column_type = labels.section_type = "LIVELLO";
+	labels.column_ctype = labels.section_ctype = "TIPO";
+							labels.section_cactivity = "ATTIVITA'";
+							labels.section_time = "TEMPISTICA";
+	gantt.config.resource_store = "my_resources";
+	gantt.config.resource_property = "s_resource_id";
+	gantt.config.columns = [
+		{name: "text", tree: true, align: "left",width: 170, resize: true},//, editor: textEditor},
+ 		{name: "bpname", align: "center", resize:true,width: 170, resize: true},//, editor: textEditor},
+		{name: "start_date", align: "center", resize: true, editor: dateEditor, width: 100},
+		// {name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
+		{name: "owner", align: "center", template: function (item) {
+				return byId(gantt.serverList(gantt.config.resource_store), item.s_resource_id)}, width: 100},
+		/*{name: "duration", label:"D puro", resize: true, align: "center", map_to:"duration"},
+		
+		{name: "duration", label:"D auto", resize: true, align: "center", template: function(task) {
+			console.log(task)
+			return autoFormatter.format(task.duration);
+		}, editor: durationEditor, width: 100},*/
+		/*{name: "dayDuration", label:"Tot giorni", resize: true, align: "center", template: function(task) {
+			return dayFormatter.format(task.duration);
+		}, editor: dayDurationEditor, width: 100},*/
+		{name: "hourDuration", label:"Tot ore", resize: true, align: "center", template: function(task) {
+			return hourFormatter.format(task.duration);
+		}, editor: hourDurationEditor, width: 90},
+		/*{name: "minuteDuration", label:"D (minute)", resize: true, align: "center", template: function(task) {
+			return minuteFormatter.format(task.duration);
+		},  width: 100},
+		{name: "customDuration", label:"D (custom)", resize: true, align: "center", template: function(task) {
+			return customFormatter.format(task.duration);
+		},  width: 100},*/
+		{name: "add", width: 44}
+	];
+
+	
+	gantt.config.lightbox.sections = [
+		//{name: "c_activity_id", height: 70, map_to: "c_activity_id", type: "textarea", focus: true},
+		{name: "name", height: 38, map_to: "text", type: "textarea", focus: true},
+        {name: "owner", height: 22, map_to: "s_resource_id", type: "select", options: gantt.serverList(gantt.config.resource_store)},
+		{name: "description", height: 38, map_to: "description", type: "textarea", focus: true},
+
+		{name: "bpname", height: 22, map_to: "bp_name", type: "textarea", focus: true},
+		{name: "type", height: 22, map_to: "type", type: "select", options: gantt.serverList("options", [
+    {key: 'project', label: "project"},
+    {key: 'task', label: "task"},
+    {key: 'milestone', label: "milestone"}])},
+
+		{name: "ctype",height: 22, map_to: "ctype", type: "select", options: gantt.serverList("options", [
+			{key: "TA",label:"TA"},
+			{key: "PR",label:"PC"},
+			{key: "EM",label:"EM"}])},
+		
+        {name: "cactivity", label:"ATTIVITA'",height: 22, map_to: "c_activity_id", type: "select", options: gantt.serverList("options", [
+			{key: 1000008,label:"Task IC"},
+       		{key: 1000004, label: "Marco"},
+       		{key: 1000000,label:"Lucia"},
+       		{key: 1000002,label:"Standard"},
+       		{key: 1000003,label:"System"},
+       		{key: 1000004,label:"Progetti iDempiere"},
+       		{key: 1000010,label:"Reports"},
+       		{key: 1000012,label:"Sales Task"},
+       		{key: 1000013,label:"Task Clienti"},
+       		{key: 1000014,label:"Task"},
+       		{key: 1000015,label:"Chiamata"},
+       		{key: 1000016,label:"Incontro"},
+       		{key: 1000017,label:"Email"},
+       		{key: 1000018,label:"Implem/Supporto"},
+       		{key: 1000019,label:"CDC*"},
+       		{key: 1000020,label:"Amm.Condomini"},
+       		{key: 1000021,label:"Giulia"},
+       		{key: 1000022,label:"Matteo"},
+       		{key: 1000023,label:"Famiglia"},
+       		{key: 1000024,label:"Marco"},
+       		{key: 1000026,label:"Task Bug"},
+       		{key: 1000027,label:"Plugin ID"}])},
+
+
+		{name: "time", type: "duration", map_to: "auto", formatter: hourFormatter}
+	];
+
+
+
+/* 	gantt.attachEvent("onTaskDblClick", function(id,e){
+		var userTasks = gantt.getTaskBy("id", id);
+
+    	console.log('ecco il task cliccato',userTasks)
+		userTasks.type = 'task'
+		gantt.render()
+    	//return true;
+	});
+
+	gantt.attachEvent("onTaskCreated", function(task){
+ 		var level = gantt.calculateTaskLevel(task),
+   		types = gantt.config.types;
+ 
+ 		//assign task type based on task level
+ 		switch (level){
+			case 0:
+				task.type = types.project;
+				break;
+			case 1:
+				task.type = types.subproject;
+				break;
+			default:
+				task.type = types.task;
+				break;
+		}
+		console.log('creato task livello: ',task.type)
+		return true;
+	});
+ */
+	gantt.templates.timeline_cell_class = function (task, date) {
+		var css = [];
+
+		if (!gantt.isWorkTime(date, 'day')) {
+			css.push("week_end");
+		}
+
+		return css.join(" ");
+	};
+
+	/*
+	gantt.attachEvent("onGanttReady", function(){
+		var tooltips = gantt.ext.tooltips;
+		tooltips.tooltip.setViewport(gantt.$task_data);
+	});*/
+	
+	gantt.templates.tooltip_text = function(start,end,task){
+	
+		var risorsa = byId(gantt.serverList(gantt.config.resource_store), task.s_resource_id);
+		var totGiorni = dayFormatter.format(task.duration);
+		var totOre = hourFormatter.format(task.duration);
+		var percentage = task.progress * 100;
+		
+		return       "<b>Task:</b> "+task.text+
+				"<br/><b>Descrizione:</b> "+ task.description +
+				"<br/><b>Cliente:</b> "+ task.bp_name +
+		
+			    "<br/><b>Risorsa:</b> "+ risorsa +
+			    "<br/><b>Start date:</b> " + gantt.templates.tooltip_date_format(start)+ 
+			    "<br/><b>End date:</b> "+gantt.templates.tooltip_date_format(end)+
+			    "<br/><b>totGiorni:</b> "+ totGiorni+
+			    "<br/><b>totOre:</b> "+ totOre +
+			    "<br/><b>Completamento:</b> "+ percentage+"<b>%</b>";
+};
+
+    //gantt.config.columns[0].sort = false;
+    //gantt.config.columns[3].sort = false;
+    //gantt.config.columns[4].sort = false;
+    gantt.config.drag_project = true;
+
+ 	// questa sotto è la parte che carica i dati dalle api di idempiere
+    gantt.init("gantt_here");
+	gantt.load('/data')
+	.then(function(data){
+		//console.log('ho caricato i task, i link e le risorse\n',data.response)
+		// console.log('\necco il gantt\n',gantt)
+		gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
+		var type= gantt.config.types
+		console.log('progetto',type)
+		// console.log(gantt)
+		gantt.render();
+		
+
+	}); 
+	
+	
+	gantt.render();
+	var dp = gantt.createDataProcessor({
+		url: "/api",
+		mode: "REST"
+	});
+
+ </script>
+</body>
+
+
+{'Description':'taskone',
+'SalesRep_ID':'1000010', 
+'StartDate':'2018-01-01 11:00:00', 
+'ContactActivityType':'TA', 
+'EndDate':'2018-01-01 13:00:00'}
+
+{'Description': None, 
+'SalesRep_ID': 1000003, 
+'StartDate': '2018-01-01 11:00:00', 
+'ContactActivityType': 'TA', 
+'EndDate': '2018-01-01 12:00:00', 
+'C_Activity_ID': 1000008}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+    "description": "Incontro con Daniela",
+    "s_resource_id": 1000001,
+    "type": "task",
+    "ctype": "",
+    "duration": 6,
+    "end_date": null,
+    "id": 11000125,
+    "progress": "0",
+    "sortorder": "0",
+    "start_date": 1517234400000,
+    "table_from": "s_resourceassignment",
+    "text": "Incontro con Daniela"
+  },
+  {
+    "description": "Ciao Marco, mi servirebbe spazio disco aggiuntivo per i seguenti server:   ORSRV32    E: aggiungere 20 GB.   ORSRV33    W: aggiungere 50 GB.  ",
+    "s_resource_id": 1000054,
+    "type": "project",
+    "ctype": "TA",
+    "duration": null,
+    "end_date": 1523527200000,
+    "id": 91001187,
+    "progress": "0.5",
+    "sortorder": "0",
+    "start_date": 1517311200000,
+    "table_from": "c_contactactivity",
+    "text": "1000319 Ormet  Spazio HD"
+  },
+
+
+
+
+  
