@@ -12,7 +12,12 @@
     "headers":{
         "Content-Type": "application/json"
     },
+    "mapping":"api_mapping_project",
+    "getTasks":"getGantt",
+    "getLinks":"getLinks",
+    "getResources":"getResources",
     
+
     "date_dormat":"%Y-%m-%d %H:%M:%S"
 
 
