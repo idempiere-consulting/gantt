@@ -7,7 +7,8 @@ import user
 # la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
 configuration_file="api_config Demo.json"
-visualization_file="risorse_e_vincoli.html"
+visualization_file="qtyduration.html"
+#visualization_file="risorse_e_vincoli.html"
 # la struttura di mappatura tra i campi del gantt e le tabelle di iDempiere
 from api_mapping_project import mapping,translator
 
