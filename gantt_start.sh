@@ -14,4 +14,4 @@ export FLASK_APP=api_ilserver-risorse.py
 #export FLASK_APP=api_ilserver-activity.py
 . ./gantV/bin/activate
 python --version
-flask run --host=127.0.0.1 --port=8090
+flask run --host=0.0.0.0 --port=8090
