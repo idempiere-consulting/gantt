@@ -115,13 +115,18 @@ min="2017-06-07T00:00" max="2022-06-14T00:00">
     }
     
     gantt.attachEvent("onBeforeTaskDisplay", function(id, task){
-			if (gantt_filter)
-				if (task.progress == 1 && gantt_filter)
+			if (gantt_filter == 1 || gantt_filter == 2){
+				if (task.progress != 1 && gantt_filter == 1)
 					return false;
-
+			
+                if(task.progress == 1 && gantt_filter == 2)
+                    return false;
+                
+			}
 			return true;
+			
 		});
-gantt.config.auto_scheduling = true;
+//gantt.config.auto_scheduling = true;
 // imposto il formato che il gantt adopererà internamente
 gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 
