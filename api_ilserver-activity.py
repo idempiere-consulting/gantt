@@ -2,7 +2,7 @@ from flask import Flask, request, render_template
 from flask_restful import Resource, Api
 from json import dumps,loads
 import datetime
-import user
+#import user
 #import json
 # la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
@@ -312,7 +312,7 @@ def after_request(response):
 # potrei lanciare lo script direttamente allora prenderebbe il parametro indicato
 if __name__ == '__main__':
     print('giro')
-    #app.run(host='127.0.0.1', port=8090, debug=True)
+    app.run(host='127.0.0.1', port=8090, debug=True)
 
 
 
