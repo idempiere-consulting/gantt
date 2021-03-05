@@ -2,8 +2,7 @@ from flask import Flask, request, render_template
 from flask_restful import Resource, Api
 from json import dumps,loads
 import datetime
-#import user
-#import json
+import json
 # la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
 configuration_file="api_config Consulting.json"
