@@ -74,7 +74,15 @@ min="2017-06-07T00:00" max="2022-06-14T00:00">
 <input type='button' id='undo' onclick="undo()" value="UNDO">
 <input type='button' id='redo' onclick="redo()" value="REDO">
 <input type='button'  value='Ordina per Risorsa FIXME' onclick='sortByOwner()'>
-
+<label>
+        <input name='filter' onclick='filter_tasks(this);' type='radio' value='' checked='true'>
+        <span>Tutti i tasks</span></label>
+<label>
+        <input name='filter' onclick='filter_tasks(this);' type='radio' value='1'>
+        <span>Solo completi</span></label>
+<label>
+        <input name='filter' onclick='filter_tasks(this);' type='radio' value='2'>
+        <span>Solo non completi</span></label>
 
 <div id="gantt_here" style='width:100%; height:100%;'></div>
 
@@ -99,6 +107,20 @@ min="2017-06-07T00:00" max="2022-06-14T00:00">
 		gantt.ext.undo.redo();
 		gantt.render()
 	}
+	
+	var gantt_filter = 0;
+    function filter_tasks(node){
+        gantt_filter = node.value;
+        gantt.refreshData();
+    }
+    
+    gantt.attachEvent("onBeforeTaskDisplay", function(id, task){
+			if (gantt_filter)
+				if (task.progress == 1 && gantt_filter)
+					return false;
+
+			return true;
+		});
 gantt.config.auto_scheduling = true;
 // imposto il formato che il gantt adopererà internamente
 gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
