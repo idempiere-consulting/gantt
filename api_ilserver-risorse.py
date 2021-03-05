@@ -24,7 +24,9 @@ print(args)
 # da spedire ad iDempiere traducendo quello in arrivo dal DHTMLX
 # devo inserire come parametro l'id perchè non è dentro il payload
 # piccola funzione di comodo per stampare chiaramente un json
-def pretty_json(json_obj):
+def pretty_json(json_obj,message=None):
+    if message:
+        print(message)
     print(dumps(json_obj, sort_keys=False, indent=2))
 
 def translate_data(data_from_gantt,gantt_id=None):
@@ -128,7 +130,7 @@ class Data(Resource):
         tasks=gantt.query('get',gantt.cfg['getTasks'])
         tasks_json=loads(tasks.text)
         tasks_json=list(map(minuscolizza ,tasks_json))
-        pretty_json(tasks_json)
+        pretty_json(tasks_json,'TASKS')
         links=gantt.query('get','getLinks')
         links_json=loads(links.text)
         #print('LINKS:\n',links_json)
@@ -136,14 +138,13 @@ class Data(Resource):
         # minuscolizzo i nomi che mi arrivano dal dhrmlx
         
         links_json=list(map(minuscolizza ,links_json))
-        print("funge?\n",links_json)
-        
+        pretty_json(links_json,'LINKS')        
         #links_dict=links_json.values.to_dict()
         #links_dict['target']=links_dict['Target']
         
         resources=gantt.query('get','getResources')
         resources_json=loads(resources.text)
-        #pretty_json(resources_json)
+        pretty_json(resources_json,'RISORSE')
         # qualsiasi altro dato che volessi far processare al gantt devo metterlo dentro a collections e poi importarlo dentro al javascript
         #links_json=[]
         #resources_json=[]
@@ -262,6 +263,8 @@ def login():
     else:
         return render_template('loginTrue.html')
  """
+    gantt.login()
+
     return render_template('loginf.html')
 
 
