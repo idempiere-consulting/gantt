@@ -20,4 +20,4 @@ SELECT r.s_resource_id AS lit_gantt_resources_v_id,
  
    JOIN s_resourcetype t on t.s_resourcetype_id = r.s_resourcetype_id
 
-  WHERE r.ad_client_id = 1000006::numeric;
+  WHERE r.ad_client_id = 1000000::numeric;
