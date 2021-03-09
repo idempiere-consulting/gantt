@@ -388,23 +388,114 @@ gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
 		format: "auto",
 
 	});
-	gantt.attachEvent("onLinkDblClick", function(id,e){
-		console.log('cancello link',id)
-		
-		gantt.deleteLink(id);
-		/*gantt.load('/data')
-        .then(function(data){
-		//console.log('ho caricato i task, i link e le risorse\n',data.response)
-		// console.log('\necco il gantt\n',gantt)
-		gantt.message({ text: "task,link e risorse caricati", expire: 1000 });
-		var type= gantt.config.types
-		console.log('progetto',type)*/
-		// console.log(gantt)
-		//gantt.render();
-		
 
-		console.log('cancellato')
+	////////////////////////////// test link menù
+	
+	
+	(function(){
+
+	function endPopup(){
+		modal = null;
+		editLinkId = null;
+	}
+	function cancelEditLink(){
+		endPopup()
+	}
+
+	function deleteLink(){
+		gantt.deleteLink(editLinkId);
+		endPopup()
+	}
+
+	function saveLink(){
+		var link = gantt.getLink(editLinkId);
+
+		var lagValue = modal.querySelector(".lag-input").value;
+		if(!isNaN(parseInt(lagValue, 10))){
+			link.lag = parseInt(lagValue, 10);
+		}
+		
+		var typeValue = modal.querySelector(".type-input").value;
+		if(!isNaN(parseInt(typeValue, 10))){
+			link.type = parseInt(typeValue, 10);
+		}
+
+		gantt.updateLink(link.id);
+		if(gantt.autoSchedule){
+			gantt.autoSchedule(link.source);
+		}
+		endPopup();
+	}
+
+	var modal;
+	var editLinkId;
+	gantt.attachEvent("onLinkDblClick", function(id,e){
+		editLinkId = id;
+		var link = gantt.getLink(id);
+		var linkTitle;
+		switch(link.type){
+			case gantt.config.links.finish_to_start:
+				linkTitle = "FS";
+				break;
+			case gantt.config.links.finish_to_finish:
+				linkTitle = "FF";
+				break;
+			case gantt.config.links.start_to_start:
+				linkTitle = "SS";
+				break;
+			case gantt.config.links.start_to_finish:
+				linkTitle = "SF";
+				break;
+		}
+
+		//linkTitle += " " + gantt.getTask(link.source).text + " ---> " + gantt.getTask(link.target).text;
+		linkTitle += " Link Edit";
+
+		modal = gantt.modalbox({
+			title: linkTitle,
+			text: "<div>" +
+					"<label>Lag <input type='number' class='lag-input' /></label>" +
+				"</div>"+
+                  "<div>" +
+					"<label>Type <input type='number' class='type-input' /></label>" +
+				"</div>",
+			buttons: [
+				{label:"Save", css:"link-save-btn", value:"save"},
+				{label:"Cancel", css:"link-cancel-btn", value:"cancel"},
+				{label:"Delete", css:"link-delete-btn", value:"delete"}
+			],
+			width: "500px",
+			type: "popup-css-class-here",
+			callback: function(result){
+				switch(result){
+					case "save":
+						saveLink();
+						break;
+					case "cancel":
+						cancelEditLink();
+						break;
+
+					case "delete":
+						deleteLink();
+						break;
+				}
+			}
+		});
+
+		modal.querySelector(".lag-input").value = link.lag || 0;
+		modal.querySelector(".type-input").value = link.type || 0;
+
+		//any custom logic here
+		return false;
 	});
+
+})();
+	
+	
+	
+	
+	
+	////////////////////////////
 	var textEditor = {type: "text", map_to: "text"};
 	var dateEditor = {type: "date", map_to: "start_date", min: new Date(2018, 0, 1), max: new Date(2019, 0, 1)};
 	var durationEditor = {type: "duration", map_to: "duration", formatter: autoFormatter, min:0, max:1000};
@@ -432,13 +523,14 @@ gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
 	labels.column_bpname = labels.section_bpname = "CLIENTE";
 	labels.column_type = labels.section_type = "LIVELLO";
 	labels.column_ctype = labels.section_ctype = "TIPO";
-							labels.section_cactivity = "ATTIVITA'";
-							labels.section_time = "TEMPISTICA";
+    labels.section_cactivity = "ATTIVITA'";
+    labels.section_time = "TEMPISTICA";
 	gantt.config.resource_store = "my_resources";
 	gantt.config.resource_property = "s_resource_id";
 	gantt.config.columns = [
 		{name: "text", tree: true, align: "left",width: 170, resize: true},//, editor: textEditor},
- 		{name: "bpname", align: "center", resize:true,width: 170, resize: true},//, editor: textEditor},
+ 		{name: "bpname", align: "center", resize:true, width: 170, template:function(obj){
+                                return obj.bp_name }},//, editor: textEditor},
 		{name: "start_date", align: "center", resize: true, editor: dateEditor, width: 100},
 		// {name: "end_date", label:"Data fine",align: "center", resize: true, editor: dateEditor, width: 100},
 		{name: "owner", align: "center", template: function (item) {
