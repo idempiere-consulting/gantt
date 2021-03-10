@@ -399,7 +399,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 	var constraintDateEditor = { type: "constraint", map_to: "constraint_date", min: new Date(2019, 0, 1), max: new Date(2022, 0, 1) };
 
 	var labels = gantt.locale.labels;
-	labels.column_myresource = labels.section_myresource = "My_resource";
+	labels.column_myresource = labels.section_myresource = "RISORSA";
 	var resourcesStore= gantt.$resourcesStore
 	resourcesStore= gantt.createDatastore({
 		name: gantt.config.resource_store,
@@ -421,8 +421,8 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			if(!resourcesStore.hasChild(res.id)){
 			
 			var copy = gantt.copy(res);
-			copy.key = res.id;
-			copy.label = res.Name;
+			//copy.key = res.id;
+			//copy.label = res.Name;
 			myresources.push(copy);
 			}
 		});
