@@ -1,4 +1,38 @@
  Ciao Vincenzo:
+
+scusa l'assenza.
+Ho implementato la login in maniera al momento grezza ma solo perchè non so bene quale sia il modo migliore per 
+recuperare le utenze.
+La login funziona sul ramo project, il merge sugli altri rami mi da conflitti e non voglio fare casini.
+utente e password come da file di confifurazione in uso
+(per ramo project:)
+"login_user":{
+        "username": "demo@ciao.com",
+        "password": "DEMOAdmin"    },
+   
+Sempre sul ramo project (dove sto lavorando io) ho sistemato l'errore delle risoprse che erano scomparse e 
+ho fatto qualche passetto verso il computo corretto delle ore.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ho implementato la chiamata (funziona) per cancellare link, ho dovuto "abilitare"
 nel javascript la effettiva chiamanta di tale api a riga 163 qtyduration.html
 prendendo un pezzettino da:
