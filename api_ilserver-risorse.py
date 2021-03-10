@@ -2,13 +2,13 @@ from flask import Flask, request, render_template
 from flask_restful import Resource, Api
 from json import dumps,loads
 import datetime
-import user
+#import user
 #import json
 # la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
 configuration_file="api_config Demo.json"
-visualization_file="qtyduration.html"
-#visualization_file="risorse_e_vincoli.html"
+#visualization_file="qtyduration.html"
+visualization_file="risorse_e_vincoli.html"
 # la struttura di mappatura tra i campi del gantt e le tabelle di iDempiere
 from api_mapping_project import mapping,translator
 
@@ -128,16 +128,17 @@ class Data(Resource):
             newd={k.lower():v  for k,v in dict.items()}
             # newd['Name']='pippo'
             return newd
+# minuscolizzo TUTTI i nomi che mi arrivano per il DHTMLX
+        
+
+
         tasks=gantt.query('get',gantt.cfg['getTasks'])
         tasks_json=loads(tasks.text)
         tasks_json=list(map(minuscolizza ,tasks_json))
         pretty_json(tasks_json,'TASKS')
+        
         links=gantt.query('get','getLinks')
         links_json=loads(links.text)
-        #print('LINKS:\n',links_json)
-        # FIXME!!!!!!
-        # minuscolizzo i nomi che mi arrivano dal dhrmlx
-        
         links_json=list(map(minuscolizza ,links_json))
         pretty_json(links_json,'LINKS')        
         #links_dict=links_json.values.to_dict()
@@ -145,14 +146,16 @@ class Data(Resource):
         
         resources=gantt.query('get','getResources')
         resources_json=loads(resources.text)
+        resources_json=list(map(minuscolizza ,resources_json))
         pretty_json(resources_json,'RISORSE')
+        
         # qualsiasi altro dato che volessi far processare al gantt devo metterlo dentro a collections e poi importarlo dentro al javascript
         #links_json=[]
         #resources_json=[]
         # assemblamento finale
         result= {'tasks': tasks_json,"links": links_json ,'collections':{'my_resources':resources_json,'otherone':[]}}
         #print(result)
-        #pretty_json(result)
+        pretty_json(result)
         return  result
         
 # quando MODIFICO un "task" viene eseguita questa
