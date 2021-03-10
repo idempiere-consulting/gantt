@@ -219,9 +219,9 @@
 			return "completed_task";
 		return "";
 	};
-	console.log('tipi',gantt.config.types)
+	//console.log('tipi',gantt.config.types)
 	gantt.attachEvent("onAfterTaskAutoSchedule", function (task, new_date, link, predecessor) {
-			console.log("onAfterTaskAutoSchedule predecessor:",predecessor)
+			//console.log("onAfterTaskAutoSchedule predecessor:",predecessor)
 			var reason = "";
 			if (predecessor) {
 				reason = predecessor.text;
@@ -279,18 +279,18 @@
 ///VV///VVV/V/V/V/V/V/V
 gantt.attachEvent("onBeforeGanttRender", function(){
    var range = gantt.getSubtaskDates();
-   console.log('range\n',range);
+   //console.log('range\n',range);
    var scaleUnit = gantt.getState().scale_unit;
    gantt.config.project_ = new Date(2020, 0, 1);
-   console.log('test: ',gantt.config.project_)
+   //console.log('test: ',gantt.config.project_)
    if(range.start_date && range.end_date){
      gantt.config.start_date = gantt.calculateEndDate(range.start_date, -1, scaleUnit);
 	 gantt.config.end_date = gantt.calculateEndDate(range.end_date, 1, scaleUnit);
 	 gantt.config.project_start = range.start_date;
 	 gantt.config.project_end = range.end_date;
-	 console.log('inizioP: ',gantt.config.project_start)
+	 //console.log('inizioP: ',gantt.config.project_start)
    gantt.config.project_ = new Date(2020, 0, 1);
-   console.log(gantt.config.project_)
+   //console.log(gantt.config.project_)
    gantt.addMarker({
 				start_date: gantt.config.project_start,
 				text: "project start"
@@ -344,7 +344,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 	gantt.config.resource_store = "my_resources";
 	gantt.config.resource_property = "s_resource_id";
 	gantt.config.order_branch = true;
-	gantt.config.open_tree_initially = false;
+	gantt.config.open_tree_initially = true;
 	gantt.config.scale_height = 50;
 	//////////////   vincoli
 	var constraintTypeEditor = {
@@ -374,9 +374,9 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			var constraintType = gantt.getConstraintType(task);
 			var types = gantt.config.constraint_types;
 			if (constraintType != types.ASAP && constraintType != types.ALAP && task.constraint_date) {
-				console.log('vincolo task: ',task.constraint_date)
+				//console.log('vincolo task: ',task.constraint_date)
 				var dates = gantt.getConstraintLimitations(task);
-				console.log('vincoli data: ',dates)
+				//console.log('vincoli data: ',dates)
 				var els = document.createElement("div");
 
 				if (dates.earliestStart) {
@@ -388,7 +388,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 				}
 
 				els.title = gantt.locale.labels[constraintType] + " " + gantt.templates.task_date(task.constraint_date);
-				console.log('trasformata....',gantt.templates.task_date(task.constraint_date))
+				//console.log('trasformata....',gantt.templates.task_date(task.constraint_date))
 
 				if (els.children.length)
 					return els;
@@ -636,7 +636,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			{
 				name: "name", label: "Name", tree:true, width:200, template: function (resource) {
 
-					return resource.Name;
+					return resource.label;
 				}, resize: true
 			},
 			{
@@ -908,7 +908,7 @@ function customSetScale(value){
 			{name: "my_resource",label:"RISORSA",width:80,align: "center",resize: true ,template: function (task) {
 			 	// console.log('mostro cosa mi arriva in my_resource\n',task);
 			// mi arriva la riga del task selezionato
-					return ResById(gantt.serverList(gantt.config.resource_store),task.S_Resource_ID)
+					return ResById(gantt.serverList(gantt.config.resource_store),task[gantt.config.resource_property])
 				}
 			},// fine
 			{name:"add",        label:"",           width:30 }
