@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 from flask_restful import Resource, Api
 from json import dumps,loads
 import datetime
@@ -108,7 +108,7 @@ api = Api(app)
 # inizializzo l'oggetto che comunicherà con iDempiere
 gantt = idapi(config_file=configuration_file)
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
-gantt.login()
+#gantt.login()
 #print('ecco il token: ',gantt.token)
 #print(gantt.cfg['getTasks'])
 # questa è la chiamata principale, quella di inizializzazione dei dati della pagina html
@@ -253,29 +253,60 @@ api.add_resource(LINK_change,'/api/link/<id>')
 api.add_resource(LINK_add,'/api/link')
 #api.add_resource(LOGIN,'/api/login/')
 
-@app.route('/login/')
-#@app.route('/api/login/<name>/<pswd>')
-def login():
-    """    
-    templateData = {
-      'name' : 'mauro',
-      'pswd'  : 'mauro',
-   }
-    if token:
+@app.route('/')
+def index():
+    print('punto di ingresso')
+    return render_template('index.html')
 
-        return render_template('loginf.html', **templateData)
-    else:
-        return render_template('loginTrue.html')
+@app.route('/profile')
+def profile():
+    print('profile')
+
+    return render_template('profile.html')
+
+""" @app.route('/loginauth')
+def loginauth():
+    return render_template('loginauth.html')
  """
-    gantt.login()
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
-    return render_template('loginf.html')
 
+@app.route('/login', methods=['POST'])
+def login_post():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    print(email,password,gantt.cfg['login_user']['username'],gantt.cfg['login_user']['password'])
+    remember = True if request.form.get('remember') else False
+    print(gantt.cfg)
+    if email == gantt.cfg['login_user']['username'] and password ==gantt.cfg['login_user']['password']:
+        gantt.login()
+        return redirect(url_for('home_gantt'))
+    # check if the user actually exists
+    # take the user-supplied password, hash it, and compare it to the hashed password in the database
+#    if not user or not check_password_hash(user.password, password):
+ #       flash('Please check your login details and try again.')
+   #     return redirect(url_for('login')) # if the user doesn't exist or password is wrong, reload the page
+
+    # if the above check passes, then we know the user has the right credentials
+    return redirect(url_for('loginq'))
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+@app.route('/logout')
+def logout():
+    print('logout')
+    return render_template('logout.html')
+    
+        # se user uguale a quello della configurazione allora faccio il 
+    # gantt.login() così da prendere il token) e renderizzo il gantt
 
 
 # decoratore per "interfacciare" la chiamata API con le funzioni interne alla classe
 # API principale
-@app.route('/') 
+@app.route('/gantt') 
 # se volessi gestire un parametro potrei fare così
 #@app.route('/<task>')
 # essendo il parametro passato di default a ''
