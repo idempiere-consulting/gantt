@@ -329,7 +329,16 @@ def home_gantt(task=''):
         #html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
 #        html = render_template('qtyduration copy.html')
       #  html = render_template('qtyduration.html')
-        html = render_template(visualization_file)
+        try:
+            t=gantt.token
+        except:
+            print('devi autenticarti prima')
+
+            return redirect(url_for('loginn'))
+
+        else:
+            print('oro!\n',t)
+            html = render_template(visualization_file)
         #html = render_template('login.html')
 
         #html = render_template('V_test.html')
