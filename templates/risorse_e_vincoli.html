@@ -453,7 +453,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			
 			if (list[i].id==id)
 // console.log('ecco la risorsa col suo numero',list[i].Name.concat(id))
-				return list[i].Name || "";
+				return list[i].label || "";
 			
 			}
 		return "";
@@ -559,11 +559,12 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 		}
 		return css.join(" ");
 	};
-
+	
 	gantt.templates.resource_cell_value = function(start_date, end_date, resource, tasks){
 		var html = "<div>"
-		if(resourceMode == "hours"){
-			html += tasks.length * 8;
+			
+		if(resourceMode == "day"){
+			html += tasks.length * resource.dailycapacity;
 		}else{
 			html += tasks.length;
 		}
@@ -617,7 +618,9 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 		var store = gantt.getDatastore(gantt.config.resource_store),
 			field = gantt.config.resource_property,
 			tasks;
-
+		console.log(store)
+		console.log(field)
+		
 		if(store.hasChild(resourceId)){
 			tasks = gantt.getTaskBy(field, store.getChildren(resourceId));
 		}else{
@@ -666,17 +669,21 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 						totalDuration += task.duration;
 					});
 
-					return (totalDuration || 0) * 8 + " h";
+					return (totalDuration || 0) * resource.dailycapacity + " h";
 				}, resize: true
 			},
 			{
-				name: "dayCap", label: "dayCapacity", align:"center", template: function (resource) {
-					var tasks = getResourceTasks(resource.id);
+				name: "dayCap", label: "dCapacity", align:"center", template: function (resource) {
+					//FIXME!!
+/* 					var tasks = getResourceTasks(resource.id);
+					console.log(tasks)
 					var dc = 0;
+					console.log(resource.dailycapacity)
 					tasks.forEach(function(task){
-						console.log(task.dailyCapacity)
-						dc =parseInt( task.dailyCapacity);
+						dc =parseInt( resource.dailycapacity);
 					});
+ */
+					dc =parseInt( resource.dailycapacity);
 
 					return (dc);
 				}, resize: true
@@ -690,7 +697,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 
 					var state = gantt.getState();
 
-					return gantt.calculateDuration(state.min_date, state.max_date) * n * 8 + " h";
+					return gantt.calculateDuration(state.min_date, state.max_date) * n * resource.dailycapacity + " h";
 				}
 			}
 
@@ -756,7 +763,7 @@ gantt.config.scales = [
   }
 }
 
-setScaleConfig('year');
+setScaleConfig('day');
 gantt.render();
 function customSetScale(value){
   setScaleConfig(value);
