@@ -167,7 +167,9 @@
 <body>
 <div class="gantt_control" >
 	<input type='button' id='default' onclick="toggleGroups(this)" value="Show Resource view">
+
 	<select name="scales" size="1" onchange="customSetScale(value)">
+		<!-- <option value="hour">Hour scale</option> -->
 		<option value="day">Day scale</option>
 		<option value="week">Week scale</option>
 		<option value="month">Month scale</option>
@@ -279,18 +281,18 @@
 ///VV///VVV/V/V/V/V/V/V
 gantt.attachEvent("onBeforeGanttRender", function(){
    var range = gantt.getSubtaskDates();
-   console.log('range\n',range);
+   //console.log('range\n',range);
    var scaleUnit = gantt.getState().scale_unit;
    gantt.config.project_ = new Date(2020, 0, 1);
-   console.log('test: ',gantt.config.project_)
+   //console.log('test: ',gantt.config.project_)
    if(range.start_date && range.end_date){
      gantt.config.start_date = gantt.calculateEndDate(range.start_date, -1, scaleUnit);
 	 gantt.config.end_date = gantt.calculateEndDate(range.end_date, 1, scaleUnit);
 	 gantt.config.project_start = range.start_date;
 	 gantt.config.project_end = range.end_date;
-	 console.log('inizioP: ',gantt.config.project_start)
+	 //console.log('inizioP: ',gantt.config.project_start)
    gantt.config.project_ = new Date(2020, 0, 1);
-   console.log(gantt.config.project_)
+   //console.log(gantt.config.project_)
    gantt.addMarker({
 				start_date: gantt.config.project_start,
 				text: "project start"
@@ -342,9 +344,9 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 	//gantt.config.auto_scheduling_strict = true;
 	gantt.config.work_time = true;
 	gantt.config.resource_store = "my_resources";
-	gantt.config.resource_property = "S_Resource_ID";
+	gantt.config.resource_property = "s_resource_id";
 	gantt.config.order_branch = true;
-	gantt.config.open_tree_initially = false;
+	gantt.config.open_tree_initially = true;
 	gantt.config.scale_height = 50;
 	//////////////   vincoli
 	var constraintTypeEditor = {
@@ -397,18 +399,25 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 		});
 ////////////   vincoli
 	var constraintDateEditor = { type: "constraint", map_to: "constraint_date", min: new Date(2019, 0, 1), max: new Date(2022, 0, 1) };
-
+////////////////////////////
+/// come importare una lista:
+/// 1 creare etichetta di visualizzazione
 	var labels = gantt.locale.labels;
-	labels.column_myresource = labels.section_myresource = "My_resource";
-	var resourcesStore= gantt.$resourcesStore
-	resourcesStore= gantt.createDatastore({
+	labels.column_myresource = labels.section_myresource = "Risorsa";
+/// 2 creare oggetto contenitore	
+	//var resourcesStore= gantt.$resourcesStore
+	console.log('ganttpre',gantt)
+/// 3 inizializzarlo	
+	//resourcesStore
+	var resourcesStore= gantt.createDatastore({
 		name: gantt.config.resource_store,
 		type: "treeDatastore",
 		initItem: function (item) {
-			//console.log('createdatastore, item',item)
+			console.log('createdatastore, item',item)
 			item.parent = item.parent || gantt.config.root_id;
 			item[gantt.config.resource_property] = item.parent;
 			item.open = true;
+			console.log('item ',item)
 			return item;
 		}
 	});
@@ -416,18 +425,29 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 	gantt.locale.labels.section_split = "Display";
 	
 	resourcesStore.attachEvent("onParse", function(){
+		console.log('dentro on parse risorse')
 		var myresources = [];
+		console.log('rstore',resourcesStore)
+		rr=gantt.serverList(gantt.config.resource_store)
+
 		resourcesStore.eachItem(function(res){
+	//	rr.eachItem(function(res){
+			console.log('item di risorse:',res)
+
 			if(!resourcesStore.hasChild(res.id)){
-			
-			var copy = gantt.copy(res);
-			copy.key = res.id;
-			copy.label = res.Name;
-			myresources.push(copy);
+				console.log(res)
+				var copy = gantt.copy(res);
+//			copy.key = res.id;
+//			copy.label = res.Name;
+		copy.key = res.id;
+		copy.label = res.text;
+				myresources.push(copy);
 			}
 		});
-		console.log('ho caricato le seguenti risorse:\n',myresources)
-		gantt.updateCollection(gantt.config.resource_property /*my_resources*/, myresources);
+		console.log(myresources)
+		console.log('ho caricato le seguenti risorse:\n',gantt.serverList(gantt.config.resource_store))
+		gantt.updateCollection(gantt.config.resource_property ,gantt.serverList(gantt.config.resource_store));// myresources);
+		console.log('gantt post',gantt)
 		gantt.config.lightbox.sections = [
 		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
 		{name: "split", type:"checkbox", map_to: "render", options:[
@@ -446,14 +466,15 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 		});
 
 	function ResById(list, id) {
+
 		if (id == null) {
 			return ""
 		}
 		for (var i = 0; i < list.length; i++) {
 			
 			if (list[i].id==id)
-// console.log('ecco la risorsa col suo numero',list[i].Name.concat(id))
-				return list[i].Name || "";
+				console.log('ecco la risorsa col suo numero',list[i].Label.concat(id))
+				return list[i].label || "";
 			
 			}
 		return "";
@@ -505,7 +526,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 	function shouldHighlightTask(task){
 //console.log('sto lavorando il task : ',task)		
 		var store = resourcesStore;
-//console.log('lo store delle risorse è: ',store)
+console.log('lo store delle risorse è: ',store)
 		var taskResource = task[gantt.config.resource_property],
 			selectedResource = store.getSelectedId();
 //console.log('taskResource',taskResource)			
@@ -561,9 +582,15 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 	};
 
 	gantt.templates.resource_cell_value = function(start_date, end_date, resource, tasks){
+		console.log('resource cell',start_date,end_date,resource)
 		var html = "<div>"
-		if(resourceMode == "hours"){
-			html += tasks.length * 8;
+		if (resourceMode == "hours"){
+			if (resource.dailycapacity==0) {
+				resource.dailycapacity == 100
+			}
+			console.log('resource cell',start_date,end_date,resource)
+
+			html +=  resource.dailycapacity;
 		}else{
 			html += tasks.length;
 		}
@@ -635,8 +662,9 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 		columns: [
 			{
 				name: "name", label: "Name", tree:true, width:200, template: function (resource) {
+					console.log(resource)
 
-					return resource.Name;
+					return resource['label'];
 				}, resize: true
 			},
 			{
@@ -660,13 +688,18 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			},
 			{
 				name: "workload", label: "Workload", align:"center", template: function (resource) {
+					console.log('dentro a workload',resource)
+					if (resource.dailycapacit == 0) {
+						resource.dailycapacity == 4
+						gantt.message('attenzione valore zero')
+					}
 					var tasks = getResourceTasks(resource.id);
 					var totalDuration = 0;
 					tasks.forEach(function(task){
 						totalDuration += task.duration;
 					});
 
-					return (totalDuration || 0) * 8 + " h";
+					return (totalDuration || 0) * resource.dailycapacity + " h";
 				}, resize: true
 			},
 			{
@@ -678,19 +711,22 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 						dc =parseInt( task.dailyCapacity);
 					});
 
-					return (dc);
+					//return (dc);
+					return resource.dailycapacity;
 				}, resize: true
 			},
 			
 
 			{
 				name: "capacity", label: "Capacity", align:"center",template: function (resource) {
+					console.log('qqq',resource)
 					var store = gantt.getDatastore(gantt.config.resource_store);
+					console.log('questo ',store)
 					var n = store.hasChild(resource.id) ? store.getChildren(resource.id).length : 1
 
 					var state = gantt.getState();
 
-					return gantt.calculateDuration(state.min_date, state.max_date) * n * 8 + " h";
+					return gantt.calculateDuration(state.min_date, state.max_date) * n * resource.dailycapacity + " h";
 				}
 			}
 
@@ -706,6 +742,15 @@ gantt.config.scales = [
 
  function setScaleConfig(value) {
   switch (value) {
+    case "hour":
+      gantt.config.scale_unit = "hour";
+      gantt.config.step = 1;
+      gantt.config.date_scale = "%H %i";
+      gantt.config.subscales = [];
+      gantt.config.scale_height = 27;
+      gantt.templates.date_scale = null;
+      break;
+
     case "day":
       gantt.config.scale_unit = "day";
       gantt.config.step = 1;
@@ -862,8 +907,35 @@ function customSetScale(value){
 	gantt.load("/data")
  	.then(function(data){
 		//console.log('ho caricato \n',gantt.serverList("my_resources"))
-		gantt.message({ text: "dati caricati", expire: 2000 });
-		resourcesStore.parse(gantt.serverList(gantt.config.resource_property))
+		gantt.message({ text: "ho caricato i dati", expire: 2000 });
+		console.log('gantt:',gantt)
+		console.log('dati:',data.response)
+		console.log('inizio il parsing delle risorse')
+		console.log(gantt.config.resource_property)
+		rr=gantt.serverList(gantt.config.resource_store)
+
+		console.log('ecco la lista delle risorse',rr,resourcesStore)
+		//resourcesStore.parse(rr)
+		console.log('parso le risorse')
+		resourcesStore.parse(gantt.serverList(gantt.config.resource_store));
+/* 		[
+		{id: 1, text: "QA", parent:null},
+		{id: 2, text: "Development", parent:null},
+		{id: 3, text: "Sales", parent:null},
+		{id: 4, text: "Other", parent:null},
+		{id: 5, text: "Unassigned", parent:4},
+		{id: 6, text: "John", parent:1},
+		{id: 7, text: "Mike", parent:2},
+		{id: 8, text: "Anna", parent:2},
+		{id: 9, text: "Bill", parent:3},
+		{id: 10, text: "Floe", parent:3}
+	]);
+		
+ */
+		
+		
+		console.log('fine   parsing delle risorse')
+ 	
 		var textEditor = { type: "text", map_to: "text" };
 
 		gantt.config.columns = [
@@ -908,7 +980,7 @@ function customSetScale(value){
 			{name: "my_resource",label:"RISORSA",width:80,align: "center",resize: true ,template: function (task) {
 			 	// console.log('mostro cosa mi arriva in my_resource\n',task);
 			// mi arriva la riga del task selezionato
-					return ResById(gantt.serverList(gantt.config.resource_property),task.S_Resource_ID)
+					return ResById(gantt.serverList(gantt.config.resource_store),task.s_resource_id)
 				}
 			},// fine
 			{name:"add",        label:"",           width:30 }
@@ -921,7 +993,7 @@ function customSetScale(value){
 		*/
 		];
 			
-		console.log('renderixzzo dopo i dati')
+		//console.log('renderixzzo dopo i dati')
 		gantt.render();
 
  });
