@@ -268,8 +268,8 @@ def profile():
 def loginauth():
     return render_template('loginauth.html')
  """
-@app.route('/login')
-def login():
+@app.route('/loginn')
+def loginn():
     return render_template('login.html')
 
 
