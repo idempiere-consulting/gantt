@@ -342,7 +342,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 	//gantt.config.auto_scheduling_strict = true;
 	gantt.config.work_time = true;
 	gantt.config.resource_store = "my_resources";
-	gantt.config.resource_property = "S_Resource_ID";
+	gantt.config.resource_property = "s_resource_id";
 	gantt.config.order_branch = true;
 	gantt.config.open_tree_initially = false;
 	gantt.config.scale_height = 50;
@@ -427,7 +427,7 @@ gantt.attachEvent("onBeforeGanttRender", function(){
 			}
 		});
 		console.log('ho caricato le seguenti risorse:\n',myresources)
-		gantt.updateCollection(gantt.config.resource_property /*my_resources*/, myresources);
+		gantt.updateCollection(gantt.config.resource_store /*my_resources*/, myresources);
 		gantt.config.lightbox.sections = [
 		{name: "description", height: 38, map_to: "text", type: "textarea", focus: true},
 		{name: "split", type:"checkbox", map_to: "render", options:[
@@ -863,7 +863,7 @@ function customSetScale(value){
  	.then(function(data){
 		//console.log('ho caricato \n',gantt.serverList("my_resources"))
 		gantt.message({ text: "dati caricati", expire: 2000 });
-		resourcesStore.parse(gantt.serverList(gantt.config.resource_property))
+		resourcesStore.parse(gantt.serverList(gantt.config.resource_store))
 		var textEditor = { type: "text", map_to: "text" };
 
 		gantt.config.columns = [
@@ -908,7 +908,7 @@ function customSetScale(value){
 			{name: "my_resource",label:"RISORSA",width:80,align: "center",resize: true ,template: function (task) {
 			 	// console.log('mostro cosa mi arriva in my_resource\n',task);
 			// mi arriva la riga del task selezionato
-					return ResById(gantt.serverList(gantt.config.resource_property),task.S_Resource_ID)
+					return ResById(gantt.serverList(gantt.config.resource_store),task.S_Resource_ID)
 				}
 			},// fine
 			{name:"add",        label:"",           width:30 }
