@@ -258,10 +258,6 @@ def index():
     print('punto di ingresso')
     return render_template('index.html')
 
-@app.route('/profile')
-def profile():
-    print('profile')
-
     return render_template('profile.html')
 
 """ @app.route('/loginauth')
@@ -270,7 +266,7 @@ def loginauth():
  """
 @app.route('/loginn')
 def loginn():
-    return render_template('login.html')
+    return render_template('login_page.html')
 
 
 @app.route('/login', methods=['POST'])
@@ -290,11 +286,11 @@ def login_post():
    #     return redirect(url_for('login')) # if the user doesn't exist or password is wrong, reload the page
 
     # if the above check passes, then we know the user has the right credentials
-    return redirect(url_for('loginq'))
-@app.route('/signup')
+    return redirect(url_for('loginn'))
+""" @app.route('/signup')
 def signup():
     return render_template('signup.html')
-
+ """
 @app.route('/logout')
 def logout():
     print('logout')
