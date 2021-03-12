@@ -1,0 +1,27 @@
+gantt.attachEvent("onAfterLinkAdd", function(id,item){
+    
+    var newid;
+    
+    var link = gantt.getLink(id);
+    
+    var target = link.target;
+    
+    var source = link.source;
+    
+    gantt.ajax.get({
+    url:"x.x.x.x:xxxx/getmylinkid", 
+    data: {
+       "target" : target,
+       "type" : type
+    }
+    }).then(function(response){
+    var res = JSON.parse(response.responseText); 
+    if (res && res.status == "ok") {
+    
+        newid = res.id;
+    }
+    });
+    
+    link.id = newid;
+    
+}); 

@@ -1,0 +1,15 @@
+gantt.attachEvent("onAfterLinkAdd", function(id,item){
+    
+    var newid;
+    
+    var link = gantt.getLink(id);
+    
+    var target = link.target;
+    
+    var source = link.source;
+    
+    newid = target + source; //stessa logica di creaziobe id su idempiere
+    
+    link.id = newid;
+    
+});  

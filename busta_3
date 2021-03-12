@@ -1,0 +1,21 @@
+var dp = gantt.createDataProcessor(function(entity, action, data, id) { 
+    switch(action) {
+        case "create":
+           return gantt.ajax.post(
+                server + "/" + entity + "/" + id, // custom post con id nell'url dell'api
+                data
+           );
+        break;
+        case "update":
+           return gantt.ajax.put(
+                 server + "/" + entity + "/" + id,
+                 data
+            );
+        break;
+        case "delete":
+           return gantt.ajax.del(
+                 server + "/" + entity + "/" + id
+           );
+         break;
+   }
+}); 
