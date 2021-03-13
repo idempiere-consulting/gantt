@@ -15,7 +15,7 @@ mapping={
     "ProjectLineLevel":["type","get_first"],     
     "progress":"progress",
     "sortorder":"sortorder",
-    "S_Resource_ID": ["S_Resource_ID","intero"],
+    "S_Resource_ID": ["s_resource_id","intero"],
     "LIT_gantt_constraint_date":["constraint_date","format_date"],
     "LIT_gantt_constraint_type":["constraint_type","not_null"],
     "api":"Project"
@@ -28,7 +28,7 @@ mapping={
     "Type": "type",
     "progress": "progress",
     "SeqNo": "sortorder",
-    "S_Resource_ID": ["S_Resource_ID","intero"],
+    "S_Resource_ID": ["s_resource_id","intero"],
     "LIT_gantt_constraint_date":["constraint_date","format_date"],
     "LIT_gantt_constraint_type":["constraint_type","not_null"],
     "api":"ProjectPhase"
@@ -42,7 +42,7 @@ mapping={
     "Type": "type",
     "progress": "progress",
     "SeqNo": "sortorder",
-    "S_Resource_ID": ["S_Resource_ID","intero"],
+    "S_Resource_ID": ["s_resource_id","intero"],
     "LIT_gantt_constraint_date":["constraint_date","format_date"],
     "LIT_gantt_constraint_type":["constraint_type","not_null"],
     "api":"ProjectTask"
