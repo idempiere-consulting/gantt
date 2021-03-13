@@ -1,0 +1,15 @@
+# put this on /etc/systemd/system/
+
+[Unit]
+Description=GANTT Projects Service
+After=network.target
+StartLimitIntervalSec=1
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=mauro
+ExecStart=/home/mauro/sviluppo/idempiere/gantt/gantV/bin/python3 /home/mauro/sviluppo/idempiere/gantt/api_ilserver-risorse.py
+[Install]
+WantedBy=multi-user.target
