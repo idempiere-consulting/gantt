@@ -97,7 +97,7 @@ class api(object):
         print('eseguo la chiamata:')
         print("requests.",method.__name__,"('")
         print(url,"',")
-        print('json=',payload,",")
+        print('payload=',payload,",")
         print('headers=',self.headers,")")
         try:
             # provo a chiamare la API
