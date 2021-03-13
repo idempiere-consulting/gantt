@@ -1,5 +1,14 @@
  Ciao Vincenzo:
 
+ https://snippet.dhtmlx.com/5/0c957e2e1
+ "multi-filtro " si potrebbe utilizzare per "selezionare" i progetti da visualizzare, come vorrebbe guglielmo
+
+
+
+
+
+
+
 scusa l'assenza.
 Ho implementato la login in maniera al momento grezza ma solo perchè non so bene quale sia il modo migliore per 
 recuperare le utenze.
