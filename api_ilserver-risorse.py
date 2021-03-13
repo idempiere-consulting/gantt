@@ -1,14 +1,18 @@
+# per comodità metto qui in alto le righe da modificare per cambiare il funzionamento del server
+import os
+gantthome=os.path.dirname(os.path.realpath(__file__)) + '/'
+configuration_file=gantthome + "api_config Demo.json"
+visualization_file= "risorse_e_vincoli.html"
+serverPort='8090'
+serverIP='0.0.0.0'
+# moduli principali per il server API
 from flask import Flask, request, render_template, redirect, url_for
 from flask_restful import Resource, Api
 from json import dumps,loads
 import datetime
-#import user
-#import json
 # la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
-configuration_file="api_config Demo.json"
-#visualization_file="qtyduration.html"
-visualization_file="risorse_e_vincoli.html"
+#gantthome="/home/mauro/sviluppo/idempiere/gantt/"
 # la struttura di mappatura tra i campi del gantt e le tabelle di iDempiere
 from api_mapping_project import mapping,translator
 
@@ -277,8 +281,12 @@ def login_post():
     remember = True if request.form.get('remember') else False
     print(gantt.cfg)
     if email == gantt.cfg['login_user']['username'] and password ==gantt.cfg['login_user']['password']:
-        gantt.login()
-        return redirect(url_for('home_gantt'))
+        try:
+            gantt.login()
+        except requests.exceptions.ConnectionError:
+            r.status_code = "Connection refused, maybe is server down?"
+        else:            
+            return redirect(url_for('home_gantt'))
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
 #    if not user or not check_password_hash(user.password, password):
@@ -353,25 +361,10 @@ def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response        
+
 # potrei lanciare lo script direttamente allora prenderebbe il parametro indicato
 if __name__ == '__main__':
     print('giro')
-    #app.run(host='127.0.0.1', port=8090, debug=True)
+    app.run(host=serverIP, port=serverPort, debug=True)
 
 
-
-""" {'tasks': 
-[{
-    'id': 11006353, 
-    'owner': 1000226, 
-    'parent': 91003929, 
-    'duration': 0, 
-    'progress': '0', 
-    'sortorder': '0', 
-    'start_date': '2020-12-03 15:33:02', 
-    'end_date': '2020-12-03 15:33:02', 
-    'table_from': 'lit_hour', 
-    'text': '999-testone'}, 
-    {'duration': 1, 'end_date': None, 'id': 91003929, 'owner': None, 'parent': 0, 'progress': '0.5', 'sortorder': '0', 'start_date': '2020-12-03 15:34:46', 'table_from': 'c_contactactivity', 'text': '999 testone'}], 'links': '[]'}
-12
- """
