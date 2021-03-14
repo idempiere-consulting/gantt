@@ -147,7 +147,7 @@ class api(object):
             self.set_query_header()
             return self.token
         finally:
-            print("eseguo SEMPRE (in realtà non faccio niente)")
+            print("eseguo SEMPRE (in realta' non faccio niente)")
             pass
 
 
