@@ -1,6 +1,7 @@
 # modifica il percorso dell'eseguibile più sotto
 # in caso di multiutenza scegliere l'utente più sotto
 # metti questo file in  /etc/systemd/system/ :
+#FIXME /usr/lib/systemd/system/: units provided by installed packages
 # cp gantt.service /etc/systemd/system/
 # informare il sistema del cambiamneto:
 # systemctl daemon-reload

@@ -97,16 +97,16 @@ class api(object):
         print('eseguo la chiamata:')
         print("requests.",method.__name__,"('")
         print(url,"',")
-        print('json=',payload,",")
+        print('payload=',payload,",")
         print('headers=',self.headers,")")
         try:
             # provo a chiamare la API
             response = method(url,json=payload,headers=self.headers)  
         except Exception as error:
             print(error)
-        except AttributeError as error:
+            """         except AttributeError as error:
             print('ecco errore',error)
-        # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
+ """        # se ci riesco mostro la risposta (come id oggetto, TODO migliorare output)    
         #print(response.request.method)  
         except:
             print('errorone')      
@@ -132,11 +132,12 @@ class api(object):
             #                             sintassi per estrarre il campo con chiave "token"
             token=requests.post(self.login_path,json=self.cfg.get("login_user")).json()["token"]
             #print(token)
-        except Exception as error:
-            print("ecco l'errore")
-            print(error)
-        except requests.exceptions.ConnectionError:
-            print("eccolo il bastardo")
+            """         except Exception as error:
+                        print("ecco l'errore")
+                        print(error)
+ """        
+        except requests.exceptions.ConnectionError as error:
+            print("eccolo il bastardo\n",error)
 
         except:
             print("eseguo per errrori sconosciuti")
@@ -146,7 +147,7 @@ class api(object):
             self.set_query_header()
             return self.token
         finally:
-            print("eseguo SEMPRE (in realtà non faccio niente)")
+            print("eseguo SEMPRE (in realta' non faccio niente)")
             pass
 
 

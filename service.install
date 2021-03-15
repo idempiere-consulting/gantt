@@ -1,0 +1,12 @@
+#!/bin/bash
+# usage: ./service.install nome_file_originale nome_con_cui_vogliamo_chiamere_il_servizio
+
+cp $1 /etc/systemd/system/$2
+systemctl daemon-reload
+# abilitare all'avvio volendo:
+# systemctl enable gantt.service
+# ricordarsi eventualmente in caso di modifiche di eseguire 
+# systemctl daemon-reload
+# ora avviare...
+#systemctl start gantt.service oppure
+# service gantt start

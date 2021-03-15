@@ -1,0 +1,25 @@
+{
+    "ssl":false,
+    "host":"192.168.0.40.60",
+    "port":"8081",
+    "path":{
+        "login":"services/api/auth/login",
+        "query":"services/api/idempierepara/web/search/"
+    },
+    "login_user":{
+        "username": "demo@ciao.com",
+        "password": "DEMOAdmin"    },
+    "headers":{
+        "Content-Type": "application/json"
+    },
+    "mapping":"api_mapping_project",
+    "getTasks":"getGantt",
+    "getLinks":"getLinks",
+    "getResources":"getResources",
+    
+
+    "date_format":"%Y-%m-%d %H:%M:%S"
+
+
+     
+}

@@ -1,13 +1,18 @@
-from flask import Flask, request, render_template
+# per comodità metto qui in alto le righe da modificare per cambiare il funzionamento del server
+import os
+gantthome=os.path.dirname(os.path.realpath(__file__)) + '/'
+configuration_file=gantthome + "api_config Demo.json"
+visualization_file= "risorse_e_vincoli.html"
+serverPort='8090'
+serverIP='0.0.0.0'
+# moduli principali per il server API
+from flask import Flask, request, render_template, redirect, url_for
 from flask_restful import Resource, Api
 from json import dumps,loads
 import datetime
-#import user
 # la classe che comunica con le API di iDempiere
 from api_idempiere import api as idapi
-configuration_file="api_config Demo.json"
-visualization_file="qtyduration.html"
-#visualization_file="risorse_e_vincoli.html"
+#gantthome="/home/mauro/sviluppo/idempiere/gantt/"
 # la struttura di mappatura tra i campi del gantt e le tabelle di iDempiere
 from api_mapping_project import mapping,translator
 
@@ -107,7 +112,7 @@ api = Api(app)
 # inizializzo l'oggetto che comunicherà con iDempiere
 gantt = idapi(config_file=configuration_file)
 # FIXME ottengo subito il token di login, non so se è bene così concettualmente
-gantt.login()
+#gantt.login()
 #print('ecco il token: ',gantt.token)
 #print(gantt.cfg['getTasks'])
 # questa è la chiamata principale, quella di inizializzazione dei dati della pagina html
@@ -127,16 +132,17 @@ class Data(Resource):
             newd={k.lower():v  for k,v in dict.items()}
             # newd['Name']='pippo'
             return newd
+# minuscolizzo TUTTI i nomi che mi arrivano per il DHTMLX
+        
+
+
         tasks=gantt.query('get',gantt.cfg['getTasks'])
         tasks_json=loads(tasks.text)
         tasks_json=list(map(minuscolizza ,tasks_json))
         pretty_json(tasks_json,'TASKS')
+        
         links=gantt.query('get','getLinks')
         links_json=loads(links.text)
-        #print('LINKS:\n',links_json)
-        # FIXME!!!!!!
-        # minuscolizzo i nomi che mi arrivano dal dhrmlx
-        
         links_json=list(map(minuscolizza ,links_json))
         pretty_json(links_json,'LINKS')        
         #links_dict=links_json.values.to_dict()
@@ -144,14 +150,16 @@ class Data(Resource):
         
         resources=gantt.query('get','getResources')
         resources_json=loads(resources.text)
+        resources_json=list(map(minuscolizza ,resources_json))
         pretty_json(resources_json,'RISORSE')
+        
         # qualsiasi altro dato che volessi far processare al gantt devo metterlo dentro a collections e poi importarlo dentro al javascript
         #links_json=[]
         #resources_json=[]
         # assemblamento finale
         result= {'tasks': tasks_json,"links": links_json ,'collections':{'my_resources':resources_json,'otherone':[]}}
         #print(result)
-        #pretty_json(result)
+        pretty_json(result)
         return  result
         
 # quando MODIFICO un "task" viene eseguita questa
@@ -249,29 +257,60 @@ api.add_resource(LINK_change,'/api/link/<id>')
 api.add_resource(LINK_add,'/api/link')
 #api.add_resource(LOGIN,'/api/login/')
 
-@app.route('/login/')
-#@app.route('/api/login/<name>/<pswd>')
-def login():
-    """    
-    templateData = {
-      'name' : 'mauro',
-      'pswd'  : 'mauro',
-   }
-    if token:
+@app.route('/')
+def index():
+    print('punto di ingresso')
+    return render_template('index.html')
 
-        return render_template('loginf.html', **templateData)
-    else:
-        return render_template('loginTrue.html')
+    return render_template('profile.html')
+
+""" @app.route('/loginauth')
+def loginauth():
+    return render_template('loginauth.html')
  """
-    gantt.login()
+@app.route('/loginn')
+def loginn():
+    return render_template('login_page.html')
 
-    return render_template('loginf.html')
 
+@app.route('/login', methods=['POST'])
+def login_post():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    print(email,password,gantt.cfg['login_user']['username'],gantt.cfg['login_user']['password'])
+    remember = True if request.form.get('remember') else False
+    print(gantt.cfg)
+    if email == gantt.cfg['login_user']['username'] and password ==gantt.cfg['login_user']['password']:
+        try:
+            gantt.login()
+        except requests.exceptions.ConnectionError:
+            r.status_code = "Connection refused, maybe is server down?"
+        else:            
+            return redirect(url_for('home_gantt'))
+    # check if the user actually exists
+    # take the user-supplied password, hash it, and compare it to the hashed password in the database
+#    if not user or not check_password_hash(user.password, password):
+ #       flash('Please check your login details and try again.')
+   #     return redirect(url_for('login')) # if the user doesn't exist or password is wrong, reload the page
+
+    # if the above check passes, then we know the user has the right credentials
+    return redirect(url_for('loginn'))
+""" @app.route('/signup')
+def signup():
+    return render_template('signup.html')
+ """
+@app.route('/logout')
+def logout():
+    print('logout')
+    return render_template('logout.html')
+    
+        # se user uguale a quello della configurazione allora faccio il 
+    # gantt.login() così da prendere il token) e renderizzo il gantt
 
 
 # decoratore per "interfacciare" la chiamata API con le funzioni interne alla classe
 # API principale
-@app.route('/') 
+@app.route('/gantt') 
 # se volessi gestire un parametro potrei fare così
 #@app.route('/<task>')
 # essendo il parametro passato di default a ''
@@ -294,7 +333,16 @@ def home_gantt(task=''):
         #html = render_template('Cons_base.html')       # di base, solo task e bottoni scala 
 #        html = render_template('qtyduration copy.html')
       #  html = render_template('qtyduration.html')
-        html = render_template(visualization_file)
+        try:
+            t=gantt.token
+        except:
+            print('devi autenticarti prima')
+
+            return redirect(url_for('loginn'))
+
+        else:
+            print('oro!\n',t)
+            html = render_template(visualization_file)
         #html = render_template('login.html')
 
         #html = render_template('V_test.html')
@@ -313,25 +361,10 @@ def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response        
+
 # potrei lanciare lo script direttamente allora prenderebbe il parametro indicato
 if __name__ == '__main__':
     print('giro')
-    #app.run(host='127.0.0.1', port=8090, debug=True)
+    app.run(host=serverIP, port=serverPort, debug=True)
 
 
-
-""" {'tasks': 
-[{
-    'id': 11006353, 
-    'owner': 1000226, 
-    'parent': 91003929, 
-    'duration': 0, 
-    'progress': '0', 
-    'sortorder': '0', 
-    'start_date': '2020-12-03 15:33:02', 
-    'end_date': '2020-12-03 15:33:02', 
-    'table_from': 'lit_hour', 
-    'text': '999-testone'}, 
-    {'duration': 1, 'end_date': None, 'id': 91003929, 'owner': None, 'parent': 0, 'progress': '0.5', 'sortorder': '0', 'start_date': '2020-12-03 15:34:46', 'table_from': 'c_contactactivity', 'text': '999 testone'}], 'links': '[]'}
-12
- """

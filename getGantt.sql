@@ -11,12 +11,14 @@
     c_project.progress,
     '0'::text AS parent,
     c_project.sortorder,
-        CASE
+/*         CASE
             WHEN c_project.projectlinelevel = 'P'::bpchar THEN 'project'::text
             WHEN c_project.projectlinelevel = 'T'::bpchar THEN 'task'::text
             WHEN c_project.projectlinelevel = 'M'::bpchar THEN 'milestone'::text
             ELSE NULL::text
         END AS type,
+ */ 
+    'project' as type,
     c_project.s_resource_id,
     c_project.isactive,
     c_project.ad_client_id,
